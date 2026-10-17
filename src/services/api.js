@@ -1,3 +1,5 @@
+import { getAssetUrl } from '../utils/assets';
+
 const API_BASE = '/api';
 
 const CLIENT_TOKEN_KEY = 'barberfade_client_token';
@@ -104,7 +106,7 @@ const MOCK_SERVICES = [
     pointsEarned: 1,
     drinkIncluded: false,
     badge: 'CLÁSICO DE LA CASA',
-    imageUrl: '/imagenes/IMG_3526.PNG',
+    imageUrl: getAssetUrl('imagenes/IMG_3526.PNG'),
     includes: [
       'Corte personalizado',
       'Perfilado',
@@ -123,7 +125,7 @@ const MOCK_SERVICES = [
     pointsEarned: 1,
     drinkIncluded: true,
     badge: 'MÁS ELEGIDO',
-    imageUrl: '/imagenes/IMG_3888.JPG.jpeg',
+    imageUrl: getAssetUrl('imagenes/IMG_3888.JPG.jpeg'),
     includes: [
       'Corte personalizado',
       'Perfilado',
@@ -143,7 +145,7 @@ const MOCK_SERVICES = [
     pointsEarned: 1,
     drinkIncluded: false,
     badge: 'PERFILADO PRO',
-    imageUrl: '/imagenes/barba-premium.jpg',
+    imageUrl: getAssetUrl('imagenes/barba-premium.jpg'),
     includes: [
       'Diseño de barba',
       'Perfilado con navaja',
@@ -160,7 +162,7 @@ const MOCK_SERVICES = [
     pointsEarned: 1,
     drinkIncluded: true,
     badge: 'BARBA + TRAGO',
-    imageUrl: '/imagenes/barba-premium-bebida.jpg',
+    imageUrl: getAssetUrl('imagenes/barba-premium-bebida.jpg'),
     includes: [
       'Diseño de barba',
       'Perfilado con navaja',
@@ -178,7 +180,7 @@ const MOCK_SERVICES = [
     pointsEarned: 1,
     drinkIncluded: true,
     badge: 'CORTE PREMIUM VIP',
-    imageUrl: '/imagenes/corte-premium.png',
+    imageUrl: getAssetUrl('imagenes/corte-premium.png'),
     includes: [
       'Corte personalizado y perfilado al detalle',
       'Sesión relax con gafas de masaje ocular y masajeador cervical',
@@ -189,6 +191,38 @@ const MOCK_SERVICES = [
     sortOrder: 5
   }
 ];
+
+export function formatStaticClient(raw) {
+  if (!raw) return null;
+  const nameParts = (raw.name || '').trim().split(/\s+/);
+  const firstName = raw.firstName || nameParts[0] || 'Socio';
+  const lastName = raw.lastName || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'VIP');
+  const fullName = raw.name || `${firstName} ${lastName}`.trim();
+  const totalCuts = raw.totalCuts ?? raw.total_cuts ?? 8;
+  const points = raw.points ?? 8;
+
+  let tier = 'Black Member · Nivel 1';
+  if (totalCuts >= 12) tier = 'Gold VIP · Nivel 3';
+  else if (totalCuts >= 6) tier = 'Silver & Gold · Nivel 2';
+
+  return {
+    id: raw.id || `client-${raw.dni || '42123456'}`,
+    dni: raw.dni || '42123456',
+    firstName,
+    lastName,
+    name: fullName,
+    phone: raw.phone || '3413762115',
+    birthDate: raw.birthDate || '1995-05-15',
+    points,
+    totalCuts,
+    total_cuts: totalCuts,
+    tier: raw.tier || tier,
+    memberSince: raw.memberSince || '2025-01-15',
+    hasPin: true,
+    pinCode: raw.pinCode || '1234',
+    notes: raw.notes || ''
+  };
+}
 
 function getMockAppointments() {
   try {
@@ -237,7 +271,6 @@ function saveMockAppointments(appts) {
 }
 
 function handleStaticFallback(path, options = {}) {
-  const method = (options.method || 'GET').toUpperCase();
   const body = options.body ? JSON.parse(options.body) : {};
 
   // 1. Bootstrap
@@ -265,50 +298,59 @@ function handleStaticFallback(path, options = {}) {
     const dni = decodeURIComponent(path.replace('/clients/check/', ''));
     const saved = localStorage.getItem(`barber_client_${dni}`);
     if (saved) {
-      return { exists: true, isRegistered: true, name: JSON.parse(saved).name };
+      const client = formatStaticClient(JSON.parse(saved));
+      return { exists: true, isRegistered: true, name: client.name, firstName: client.firstName, lastName: client.lastName };
     }
     if (dni === '42123456') {
-      return { exists: true, isRegistered: true, name: 'Mateo Rossi' };
+      return { exists: true, isRegistered: true, name: 'Mateo Rossi', firstName: 'Mateo', lastName: 'Rossi' };
     }
     return { exists: false, isRegistered: false };
   }
 
   // 5. Client Login
   if (path === '/clients/login') {
-    const { dni, pin } = body;
+    const { dni } = body;
     let client = null;
     const saved = localStorage.getItem(`barber_client_${dni}`);
     if (saved) {
-      client = JSON.parse(saved);
+      client = formatStaticClient(JSON.parse(saved));
     } else {
-      client = {
+      client = formatStaticClient({
         dni,
+        firstName: dni === '42123456' ? 'Mateo' : 'Socio',
+        lastName: dni === '42123456' ? 'Rossi' : 'VIP',
         name: dni === '42123456' ? 'Mateo Rossi' : 'Socio David Barber',
         phone: '3413762115',
         points: 7,
-        total_cuts: 7,
+        totalCuts: 7,
         tier: 'Black Gold'
-      };
+      });
       localStorage.setItem(`barber_client_${dni}`, JSON.stringify(client));
     }
     const token = `mock-client-token-${dni}`;
+    localStorage.setItem(CLIENT_TOKEN_KEY, token);
     localStorage.setItem('barberfade_current_mock_client', JSON.stringify(client));
     return { token, client };
   }
 
   // 6. Client Register
   if (path === '/clients/register') {
-    const client = {
+    const client = formatStaticClient({
       dni: body.dni,
-      name: body.name || 'Nuevo Socio',
+      firstName: body.firstName || (body.name ? body.name.split(' ')[0] : 'Nuevo'),
+      lastName: body.lastName || (body.name ? body.name.split(' ').slice(1).join(' ') : 'Socio'),
+      name: body.name || `${body.firstName || 'Nuevo'} ${body.lastName || 'Socio'}`.trim(),
       phone: body.phone || '3413762115',
+      birthDate: body.birthDate || '',
       points: 0,
-      total_cuts: 0,
-      tier: 'Miembro'
-    };
+      totalCuts: 0,
+      tier: 'Black Member · Nivel 1'
+    });
     localStorage.setItem(`barber_client_${body.dni}`, JSON.stringify(client));
+    const token = `mock-client-token-${body.dni}`;
+    localStorage.setItem(CLIENT_TOKEN_KEY, token);
     localStorage.setItem('barberfade_current_mock_client', JSON.stringify(client));
-    return { token: `mock-client-token-${body.dni}`, client };
+    return { token, client };
   }
 
   // 7. Client Me
@@ -316,16 +358,23 @@ function handleStaticFallback(path, options = {}) {
     let client = null;
     const saved = localStorage.getItem('barberfade_current_mock_client');
     if (saved) {
-      client = JSON.parse(saved);
-    } else {
-      client = {
+      try {
+        client = formatStaticClient(JSON.parse(saved));
+      } catch {
+        client = null;
+      }
+    }
+    if (!client) {
+      client = formatStaticClient({
         dni: '42123456',
+        firstName: 'Mateo',
+        lastName: 'Rossi',
         name: 'Mateo Rossi',
         phone: '3413762115',
         points: 8,
-        total_cuts: 8,
-        tier: 'Black Gold'
-      };
+        totalCuts: 8,
+        tier: 'Silver & Gold · Nivel 2'
+      });
     }
     const appts = getMockAppointments().filter((a) => a.client_dni === client.dni);
     return { client, appointments: appts };
@@ -367,6 +416,7 @@ function handleStaticFallback(path, options = {}) {
   if (path === '/admin/login') {
     if (body.password === '1234' || body.password === 'barber2026' || body.username === 'david') {
       const token = 'mock-admin-token-david';
+      localStorage.setItem(ADMIN_TOKEN_KEY, token);
       return {
         token,
         admin: { username: 'david', displayName: 'David' }
@@ -418,10 +468,46 @@ function handleStaticFallback(path, options = {}) {
     return { success: true };
   }
 
+  // 13. Admin Clients List
+  if (path === '/admin/clients') {
+    return {
+      clients: [
+        formatStaticClient({ dni: '42123456', firstName: 'Mateo', lastName: 'Rossi', phone: '3413762115', points: 8, totalCuts: 8 }),
+        formatStaticClient({ dni: '40899123', firstName: 'Lucas', lastName: 'Benítez', phone: '3415558899', points: 3, totalCuts: 3 }),
+        formatStaticClient({ dni: '39112233', firstName: 'Joaquín', lastName: 'Alvarez', phone: '3416778899', points: 12, totalCuts: 14 })
+      ]
+    };
+  }
+
+  // 14. Admin Birthdays
+  if (path === '/admin/birthdays') {
+    return {
+      thisWeek: [
+        formatStaticClient({ dni: '42123456', firstName: 'Mateo', lastName: 'Rossi', phone: '3413762115', birthDate: '1995-10-18', points: 8, totalCuts: 8 })
+      ]
+    };
+  }
+
+  // 15. Admin Appointments
+  if (path.startsWith('/admin/appointments')) {
+    return { appointments: getMockAppointments() };
+  }
+
   return { ok: true };
 }
 
+const isStaticHost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname.includes('github.io') ||
+   window.location.protocol === 'file:' ||
+   Boolean(import.meta.env.VITE_STATIC_DEMO));
+
 async function request(path, options = {}, authType = null) {
+  // If hosted on GitHub Pages or static host, handle directly to avoid 404 network console noise
+  if (isStaticHost) {
+    return handleStaticFallback(path, options);
+  }
+
   const headers = {
     'Content-Type': 'application/json',
     ...(options.headers || {})

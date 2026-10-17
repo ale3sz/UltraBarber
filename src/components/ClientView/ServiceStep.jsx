@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check, Clock, Wine, ArrowLeft, ArrowRight } from 'lucide-react';
+import { getAssetUrl } from '../../utils/assets';
 
 export default function ServiceStep({
   services = [],
@@ -27,13 +28,7 @@ export default function ServiceStep({
     return 'center center';
   };
 
-  const getImageSrc = (url) => {
-    if (!url) return '';
-    if (url.startsWith('http') || url.startsWith('data:')) return url;
-    const base = import.meta.env.BASE_URL || './';
-    const cleanBase = base.endsWith('/') ? base : `${base}/`;
-    return `${cleanBase}${url.replace(/^\/+/, '')}`;
-  };
+  const getImageSrc = (url) => getAssetUrl(url);
 
   return (
     <div className="space-y-6">

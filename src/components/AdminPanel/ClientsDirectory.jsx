@@ -54,7 +54,7 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
   const filtered = clients.filter((c) => {
     const q = query.toLowerCase().trim();
     if (!q) return true;
-    const fullName = `${c.firstName} ${c.lastName}`.toLowerCase();
+    const fullName = `${c.firstName || c.name || ''} ${c.lastName || ''}`.toLowerCase();
     return (
       fullName.includes(q) ||
       (c.dni || '').toLowerCase().includes(q) ||
@@ -79,7 +79,7 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
         {filtered.map((c) => {
           const cleanPhone = (c.phone || '').replace(/\D/g, '');
           const sendPinWaUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-            `Hola ${c.firstName}! Te paso tu PIN de acceso de 4 dígitos para la web de David Barber Studio: ${c.pinCode || '1234'} (DNI: ${c.dni}).`
+            `Hola ${c.firstName || c.name || 'Socio'}! Te paso tu PIN de acceso de 4 dígitos para la web de David Barber Studio: ${c.pinCode || '1234'} (DNI: ${c.dni}).`
           )}`;
 
           return (
@@ -90,7 +90,7 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-display font-bold text-barber-lightText dark:text-barber-darkText">
-                    {c.firstName} {c.lastName}
+                    {c.firstName || c.name || 'Socio'} {c.lastName || ''}
                   </h3>
                   <p className="text-xs font-mono text-barber-lightMuted dark:text-barber-darkMuted tabular-nums">
                     DNI {c.dni} • {c.phone}

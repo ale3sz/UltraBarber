@@ -44,7 +44,7 @@ export default function DniStep({
             </div>
             <div>
               <h2 className="text-xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
-                {loggedClient.firstName} {loggedClient.lastName}
+                {loggedClient.firstName || loggedClient.name} {loggedClient.lastName || ''}
               </h2>
               <p className="text-xs font-mono text-barber-lightMuted dark:text-barber-darkMuted tabular-nums">
                 DNI {loggedClient.dni} • {loggedClient.phone}

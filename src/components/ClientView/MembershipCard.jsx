@@ -9,32 +9,33 @@ import {
   Maximize2,
   X
 } from 'lucide-react';
+import { getAssetUrl } from '../../utils/assets';
 
 const STUDIO_GALLERY = [
   {
     id: 'look-1',
-    src: '/imagenes/IMG_3888.JPG.jpeg',
-    title: 'Freestyle & Geometría',
+    src: getAssetUrl('imagenes/corte-bebida.jpg'),
+    title: 'Corte + Bebida (Monster Energy)',
     subtitle: 'Fade comprimido + diseño a navaja',
-    tag: 'CORTE + DISEÑO'
+    tag: 'CORTE + BEBIDA'
   },
   {
     id: 'look-2',
-    src: '/imagenes/IMG_3526.PNG',
+    src: getAssetUrl('imagenes/IMG_3526.PNG'),
     title: 'Burst Fade · Diseño 23',
     subtitle: 'Degradado curvo y textura superior',
     tag: 'FADE DE AUTOR'
   },
   {
     id: 'look-3',
-    src: '/imagenes/corte-premium-original.png',
+    src: getAssetUrl('imagenes/corte-premium.png'),
     title: 'Corte Premium · Relax VIP',
     subtitle: 'Gafas de masaje ocular + pistola cervical',
     tag: 'CORTE PREMIUM'
   },
   {
     id: 'look-4',
-    src: '/imagenes/IMG_0989.JPG.jpeg',
+    src: getAssetUrl('imagenes/IMG_0989.JPG.jpeg'),
     title: 'Colorimetría & Sesión VIP',
     subtitle: 'Iluminación, reflejos y terminación técnica',
     tag: 'COLOR & TÉCNICA'
@@ -110,13 +111,13 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-full bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-chai flex items-center justify-center text-barber-chai font-display font-bold text-base">
-            {client ? client.firstName.charAt(0).toUpperCase() : 'D'}
+            {client ? (client.firstName || client.name?.split(' ')[0] || 'S').charAt(0).toUpperCase() : 'D'}
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
               Hola,{' '}
               <span className="font-editorial italic font-normal text-barber-chai">
-                {client ? client.firstName : 'Invitado'}
+                {client ? (client.firstName || client.name?.split(' ')[0] || 'Socio') : 'Invitado'}
               </span>
             </h1>
           </div>
@@ -354,7 +355,7 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
       {/* Hero Booking Action Banner (Con foto real del estudio de David) */}
       <div className="relative rounded-3xl overflow-hidden border border-barber-lightBorder dark:border-barber-darkBorder bg-barber-darkSurface club-shadow">
         <img
-          src="/imagenes/IMG_0989.JPG.jpeg"
+          src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
           alt="David trabajando en el sillón del estudio"
           className="absolute inset-0 w-full h-full object-cover object-center opacity-45"
         />
@@ -405,7 +406,7 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
               className="group relative aspect-[3/4] rounded-2xl sm:rounded-3xl overflow-hidden border border-barber-lightBorder dark:border-barber-darkBorder bg-barber-darkSurface text-left club-shadow focus:outline-none focus:ring-2 focus:ring-barber-chai"
             >
               <img
-                src={item.src}
+                src={getImageSrc(item.src)}
                 alt={item.title}
                 className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 ease-out"
                 loading="lazy"
@@ -445,7 +446,7 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
           >
             <div className="relative aspect-[4/5] w-full bg-barber-darkBg">
               <img
-                src={selectedPhoto.src}
+                src={getImageSrc(selectedPhoto.src)}
                 alt={selectedPhoto.title}
                 className="w-full h-full object-cover object-top"
               />
@@ -509,13 +510,13 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
             <div className="w-44 h-44 mx-auto p-4 rounded-2xl bg-barber-lightBg flex flex-col items-center justify-center border-2 border-barber-chai">
               <QrCode className="w-28 h-28 text-barber-lightText stroke-[1.5]" />
               <span className="mt-1 font-mono text-xs font-bold text-barber-lightText tabular-nums">
-                DNI {client.dni}
+                DNI {client?.dni || ''}
               </span>
             </div>
 
             <div className="space-y-1">
               <p className="font-display font-bold text-lg text-barber-darkText">
-                {client.firstName} {client.lastName}
+                {client ? `${client.firstName || client.name || 'Socio'} ${client.lastName || ''}`.trim() : 'Socio Invitado'}
               </p>
               <p className="text-xs font-mono text-barber-chai tabular-nums">
                 {points} PUNTOS DISPONIBLES • {cuts} CORTES

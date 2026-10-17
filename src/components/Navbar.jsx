@@ -104,7 +104,7 @@ export default function Navbar({
               <div className="flex items-center gap-2 pl-3 pr-1.5 py-1 rounded-xl bg-barber-lightBg dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder">
                 <UserCheck className="w-3.5 h-3.5 text-barber-matcha shrink-0" />
                 <span className="text-xs font-semibold text-barber-lightText dark:text-barber-darkText hidden sm:inline">
-                  {loggedClient.firstName}
+                  {loggedClient.firstName || loggedClient.name}
                 </span>
                 <span className="text-xs font-mono font-bold text-barber-chai tabular-nums">
                   {loggedClient.points} PTS
@@ -224,14 +224,16 @@ export default function Navbar({
             <span>Turnos</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveView('admin')}
-            className="flex-1 py-2.5 rounded-xl flex flex-col items-center gap-1 text-[11px] font-semibold text-barber-lightMuted dark:text-barber-darkMuted"
-          >
-            <Lock className="w-4 h-4 text-barber-chai" />
-            <span>David</span>
-          </button>
+          {adminUser && (
+            <button
+              type="button"
+              onClick={() => setActiveView('admin')}
+              className="flex-1 py-2.5 rounded-xl flex flex-col items-center gap-1 text-[11px] font-semibold text-barber-lightMuted dark:text-barber-darkMuted"
+            >
+              <Lock className="w-4 h-4 text-barber-chai" />
+              <span>David</span>
+            </button>
+          )}
         </nav>
       )}
     </>
