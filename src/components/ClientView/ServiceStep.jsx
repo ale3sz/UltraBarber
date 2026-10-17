@@ -27,6 +27,14 @@ export default function ServiceStep({
     return 'center center';
   };
 
+  const getImageSrc = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http') || url.startsWith('data:')) return url;
+    const base = import.meta.env.BASE_URL || './';
+    const cleanBase = base.endsWith('/') ? base : `${base}/`;
+    return `${cleanBase}${url.replace(/^\/+/, '')}`;
+  };
+
   return (
     <div className="space-y-6">
       {/* Step Progress Bar (Inspired by Reference Video 01 / 03) */}
@@ -89,7 +97,7 @@ export default function ServiceStep({
                 <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-barber-darkBg">
                   {service.imageUrl && (
                     <img
-                      src={service.imageUrl}
+                      src={getImageSrc(service.imageUrl)}
                       alt={service.name}
                       style={{ objectPosition: getObjectPosition(service.id) }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
