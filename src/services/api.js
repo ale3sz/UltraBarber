@@ -125,7 +125,7 @@ const MOCK_SERVICES = [
     pointsEarned: 1,
     drinkIncluded: true,
     badge: 'MÁS ELEGIDO',
-    imageUrl: getAssetUrl('imagenes/IMG_3888.JPG.jpeg'),
+    imageUrl: getAssetUrl('imagenes/corte-bebida.jpg'),
     includes: [
       'Corte personalizado',
       'Perfilado',

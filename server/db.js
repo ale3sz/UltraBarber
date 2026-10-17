@@ -266,7 +266,7 @@ export function initDatabase() {
         points_earned: 1,
         drink_included: 1,
         badge: 'MÁS ELEGIDO',
-        image_url: '/imagenes/IMG_3888.JPG.jpeg',
+        image_url: '/imagenes/corte-bebida.jpg',
         includes: [
           'Corte personalizado',
           'Perfilado',
