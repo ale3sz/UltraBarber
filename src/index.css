@@ -63,11 +63,51 @@
 
 /* Soft depth shadows */
 .club-shadow {
-  box-shadow: 0 12px 32px -8px rgba(18, 16, 13, 0.14), 0 4px 12px -4px rgba(18, 16, 13, 0.08);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.12), 0 4px 12px -4px rgba(0, 0, 0, 0.06);
 }
 
 .dark .club-shadow {
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 4px 14px -4px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.85), 0 4px 14px -4px rgba(0, 0, 0, 0.55);
+}
+
+/* Explicit Black & Gold Luxury Studio Color Binding */
+.bg-barber-matcha,
+.bg-barber-chai {
+  background-color: #D4AF37 !important;
+}
+
+.text-barber-matcha,
+.text-barber-chai {
+  color: #D4AF37 !important;
+}
+
+.border-barber-matcha,
+.border-barber-chai {
+  border-color: #D4AF37 !important;
+}
+
+.fill-barber-chai {
+  fill: #D4AF37 !important;
+}
+
+.dark .bg-barber-darkBg {
+  background-color: #0A0A0A !important;
+}
+
+.dark .bg-barber-darkSurface {
+  background-color: #141414 !important;
+}
+
+.dark .border-barber-darkBorder {
+  border-color: #262626 !important;
+}
+
+.dark .text-barber-darkText {
+  color: #FFFFFF !important;
+}
+
+.dark .text-barber-pistache {
+  color: #A3A3A3 !important;
 }
 
 /* Micro-interaction & Emil Kowalski Design Engineering Utilities */
