@@ -4,8 +4,10 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('barberfade_theme');
-    if (saved) return saved === 'dark';
+    try {
+      const saved = localStorage.getItem('barberfade_theme');
+      if (saved) return saved === 'dark';
+    } catch {}
     return true; // Predeterminado en modo oscuro como en el estudio premium
   });
 
@@ -13,10 +15,14 @@ export function ThemeProvider({ children }) {
     const root = document.documentElement;
     if (isDark) {
       root.classList.add('dark');
-      localStorage.setItem('barberfade_theme', 'dark');
+      try {
+        localStorage.setItem('barberfade_theme', 'dark');
+      } catch {}
     } else {
       root.classList.remove('dark');
-      localStorage.setItem('barberfade_theme', 'light');
+      try {
+        localStorage.setItem('barberfade_theme', 'light');
+      } catch {}
     }
   }, [isDark]);
 

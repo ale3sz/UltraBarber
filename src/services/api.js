@@ -5,22 +5,42 @@ const API_BASE = '/api';
 const CLIENT_TOKEN_KEY = 'barberfade_client_token';
 const ADMIN_TOKEN_KEY = 'barberfade_admin_token';
 
+function safeGetStorage(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSetStorage(key, val) {
+  try {
+    localStorage.setItem(key, val);
+  } catch {}
+}
+
+function safeRemoveStorage(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch {}
+}
+
 export function getClientToken() {
-  return localStorage.getItem(CLIENT_TOKEN_KEY);
+  return safeGetStorage(CLIENT_TOKEN_KEY);
 }
 
 export function setClientToken(token) {
-  if (token) localStorage.setItem(CLIENT_TOKEN_KEY, token);
-  else localStorage.removeItem(CLIENT_TOKEN_KEY);
+  if (token) safeSetStorage(CLIENT_TOKEN_KEY, token);
+  else safeRemoveStorage(CLIENT_TOKEN_KEY);
 }
 
 export function getAdminToken() {
-  return localStorage.getItem(ADMIN_TOKEN_KEY);
+  return safeGetStorage(ADMIN_TOKEN_KEY);
 }
 
 export function setAdminToken(token) {
-  if (token) localStorage.setItem(ADMIN_TOKEN_KEY, token);
-  else localStorage.removeItem(ADMIN_TOKEN_KEY);
+  if (token) safeSetStorage(ADMIN_TOKEN_KEY, token);
+  else safeRemoveStorage(ADMIN_TOKEN_KEY);
 }
 
 // ----------------------------------------------------
@@ -224,54 +244,94 @@ export function formatStaticClient(raw) {
   };
 }
 
+function normalizeMockAppointment(a) {
+  const clientName = a.clientName || a.client_name || 'Cliente';
+  const clientPhone = a.clientPhone || a.client_phone || '3413762115';
+  const dni = a.dni || a.client_dni || '42123456';
+  const serviceId = a.serviceId || a.service_id || 'corte-bebida';
+  const serviceName = a.serviceName || a.service_name || 'Corte + Bebida';
+  const price = a.price ?? a.service_price ?? 20000;
+  const selectedDrink = a.selectedDrink ?? a.chosen_drink ?? null;
+  let status = a.status || 'confirmado';
+  if (status === 'confirmed') status = 'confirmado';
+  if (status === 'pending_confirmation') status = 'pendiente';
+  if (status === 'completed') status = 'finalizado';
+  if (status === 'cancelled') status = 'cancelado';
+
+  return {
+    ...a,
+    dni,
+    client_dni: dni,
+    clientName,
+    client_name: clientName,
+    clientPhone,
+    client_phone: clientPhone,
+    serviceId,
+    service_id: serviceId,
+    serviceName,
+    service_name: serviceName,
+    price,
+    service_price: price,
+    selectedDrink,
+    chosen_drink: selectedDrink,
+    status
+  };
+}
+
 function getMockAppointments() {
   try {
-    const raw = localStorage.getItem('barberfade_mock_appts');
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetStorage('barberfade_mock_appts');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.map(normalizeMockAppointment);
+    }
   } catch {}
   const today = new Date().toISOString().split('T')[0];
   return [
-    {
+    normalizeMockAppointment({
       id: 'demo-1',
       code: 'BF-8821',
-      client_name: 'Mateo Rossi',
-      client_phone: '3413762115',
-      client_dni: '42123456',
-      service_id: 'corte-bebida',
-      service_name: 'Corte + Bebida',
-      service_price: 20000,
-      chosen_drink: 'Cerveza',
+      dni: '38999888',
+      clientName: 'Mateo Rossi',
+      clientPhone: '3413762115',
+      serviceId: 'corte-bebida',
+      serviceName: 'Corte + Bebida',
+      price: 20000,
+      selectedDrink: 'Cerveza',
       date: today,
       time: '15:30',
-      status: 'confirmed',
+      status: 'confirmado',
       notes: 'Turno confirmado'
-    },
-    {
+    }),
+    normalizeMockAppointment({
       id: 'demo-2',
       code: 'BF-9014',
-      client_name: 'Lucas Benítez',
-      client_phone: '3415558899',
-      client_dni: '40899123',
-      service_id: 'experiencia-completa',
-      service_name: 'Corte Premium · Experiencia Completa',
-      service_price: 24000,
-      chosen_drink: 'Gaseosa',
+      dni: '40123456',
+      clientName: 'Lucas Benítez',
+      clientPhone: '3415558899',
+      serviceId: 'experiencia-completa',
+      serviceName: 'Corte Premium · Experiencia Completa',
+      price: 24000,
+      selectedDrink: 'Gaseosa',
       date: today,
       time: '17:00',
-      status: 'pending_confirmation',
+      status: 'pendiente',
       notes: 'Aguardando confirmación'
-    }
+    })
   ];
 }
 
 function saveMockAppointments(appts) {
-  try {
-    localStorage.setItem('barberfade_mock_appts', JSON.stringify(appts));
-  } catch {}
+  safeSetStorage('barberfade_mock_appts', JSON.stringify(appts.map(normalizeMockAppointment)));
 }
 
 function handleStaticFallback(path, options = {}) {
-  const body = options.body ? JSON.parse(options.body) : {};
+  let body = {};
+  try {
+    body = options.body ? JSON.parse(options.body) : {};
+  } catch {
+    body = {};
+  }
 
   // 1. Bootstrap
   if (path === '/public/bootstrap') {
@@ -288,55 +348,112 @@ function handleStaticFallback(path, options = {}) {
 
   // 3. Busy slots
   if (path.startsWith('/appointments/busy-slots')) {
-    const appts = getMockAppointments();
-    const busy = appts.map((a) => a.time);
-    return { busy };
+    const appts = getMockAppointments().filter((a) => a.status === 'confirmado' || a.status === 'pendiente');
+    const busySlots = appts.map((a) => a.time);
+    return {
+      busy: busySlots,
+      busySlots,
+      disabledSlots: MOCK_CONFIG.disabledSlots || [],
+      isDayClosed: false,
+      closedReason: ''
+    };
   }
 
   // 4. Client Check DNI
   if (path.startsWith('/clients/check/')) {
-    const dni = decodeURIComponent(path.replace('/clients/check/', ''));
-    const saved = localStorage.getItem(`barber_client_${dni}`);
+    const dni = decodeURIComponent(path.replace('/clients/check/', '')).replace(/\D/g, '');
+    const saved = safeGetStorage(`barber_client_${dni}`);
     if (saved) {
-      const client = formatStaticClient(JSON.parse(saved));
-      return { exists: true, isRegistered: true, name: client.name, firstName: client.firstName, lastName: client.lastName };
+      try {
+        const client = formatStaticClient(JSON.parse(saved));
+        return {
+          exists: true,
+          dni,
+          hasPin: true,
+          isRegistered: true,
+          name: client.name,
+          firstName: client.firstName,
+          lastName: client.lastName,
+          maskedName: `${client.firstName} ${client.lastName ? client.lastName.charAt(0) + '.' : ''}`.trim(),
+          phoneHint: `•••${String(client.phone || '2115').slice(-4)}`
+        };
+      } catch {}
     }
-    if (dni === '42123456') {
-      return { exists: true, isRegistered: true, name: 'Mateo Rossi', firstName: 'Mateo', lastName: 'Rossi' };
+    if (dni === '40123456') {
+      return {
+        exists: true,
+        dni,
+        hasPin: true,
+        isRegistered: true,
+        name: 'Lucas Benítez',
+        firstName: 'Lucas',
+        lastName: 'Benítez',
+        maskedName: 'Lucas B.',
+        phoneHint: '•••8899'
+      };
     }
-    return { exists: false, isRegistered: false };
+    if (dni === '38999888' || dni === '42123456') {
+      return {
+        exists: true,
+        dni,
+        hasPin: true,
+        isRegistered: true,
+        name: 'Mateo Rossi',
+        firstName: 'Mateo',
+        lastName: 'Rossi',
+        maskedName: 'Mateo R.',
+        phoneHint: '•••2115'
+      };
+    }
+    return { exists: false, dni, hasPin: false, isRegistered: false };
   }
 
   // 5. Client Login
   if (path === '/clients/login') {
-    const { dni } = body;
+    const dni = String(body.dni || '40123456').replace(/\D/g, '');
     let client = null;
-    const saved = localStorage.getItem(`barber_client_${dni}`);
+    const saved = safeGetStorage(`barber_client_${dni}`);
     if (saved) {
-      client = formatStaticClient(JSON.parse(saved));
-    } else {
-      client = formatStaticClient({
-        dni,
-        firstName: dni === '42123456' ? 'Mateo' : 'Socio',
-        lastName: dni === '42123456' ? 'Rossi' : 'VIP',
-        name: dni === '42123456' ? 'Mateo Rossi' : 'Socio David Barber',
-        phone: '3413762115',
-        points: 7,
-        totalCuts: 7,
-        tier: 'Black Gold'
-      });
-      localStorage.setItem(`barber_client_${dni}`, JSON.stringify(client));
+      try {
+        client = formatStaticClient(JSON.parse(saved));
+      } catch {}
+    }
+    if (!client) {
+      if (dni === '40123456') {
+        client = formatStaticClient({
+          dni,
+          firstName: 'Lucas',
+          lastName: 'Benítez',
+          name: 'Lucas Benítez',
+          phone: '3415558899',
+          points: 4,
+          totalCuts: 4
+        });
+      } else {
+        client = formatStaticClient({
+          dni,
+          firstName: dni === '38999888' || dni === '42123456' ? 'Mateo' : 'Socio',
+          lastName: dni === '38999888' || dni === '42123456' ? 'Rossi' : 'VIP',
+          name: dni === '38999888' || dni === '42123456' ? 'Mateo Rossi' : 'Socio David Barber',
+          phone: '3413762115',
+          points: 10,
+          totalCuts: 10
+        });
+      }
+      safeSetStorage(`barber_client_${dni}`, JSON.stringify(client));
     }
     const token = `mock-client-token-${dni}`;
-    localStorage.setItem(CLIENT_TOKEN_KEY, token);
-    localStorage.setItem('barberfade_current_mock_client', JSON.stringify(client));
-    return { token, client };
+    safeSetStorage(CLIENT_TOKEN_KEY, token);
+    safeSetStorage('barberfade_current_mock_client', JSON.stringify(client));
+    const appointments = getMockAppointments().filter((a) => a.dni === client.dni);
+    return { token, client, appointments };
   }
 
   // 6. Client Register
   if (path === '/clients/register') {
+    const dni = String(body.dni || '').replace(/\D/g, '') || '40999111';
     const client = formatStaticClient({
-      dni: body.dni,
+      dni,
       firstName: body.firstName || (body.name ? body.name.split(' ')[0] : 'Nuevo'),
       lastName: body.lastName || (body.name ? body.name.split(' ').slice(1).join(' ') : 'Socio'),
       name: body.name || `${body.firstName || 'Nuevo'} ${body.lastName || 'Socio'}`.trim(),
@@ -346,17 +463,17 @@ function handleStaticFallback(path, options = {}) {
       totalCuts: 0,
       tier: 'Black Member · Nivel 1'
     });
-    localStorage.setItem(`barber_client_${body.dni}`, JSON.stringify(client));
-    const token = `mock-client-token-${body.dni}`;
-    localStorage.setItem(CLIENT_TOKEN_KEY, token);
-    localStorage.setItem('barberfade_current_mock_client', JSON.stringify(client));
-    return { token, client };
+    safeSetStorage(`barber_client_${dni}`, JSON.stringify(client));
+    const token = `mock-client-token-${dni}`;
+    safeSetStorage(CLIENT_TOKEN_KEY, token);
+    safeSetStorage('barberfade_current_mock_client', JSON.stringify(client));
+    return { token, client, appointments: [] };
   }
 
   // 7. Client Me
   if (path === '/clients/me') {
     let client = null;
-    const saved = localStorage.getItem('barberfade_current_mock_client');
+    const saved = safeGetStorage('barberfade_current_mock_client');
     if (saved) {
       try {
         client = formatStaticClient(JSON.parse(saved));
@@ -366,17 +483,17 @@ function handleStaticFallback(path, options = {}) {
     }
     if (!client) {
       client = formatStaticClient({
-        dni: '42123456',
+        dni: '38999888',
         firstName: 'Mateo',
         lastName: 'Rossi',
         name: 'Mateo Rossi',
         phone: '3413762115',
-        points: 8,
-        totalCuts: 8,
+        points: 10,
+        totalCuts: 10,
         tier: 'Silver & Gold · Nivel 2'
       });
     }
-    const appts = getMockAppointments().filter((a) => a.client_dni === client.dni);
+    const appts = getMockAppointments().filter((a) => a.dni === client.dni);
     return { client, appointments: appts };
   }
 
@@ -384,31 +501,80 @@ function handleStaticFallback(path, options = {}) {
   if (path === '/appointments/request') {
     const code = `BF-${Math.floor(1000 + Math.random() * 9000)}`;
     const svc = MOCK_SERVICES.find((s) => s.id === body.serviceId) || MOCK_SERVICES[0];
-    const newAppt = {
+    let currentClient = null;
+    try {
+      const saved = safeGetStorage('barberfade_current_mock_client');
+      if (saved) currentClient = formatStaticClient(JSON.parse(saved));
+    } catch {}
+    const clientName = body.clientName || (currentClient ? `${currentClient.firstName} ${currentClient.lastName}`.trim() : 'Cliente');
+    const clientPhone = body.clientPhone || currentClient?.phone || '3413762115';
+    const clientDni = body.clientDni || currentClient?.dni || '38999888';
+    const selectedDrink = body.selectedDrink || body.chosenDrink || (svc.drinkIncluded ? 'Cerveza' : null);
+    const expiresAt = Date.now() + 15 * 60 * 1000;
+
+    const newAppt = normalizeMockAppointment({
       id: `mock-${Date.now()}`,
       code,
-      client_name: body.clientName || 'Cliente',
-      client_phone: body.clientPhone || '3413762115',
-      client_dni: body.clientDni || '42123456',
-      service_id: svc.id,
-      service_name: svc.name,
-      service_price: svc.price,
-      chosen_drink: body.chosenDrink || (svc.drinkIncluded ? 'Cerveza' : null),
+      dni: clientDni,
+      clientName,
+      clientPhone,
+      serviceId: svc.id,
+      serviceName: svc.name,
+      price: svc.price,
+      selectedDrink,
       date: body.date,
       time: body.time,
-      status: 'pending_confirmation',
+      status: 'pendiente',
+      expiresAt,
       notes: body.notes || ''
-    };
+    });
+
     const appts = [newAppt, ...getMockAppointments()];
     saveMockAppointments(appts);
 
-    const waText = `¡Hola David! Quiero pedir un turno:%0A%0A✂ *Servicio:* ${svc.name}%0A📅 *Fecha:* ${body.date}%0A⏰ *Hora:* ${body.time}%0A👤 *Cliente:* ${newAppt.client_name}%0A%0ACódigo: ${code}`;
-    const whatsappLink = `https://wa.me/5493413762115?text=${waText}`;
+    const rawMessage = `¡Hola David! Quiero confirmar mi turno:\n\n✂ Servicio: ${svc.name}${selectedDrink ? ` (${selectedDrink})` : ''}\n📅 Fecha: ${body.date}\n⏰ Hora: ${body.time} hs\n👤 Cliente: ${clientName} (DNI ${clientDni})\n🔑 Código: #${code}`;
+    const whatsappUrl = `https://wa.me/5493413762115?text=${encodeURIComponent(rawMessage)}`;
 
     return {
       appointment: newAppt,
-      whatsappLink,
-      holdExpiresAt: Date.now() + 15 * 60 * 1000
+      code,
+      expiresAt,
+      rawMessage,
+      whatsappUrl,
+      whatsappLink: whatsappUrl,
+      holdExpiresAt: expiresAt
+    };
+  }
+
+  // 8B. Appointment Status
+  if (path.startsWith('/appointments/') && !path.includes('busy-slots') && !path.includes('client-cancel')) {
+    const idOrCode = decodeURIComponent(path.replace('/appointments/', ''));
+    const appts = getMockAppointments();
+    const found = appts.find((a) => a.id === idOrCode || a.code === idOrCode) || appts[0];
+    const expiresAt = found?.expiresAt || Date.now() + 15 * 60 * 1000;
+    const rawMessage = `¡Hola David! Quiero confirmar mi turno:\n\n✂ Servicio: ${found.serviceName}\n📅 Fecha: ${found.date}\n⏰ Hora: ${found.time} hs\n👤 Cliente: ${found.clientName}\n🔑 Código: #${found.code}`;
+    const whatsappUrl = `https://wa.me/5493413762115?text=${encodeURIComponent(rawMessage)}`;
+    return {
+      ...found,
+      expiresAt,
+      rawMessage,
+      whatsappUrl
+    };
+  }
+
+  // 8C. Cancel My Appointment
+  if (path.endsWith('/client-cancel')) {
+    const id = decodeURIComponent(path.split('/')[2]);
+    const appts = getMockAppointments().map((a) => (a.id === id ? { ...a, status: 'cancelado' } : a));
+    saveMockAppointments(appts);
+    return { success: true };
+  }
+
+  // 8D. Recovery Link
+  if (path === '/clients/recovery-link') {
+    const msg = `Hola David! Olvidé mi PIN de acceso a David Barber Studio (DNI ${body.dni || ''}). ¿Me ayudás a recuperarlo?`;
+    return {
+      whatsappUrl: `https://wa.me/5493413762115?text=${encodeURIComponent(msg)}`
     };
   }
 
@@ -416,7 +582,7 @@ function handleStaticFallback(path, options = {}) {
   if (path === '/admin/login') {
     if (body.password === '1234' || body.password === 'barber2026' || body.username === 'david') {
       const token = 'mock-admin-token-david';
-      localStorage.setItem(ADMIN_TOKEN_KEY, token);
+      safeSetStorage(ADMIN_TOKEN_KEY, token);
       return {
         token,
         admin: { username: 'david', displayName: 'David' }
@@ -435,13 +601,25 @@ function handleStaticFallback(path, options = {}) {
   // 11. Admin Dashboard
   if (path === '/admin/dashboard') {
     const appointments = getMockAppointments();
+    const clients = [
+      formatStaticClient({ dni: '38999888', firstName: 'Mateo', lastName: 'Rossi', phone: '3413762115', birthDate: '1995-10-18', points: 10, totalCuts: 10 }),
+      formatStaticClient({ dni: '40123456', firstName: 'Lucas', lastName: 'Benítez', phone: '3415558899', birthDate: '1998-10-22', points: 4, totalCuts: 4 }),
+      formatStaticClient({ dni: '39112233', firstName: 'Joaquín', lastName: 'Alvarez', phone: '3416778899', birthDate: '1993-04-12', points: 12, totalCuts: 14 })
+    ];
     return {
       appointments,
+      clients,
+      blockedSlots: [],
+      payments: [],
+      birthdays: {
+        thisWeek: [clients[0]],
+        thisMonth: [clients[0], clients[1]]
+      },
       metrics: {
         todayTurns: appointments.length,
-        todayEarnings: appointments.reduce((sum, a) => sum + (a.service_price || 0), 0),
-        pendingConfirmations: appointments.filter((a) => a.status === 'pending_confirmation').length,
-        totalClients: 48
+        todayEarnings: appointments.reduce((sum, a) => sum + (a.price || 0), 0),
+        pendingConfirmations: appointments.filter((a) => a.status === 'pendiente').length,
+        totalClients: clients.length
       },
       services: MOCK_SERVICES,
       config: MOCK_CONFIG
@@ -450,47 +628,22 @@ function handleStaticFallback(path, options = {}) {
 
   // 12. Admin appointment actions
   if (path.includes('/confirm')) {
-    const id = path.split('/')[3];
-    const appts = getMockAppointments().map((a) => (a.id === id ? { ...a, status: 'confirmed' } : a));
+    const id = decodeURIComponent(path.split('/')[3]);
+    const appts = getMockAppointments().map((a) => (a.id === id ? { ...a, status: 'confirmado' } : a));
     saveMockAppointments(appts);
     return { success: true };
   }
   if (path.includes('/complete')) {
-    const id = path.split('/')[3];
-    const appts = getMockAppointments().map((a) => (a.id === id ? { ...a, status: 'completed' } : a));
+    const id = decodeURIComponent(path.split('/')[3]);
+    const appts = getMockAppointments().map((a) => (a.id === id ? { ...a, status: 'finalizado' } : a));
     saveMockAppointments(appts);
     return { success: true };
   }
-  if (path.includes('/cancel')) {
-    const id = path.split('/')[3];
-    const appts = getMockAppointments().map((a) => (a.id === id ? { ...a, status: 'cancelled' } : a));
+  if (path.includes('/cancel') || path.includes('/no-show')) {
+    const id = decodeURIComponent(path.split('/')[3]);
+    const appts = getMockAppointments().map((a) => (a.id === id ? { ...a, status: 'cancelado' } : a));
     saveMockAppointments(appts);
     return { success: true };
-  }
-
-  // 13. Admin Clients List
-  if (path === '/admin/clients') {
-    return {
-      clients: [
-        formatStaticClient({ dni: '42123456', firstName: 'Mateo', lastName: 'Rossi', phone: '3413762115', points: 8, totalCuts: 8 }),
-        formatStaticClient({ dni: '40899123', firstName: 'Lucas', lastName: 'Benítez', phone: '3415558899', points: 3, totalCuts: 3 }),
-        formatStaticClient({ dni: '39112233', firstName: 'Joaquín', lastName: 'Alvarez', phone: '3416778899', points: 12, totalCuts: 14 })
-      ]
-    };
-  }
-
-  // 14. Admin Birthdays
-  if (path === '/admin/birthdays') {
-    return {
-      thisWeek: [
-        formatStaticClient({ dni: '42123456', firstName: 'Mateo', lastName: 'Rossi', phone: '3413762115', birthDate: '1995-10-18', points: 8, totalCuts: 8 })
-      ]
-    };
-  }
-
-  // 15. Admin Appointments
-  if (path.startsWith('/admin/appointments')) {
-    return { appointments: getMockAppointments() };
   }
 
   return { ok: true };
@@ -503,7 +656,6 @@ const isStaticHost =
    Boolean(import.meta.env.VITE_STATIC_DEMO));
 
 async function request(path, options = {}, authType = null) {
-  // If hosted on GitHub Pages or static host, handle directly to avoid 404 network console noise
   if (isStaticHost) {
     return handleStaticFallback(path, options);
   }
@@ -527,10 +679,8 @@ async function request(path, options = {}, authType = null) {
       headers
     });
 
-    // If server responded with an HTML 404 page (typical on GitHub Pages static host)
     const contentType = res.headers.get('content-type') || '';
     if (!res.ok || !contentType.includes('application/json')) {
-      // Trigger static fallback
       return handleStaticFallback(path, options);
     }
 
@@ -540,7 +690,6 @@ async function request(path, options = {}, authType = null) {
     }
     return data;
   } catch {
-    // Backend offline / GitHub Pages static environment -> fallback gracefully
     return handleStaticFallback(path, options);
   }
 }

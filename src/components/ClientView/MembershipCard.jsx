@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { getAssetUrl } from '../../utils/assets';
 
+const getImageSrc = getAssetUrl;
+
 const STUDIO_GALLERY = [
   {
     id: 'look-1',

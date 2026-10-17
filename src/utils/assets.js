@@ -1,17 +1,26 @@
 // Helper to resolve asset URLs correctly across local dev, custom domains, and GitHub Pages (subpaths)
 export function getAssetUrl(path) {
   if (!path) return '';
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:') || path.startsWith('blob:')) {
+  if (
+    path.startsWith('http://') ||
+    path.startsWith('https://') ||
+    path.startsWith('data:') ||
+    path.startsWith('blob:')
+  ) {
     return path;
   }
 
-  const clean = path.replace(/^\/+/, '');
+  // Strip leading ./ or /
+  let clean = path.replace(/^(\.\/|\/)+/, '');
 
   if (typeof window !== 'undefined') {
-    // If hosted on GitHub Pages (e.g. username.github.io/repo-name)
     const segments = window.location.pathname.split('/').filter(Boolean);
     if (window.location.hostname.includes('github.io') && segments.length > 0) {
       const repo = segments[0];
+      // Make idempotent: if already prefixed with repo name, don't prefix again
+      if (clean.startsWith(`${repo}/`)) {
+        return `/${clean}`;
+      }
       return `/${repo}/${clean}`;
     }
   }
