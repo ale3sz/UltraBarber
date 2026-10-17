@@ -1,0 +1,230 @@
+{
+  "config": {
+    "barberName": "David",
+    "businessName": "David Barber Studio",
+    "whatsappPhone": "5491123456789",
+    "holdDurationMinutes": 15,
+    "workHours": {
+      "start": "09:00",
+      "end": "20:00",
+      "slotDuration": 45
+    }
+  },
+  "services": [
+    {
+      "id": "corte",
+      "name": "Corte",
+      "price": 18000,
+      "duration": 45,
+      "pointsEarned": 1,
+      "includes": [
+        "Corte personalizado",
+        "Perfilado",
+        "Diseños simples",
+        "Asesoramiento de imagen",
+        "Finalización con productos profesionales"
+      ],
+      "drinkIncluded": false
+    },
+    {
+      "id": "corte-bebida",
+      "name": "Corte + Bebida",
+      "price": 20000,
+      "duration": 45,
+      "pointsEarned": 1,
+      "includes": [
+        "Corte personalizado",
+        "Perfilado",
+        "Diseños simples",
+        "Asesoramiento de imagen",
+        "1 bebida a elección (agua mineral, gaseosa o cerveza)",
+        "Finalización con productos profesionales"
+      ],
+      "drinkIncluded": true
+    },
+    {
+      "id": "barba-premium",
+      "name": "Barba Premium",
+      "price": 20000,
+      "duration": 45,
+      "pointsEarned": 1,
+      "includes": [
+        "Diseño de barba",
+        "Perfilado con navaja",
+        "Hidratación y terminación profesional"
+      ],
+      "drinkIncluded": false
+    },
+    {
+      "id": "barba-premium-bebida",
+      "name": "Barba Premium + Bebida",
+      "price": 22000,
+      "duration": 45,
+      "pointsEarned": 1,
+      "includes": [
+        "Diseño de barba",
+        "Perfilado con navaja",
+        "1 bebida a elección (agua mineral, gaseosa o cerveza)",
+        "Hidratación y terminación profesional"
+      ],
+      "drinkIncluded": true
+    },
+    {
+      "id": "experiencia-completa",
+      "name": "Experiencia Completa",
+      "tagline": "Corte + Barba + Facial",
+      "price": 24000,
+      "duration": 60,
+      "pointsEarned": 1,
+      "includes": [
+        "Corte personalizado",
+        "Perfilado y detalles",
+        "Limpieza facial express",
+        "Productos de cuidado para cabello y barba",
+        "1 bebida a elección (agua mineral, gaseosa o cerveza)"
+      ],
+      "drinkIncluded": true
+    }
+  ],
+  "drinks": [
+    "Agua mineral",
+    "Gaseosa",
+    "Cerveza"
+  ],
+  "clients": [
+    {
+      "id": "c1",
+      "dni": "40123456",
+      "firstName": "Lucas",
+      "lastName": "Martínez",
+      "phone": "+54 9 11 5555-0101",
+      "birthDate": "1997-10-20",
+      "totalCuts": 9,
+      "points": 9,
+      "memberSince": "2024-03-15",
+      "notes": "Prefiere fade bajo en los laterales"
+    },
+    {
+      "id": "c2",
+      "dni": "38999888",
+      "firstName": "Mateo",
+      "lastName": "Fernández",
+      "phone": "+54 9 11 4444-0202",
+      "birthDate": "1995-10-18",
+      "totalCuts": 12,
+      "points": 4,
+      "memberSince": "2023-11-01",
+      "notes": "Cliente fiel, canjeó puntos el mes pasado"
+    },
+    {
+      "id": "c3",
+      "dni": "42111222",
+      "firstName": "Joaquín",
+      "lastName": "González",
+      "phone": "+54 9 11 3333-0303",
+      "birthDate": "1999-10-22",
+      "totalCuts": 5,
+      "points": 5,
+      "memberSince": "2024-06-10",
+      "notes": "Viene con el hermano"
+    },
+    {
+      "id": "c4",
+      "dni": "35444555",
+      "firstName": "Esteban",
+      "lastName": "Ríos",
+      "phone": "+54 9 11 2222-0404",
+      "birthDate": "1990-11-05",
+      "totalCuts": 3,
+      "points": 3,
+      "memberSince": "2024-08-01"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt-101",
+      "code": "4821",
+      "dni": "40123456",
+      "clientName": "Lucas Martínez",
+      "clientPhone": "+54 9 11 5555-0101",
+      "serviceId": "corte-bebida",
+      "serviceName": "Corte + Bebida",
+      "selectedDrink": "Cerveza",
+      "price": 20000,
+      "date": "2026-10-17",
+      "time": "16:00",
+      "status": "expirado",
+      "createdAt": 1729188000000,
+      "expiresAt": 1729188900000,
+      "expiredAt": 1792263695105
+    },
+    {
+      "id": "apt-102",
+      "code": "7290",
+      "dni": "38999888",
+      "clientName": "Mateo Fernández",
+      "clientPhone": "+54 9 11 4444-0202",
+      "serviceId": "experiencia-completa",
+      "serviceName": "Experiencia Completa",
+      "selectedDrink": "Gaseosa",
+      "price": 24000,
+      "date": "2026-10-17",
+      "time": "17:00",
+      "status": "confirmado",
+      "createdAt": 1729180000000,
+      "confirmedAt": 1729180200000
+    },
+    {
+      "id": "apt_1792263767508_3025",
+      "code": "3025",
+      "dni": "40123456",
+      "clientName": "Lucas Martínez",
+      "clientPhone": "+54 9 11 5555-0101",
+      "serviceId": "corte-bebida",
+      "serviceName": "Corte + Bebida",
+      "selectedDrink": "Cerveza",
+      "price": 20000,
+      "date": "2026-10-18",
+      "time": "11:15",
+      "status": "finalizado",
+      "createdAt": 1792263767508,
+      "expiresAt": 1792264667508,
+      "confirmedAt": 1792263767547,
+      "completedAt": 1792263767570,
+      "paymentMethod": "Efectivo",
+      "amountPaid": 20000,
+      "pointsUsed": 0,
+      "notes": ""
+    },
+    {
+      "id": "apt_1792263892077_2074",
+      "code": "2074",
+      "dni": "40123456",
+      "clientName": "Lucas Martínez",
+      "clientPhone": "+54 9 11 5555-0101",
+      "serviceId": "corte-bebida",
+      "serviceName": "Corte + Bebida",
+      "selectedDrink": "Gaseosa",
+      "price": 20000,
+      "date": "2026-10-19",
+      "time": "14:45",
+      "status": "pendiente",
+      "createdAt": 1792263892077,
+      "expiresAt": 1792264792077
+    }
+  ],
+  "paymentsHistory": [
+    {
+      "id": "pay_1792263767570",
+      "appointmentId": "apt_1792263767508_3025",
+      "code": "3025",
+      "clientDni": "40123456",
+      "clientName": "Lucas Martínez",
+      "serviceName": "Corte + Bebida",
+      "paymentMethod": "Efectivo",
+      "amount": 20000,
+      "pointsUsed": 0,
+      "date": "2026-10-17T19:02:47.570Z"
+    }
+  ]
+}

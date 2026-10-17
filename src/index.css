@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+    caret-color: #D4AF37;
+  }
+
+  body {
+    font-family: 'Work Sans', system-ui, -apple-system, sans-serif;
+    text-underline-offset: 4px;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Archivo', sans-serif;
+    letter-spacing: -0.025em;
+  }
+
+  .font-editorial {
+    font-family: 'Newsreader', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+::selection {
+  background-color: #D4AF37;
+  color: #0A0A0A;
+}
+
+/* Custom themed scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAFAFA;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+/* Soft depth shadows */
+.club-shadow {
+  box-shadow: 0 12px 32px -8px rgba(18, 16, 13, 0.14), 0 4px 12px -4px rgba(18, 16, 13, 0.08);
+}
+
+.dark .club-shadow {
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 4px 14px -4px rgba(0, 0, 0, 0.35);
+}
+
+/* Micro-interaction & Emil Kowalski Design Engineering Utilities */
+:root {
+  --ease-out-cubic: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-cubic: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Responsive button press feedback */
+button:active, [role="button"]:active {
+  transform: scale(0.975);
+}
+
+/* Smooth enter transitions */
+.animate-enter {
+  animation: enter 220ms var(--ease-out-cubic) both;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Shimmer pulse for points counter & VIP badge */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-badge {
+  background: linear-gradient(
+    90deg,
+    rgba(210, 171, 128, 0.12) 0%,
+    rgba(210, 171, 128, 0.35) 50%,
+    rgba(210, 171, 128, 0.12) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3.5s infinite linear;
+}
+
+/* Subtle botanical ambient glow */
+.botanical-glow {
+  position: relative;
+}
+
+.botanical-glow::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 10%;
+  width: 80%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(128, 150, 113, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
