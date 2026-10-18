@@ -79,7 +79,7 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
         {filtered.map((c) => {
           const cleanPhone = (c.phone || '').replace(/\D/g, '');
           const sendPinWaUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-            `Hola ${c.firstName || c.name || 'Socio'}! Te paso tu PIN de acceso de 4 dígitos para la web de David Barber Studio: ${c.pinCode || '1234'} (DNI: ${c.dni}).`
+            `Hola ${c.firstName || c.name || 'Socio'}! Te paso tu PIN de acceso de 4 dígitos para la web de ULTRA BARBER Studio: ${c.pinCode || '1234'} (DNI: ${c.dni}).`
           )}`;
 
           return (

@@ -7,6 +7,7 @@ import ClientsDirectory from './ClientsDirectory';
 import PaymentModal from './PaymentModal';
 import SettingsModal from './SettingsModal';
 import { api } from '../../services/api';
+import { formatLocalDate } from '../../utils/date';
 import confetti from 'canvas-confetti';
 import {
   Clock,
@@ -33,7 +34,7 @@ export default function AdminPanel({
   const [birthdaysData, setBirthdaysData] = useState({ thisWeek: [], thisMonth: [] });
   const [config, setConfig] = useState({});
 
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(() => formatLocalDate(new Date()));
   const [payingAppointment, setPayingAppointment] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 

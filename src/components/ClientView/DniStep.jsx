@@ -176,9 +176,9 @@ export default function DniStep({
   };
 
   return (
-    <div className="p-6 sm:p-7 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder club-shadow space-y-6">
+    <div className="p-4 sm:p-7 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder club-shadow space-y-6">
       <div>
-        <h2 className="text-2xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
           Identificación de socio
         </h2>
         <p className="text-xs sm:text-sm text-barber-lightMuted dark:text-barber-darkMuted mt-1">
@@ -206,12 +206,12 @@ export default function DniStep({
               if (errorMsg) setErrorMsg('');
             }}
             placeholder="Ingresá tu DNI (ej: 40123456)"
-            className="w-full flex-1 min-w-0 px-4 py-3.5 rounded-2xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-base font-mono tracking-wider tabular-nums focus:outline-none focus:border-white"
+            className="w-full flex-1 min-w-0 px-4 py-3 sm:py-3.5 rounded-2xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-base font-mono tracking-wider tabular-nums focus:outline-none focus:border-white"
           />
           <button
             type="submit"
             disabled={isLoading || dniInput.length < 6}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shrink-0 shadow-md"
+            className="w-full sm:w-auto px-6 py-3 sm:py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shrink-0 shadow-md"
           >
             <Search className="w-4 h-4 text-[#D4AF37]" />
             <span>Validar</span>
@@ -220,8 +220,8 @@ export default function DniStep({
 
         {/* Demo Quick Fill Button */}
         {!checkResult && (
-          <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-barber-lightMuted dark:text-barber-darkMuted">
-            <span>Demo rápido:</span>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 text-xs text-barber-lightMuted dark:text-barber-darkMuted">
+            <span className="w-full sm:w-auto text-[11px] uppercase tracking-wider font-semibold opacity-70">Demo rápido:</span>
             <button
               type="button"
               onClick={() => {
@@ -229,7 +229,7 @@ export default function DniStep({
                 api.checkDni('40123456').then(setCheckResult);
                 setPinInput('1234');
               }}
-              className="px-2.5 py-1 rounded-lg bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder font-mono text-barber-chai font-semibold hover:border-barber-chai transition-colors"
+              className="px-2.5 py-1 rounded-lg bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder font-mono text-[11px] sm:text-xs text-barber-chai font-semibold hover:border-barber-chai transition-colors truncate max-w-full"
             >
               Lucas (DNI 40123456 • PIN 1234)
             </button>
@@ -240,7 +240,7 @@ export default function DniStep({
                 api.checkDni('38999888').then(setCheckResult);
                 setPinInput('1234');
               }}
-              className="px-2.5 py-1 rounded-lg bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder font-mono text-barber-chai font-semibold hover:border-barber-chai transition-colors"
+              className="px-2.5 py-1 rounded-lg bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder font-mono text-[11px] sm:text-xs text-barber-chai font-semibold hover:border-barber-chai transition-colors truncate max-w-full"
             >
               Mateo (10 PTS • PIN 1234)
             </button>

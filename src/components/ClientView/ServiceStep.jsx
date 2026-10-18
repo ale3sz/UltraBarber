@@ -23,7 +23,7 @@ export default function ServiceStep({
 
   const getObjectPosition = (serviceId) => {
     if (serviceId === 'corte') return 'center 38%';
-    if (serviceId === 'corte-bebida') return 'center 56%';
+    if (serviceId === 'corte-bebida') return 'center 20%';
     if (serviceId === 'experiencia-completa') return 'center 35%';
     return 'center center';
   };
@@ -45,8 +45,8 @@ export default function ServiceStep({
         </div>
         <div className="grid grid-cols-3 gap-2 h-1">
           <div className="bg-barber-chai rounded-full" />
-          <div className="bg-barber-lightBorder dark:bg-barber-darkBorder rounded-full" />
-          <div className="bg-barber-lightBorder dark:bg-barber-darkBorder rounded-full" />
+          <div className="bg-barber-lightBorder dark:border-barber-darkBorder rounded-full" />
+          <div className="bg-barber-lightBorder dark:border-barber-darkBorder rounded-full" />
         </div>
       </div>
 
@@ -66,8 +66,9 @@ export default function ServiceStep({
 
       {/* 2-Column Visual Service Grid (Like Reference Video) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {services.map((service) => {
+        {services.map((service, index) => {
           const isSelected = selectedService?.id === service.id;
+          const isLastOdd = index === services.length - 1 && services.length % 2 !== 0;
 
           return (
             <div
@@ -82,6 +83,8 @@ export default function ServiceStep({
                 }
               }}
               className={`group rounded-3xl overflow-hidden border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between active:scale-[0.985] animate-enter ${
+                isLastOdd ? 'sm:col-span-2' : ''
+              } ${
                 isSelected
                   ? 'bg-barber-darkSurface border-barber-chai ring-2 ring-barber-chai club-shadow shadow-barber-chai/10'
                   : 'bg-barber-lightSurface dark:bg-barber-darkSurface border-barber-lightBorder dark:border-barber-darkBorder hover:border-barber-chai hover:shadow-lg'
@@ -89,7 +92,7 @@ export default function ServiceStep({
             >
               {/* Service Photo Header */}
               <div>
-                <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-barber-darkBg">
+                <div className={`relative w-full overflow-hidden bg-barber-darkBg ${isLastOdd ? 'h-64 sm:h-80' : 'h-64 sm:h-72'}`}>
                   {service.imageUrl && (
                     <img
                       src={getImageSrc(service.imageUrl)}

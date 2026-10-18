@@ -119,11 +119,11 @@ async function captureAllScreens() {
     await snap('04-club-socio-puntos.png');
 
     // 5. Pestaña Canje de Premios en MembershipCard
-    const tabPremios = page.locator('button:has-text("Canje de Premios")');
+    const tabPremios = page.locator('button:has-text("Premios")').first();
     if (await tabPremios.isVisible()) {
       await tabPremios.click();
       await snap('05-club-socio-premios.png');
-      const tabPuntos = page.locator('button:has-text("Mis Puntos")');
+      const tabPuntos = page.locator('button:has-text("Puntos")').first();
       if (await tabPuntos.isVisible()) await tabPuntos.click();
     }
 
@@ -168,7 +168,7 @@ async function captureAllScreens() {
     // 10. Reservar Turno — Paso 2 (Agenda y Horario)
     await page.waitForTimeout(400);
     // Elegir un horario libre
-    const availableSlot = page.locator('button:has-text("10:30 hs"), button:has-text("11:15 hs"), button:has-text("16:15 hs")').first();
+    const availableSlot = page.locator('button:has-text("hs"):not([disabled])').first();
     if (await availableSlot.isVisible()) {
       await availableSlot.click();
     }

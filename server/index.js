@@ -46,6 +46,14 @@ function formatClient(row, includeSensitivePin = false) {
   return formatted;
 }
 
+function getLocalDateString(date = new Date()) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // Helper: Format DB appointment row to camelCase
 function formatAppointment(row) {
   if (!row) return null;
@@ -261,7 +269,7 @@ app.post('/api/clients/register', (req, res) => {
   }
 
   const id = `c_${Date.now()}`;
-  const memberSince = new Date().toISOString().split('T')[0];
+  const memberSince = getLocalDateString();
 
   db.prepare(`
     INSERT INTO clients (id, dni, pin_hash, pin_code, first_name, last_name, phone, birth_date, points, total_cuts, notes, member_since, created_at)
@@ -913,7 +921,7 @@ app.post('/api/admin/appointments/manual', requireAdmin, (req, res) => {
       firstName.trim(),
       (lastName || '').trim(),
       (phone || '').trim(),
-      new Date().toISOString().split('T')[0],
+      getLocalDateString(),
       Date.now()
     );
     clientRow = db.prepare('SELECT * FROM clients WHERE id = ?').get(id);
@@ -1040,5 +1048,5 @@ app.put('/api/admin/config', requireAdmin, (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 David Barber Studio SQLite Server running on http://localhost:${PORT}`);
+  console.log(`🚀 ULTRA BARBER Studio SQLite Server running on http://localhost:${PORT}`);
 });

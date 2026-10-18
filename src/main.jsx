@@ -36,7 +36,7 @@ class RootErrorBoundary extends React.Component {
           }}
         >
           <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#D4AF37', marginBottom: '8px' }}>
-            DAVID BARBER STUDIO
+            ULTRA BARBER STUDIO
           </h1>
           <p style={{ fontSize: '14px', color: '#A3A3A3', marginBottom: '16px' }}>
             Ocurrió un problema inesperado al cargar la vista.
@@ -77,3 +77,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </RootErrorBoundary>
   </React.StrictMode>,
 );
+
+// Register PWA Service Worker
+if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((err) => {
+      console.log('SW registration note:', err);
+    });
+  });
+}
+

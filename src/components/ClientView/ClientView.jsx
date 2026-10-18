@@ -5,6 +5,7 @@ import ServiceStep from './ServiceStep';
 import DateTimeStep from './DateTimeStep';
 import HoldWaitingStep from './HoldWaitingStep';
 import { api } from '../../services/api';
+import AddToCalendarButton from './AddToCalendarButton';
 import {
   Calendar,
   Clock,
@@ -13,7 +14,8 @@ import {
   CheckCircle2,
   Wine,
   ArrowRight,
-  MapPin
+  MapPin,
+  Navigation
 } from 'lucide-react';
 
 export default function ClientView({
@@ -101,7 +103,7 @@ export default function ClientView({
     return (
       <div className="py-24 text-center">
         <p className="text-xs font-mono uppercase tracking-widest text-barber-lightMuted dark:text-barber-darkMuted">
-          Cargando David Barber Studio...
+          Cargando ULTRA BARBER Studio...
         </p>
       </div>
     );
@@ -148,7 +150,9 @@ export default function ClientView({
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <AddToCalendarButton appointment={activeTurns[0]} studioConfig={studioConfig} />
+
                   {activeTurns[0].status === 'pendiente' && (
                     <button
                       type="button"
@@ -164,7 +168,7 @@ export default function ClientView({
                         setSubTab('book');
                         setBookingStep(3);
                       }}
-                      className="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                      className="px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
                     >
                       <MessageCircle className="w-3.5 h-3.5 fill-white/20" />
                       <span>Confirmar por WhatsApp</span>
@@ -174,7 +178,7 @@ export default function ClientView({
                   <button
                     type="button"
                     onClick={() => handleCancelTurn(activeTurns[0].id)}
-                    className="px-3 py-2.5 rounded-xl border border-barber-darkBorder text-barber-pistache hover:text-red-400 text-xs font-semibold"
+                    className="px-3 py-2 rounded-xl border border-barber-darkBorder text-barber-pistache hover:text-red-400 text-xs font-semibold"
                   >
                     Cancelar
                   </button>
@@ -194,22 +198,36 @@ export default function ClientView({
             }}
           />
 
-          {/* Studio Location & Info Strip */}
-          <div className="p-5 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          {/* Studio Location & Info Strip con Cómo llegar */}
+          <div className="p-5 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-3">
-              <MapPin className="w-4 h-4 text-barber-chai shrink-0" />
+              <div className="w-10 h-10 rounded-2xl bg-neutral-800 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] shrink-0">
+                <MapPin className="w-5 h-5" />
+              </div>
               <div>
-                <strong className="text-barber-lightText dark:text-barber-darkText block font-semibold">
-                  {studioConfig.businessName || 'DAVID BARBER STUDIO'}
+                <strong className="text-barber-lightText dark:text-barber-darkText block font-semibold text-sm">
+                  {studioConfig.businessName || 'ULTRA BARBER STUDIO'}
                 </strong>
-                <span className="text-barber-lightMuted dark:text-barber-darkMuted">
-                  {studioConfig.address || 'Av. Santa Fe 3240 • Studio Privado'}
+                <span className="text-barber-lightMuted dark:text-barber-darkMuted text-xs">
+                  {studioConfig.address || 'Av. Santa Fe 3240 • Studio Privado'}, Rosario
                 </span>
               </div>
             </div>
-            <span className="font-mono text-barber-chai font-semibold">
-              Lun a Sáb • 09:00 a 20:00 hs
-            </span>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-barber-lightBorder/50 dark:border-barber-darkBorder/50">
+              <span className="font-mono text-[#D4AF37] font-semibold text-[11px]">
+                Lun a Sáb • 09 a 20 hs
+              </span>
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent((studioConfig.address || 'Av. Santa Fe 3240') + ', Rosario, Santa Fe')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-2 rounded-xl bg-white text-[#0A0A0A] hover:bg-neutral-200 font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm shrink-0"
+              >
+                <Navigation className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Cómo llegar</span>
+              </a>
+            </div>
           </div>
         </div>
       )}
@@ -366,7 +384,11 @@ export default function ClientView({
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {(isPending || isConfirmed) && (
+                        <AddToCalendarButton appointment={apt} studioConfig={studioConfig} />
+                      )}
+
                       {isPending && (
                         <button
                           type="button"

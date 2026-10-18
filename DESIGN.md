@@ -1,4 +1,4 @@
-# Design System — DAVID BARBER STUDIO (Urban Botanical Club)
+# Design System — ULTRA BARBER STUDIO (Urban Botanical Club)
 
 ## 1. Visual Direction & Atmosphere
 

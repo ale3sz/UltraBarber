@@ -1,4 +1,5 @@
 import { getAssetUrl } from '../utils/assets';
+import { formatLocalDate } from '../utils/date';
 
 const API_BASE = '/api';
 
@@ -48,7 +49,7 @@ export function setAdminToken(token) {
 // ----------------------------------------------------
 const MOCK_CONFIG = {
   barberName: 'David',
-  businessName: 'DAVID BARBER STUDIO',
+  businessName: 'ULTRA BARBER STUDIO',
   whatsappPhone: '5493413762115',
   holdDurationMinutes: 15,
   pointsForFreeCut: 10,
@@ -286,7 +287,7 @@ function getMockAppointments() {
       if (Array.isArray(parsed)) return parsed.map(normalizeMockAppointment);
     }
   } catch {}
-  const today = new Date().toISOString().split('T')[0];
+  const today = formatLocalDate(new Date());
   return [
     normalizeMockAppointment({
       id: 'demo-1',
@@ -434,7 +435,7 @@ function handleStaticFallback(path, options = {}) {
           dni,
           firstName: dni === '38999888' || dni === '42123456' ? 'Mateo' : 'Socio',
           lastName: dni === '38999888' || dni === '42123456' ? 'Rossi' : 'VIP',
-          name: dni === '38999888' || dni === '42123456' ? 'Mateo Rossi' : 'Socio David Barber',
+          name: dni === '38999888' || dni === '42123456' ? 'Mateo Rossi' : 'Socio ULTRA BARBER',
           phone: '3413762115',
           points: 10,
           totalCuts: 10
@@ -572,7 +573,7 @@ function handleStaticFallback(path, options = {}) {
 
   // 8D. Recovery Link
   if (path === '/clients/recovery-link') {
-    const msg = `Hola David! Olvidé mi PIN de acceso a David Barber Studio (DNI ${body.dni || ''}). ¿Me ayudás a recuperarlo?`;
+    const msg = `Hola David! Olvidé mi PIN de acceso a ULTRA BARBER Studio (DNI ${body.dni || ''}). ¿Me ayudás a recuperarlo?`;
     return {
       whatsappUrl: `https://wa.me/5493413762115?text=${encodeURIComponent(msg)}`
     };

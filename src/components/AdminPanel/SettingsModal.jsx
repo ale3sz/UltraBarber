@@ -201,22 +201,26 @@ export default function SettingsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-      <div className="w-full max-w-4xl rounded-3xl bg-barber-darkSurface border border-barber-darkBorder p-6 text-barber-darkText club-shadow space-y-5 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between pb-3 border-b border-barber-darkBorder">
+      <div className="w-full max-w-4xl rounded-3xl bg-barber-darkSurface border border-barber-darkBorder text-barber-darkText club-shadow flex flex-col max-h-[90vh] overflow-hidden">
+        {/* Sticky Header */}
+        <div className="flex items-center justify-between p-6 pb-4 border-b border-barber-darkBorder shrink-0 bg-barber-darkSurface">
           <div className="flex items-center gap-2.5">
             <Shield className="w-5 h-5 text-barber-chai" />
             <h3 className="text-lg font-display font-bold text-barber-darkText">
-              Configuración de David Barber Studio
+              Configuración de ULTRA BARBER Studio
             </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-barber-pistache hover:text-barber-darkText"
+            className="p-2 rounded-xl text-barber-pistache hover:text-barber-darkText transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Scrollable Body */}
+        <div className="p-6 pt-4 space-y-5 overflow-y-auto">
 
         {/* Subtabs */}
         <div className="grid grid-cols-2 sm:grid-cols-6 gap-1.5 p-1 rounded-2xl bg-barber-darkBg border border-barber-darkBorder text-xs font-bold">
@@ -569,6 +573,7 @@ export default function SettingsModal({
             </div>
           </form>
         )}
+        </div>
       </div>
     </div>
   );

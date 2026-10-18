@@ -219,8 +219,8 @@ export default function AnnualCalendarSchedule({
           </div>
         </div>
 
-        {/* 12 Months horizontal pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+        {/* 12 Months responsive grid (2 clean rows of 6, no hidden scroll) */}
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-xs">
           {MONTH_NAMES.map((mName, idx) => {
             const isSelected = selectedMonth === idx;
             return (
@@ -228,7 +228,7 @@ export default function AnnualCalendarSchedule({
                 key={mName}
                 type="button"
                 onClick={() => setSelectedMonth(idx)}
-                className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all ${
+                className={`py-2 px-1 rounded-xl font-semibold text-center whitespace-nowrap transition-all ${
                   isSelected
                     ? 'bg-barber-chai text-barber-lightText font-bold shadow-sm'
                     : 'bg-barber-darkSurface text-barber-pistache hover:text-white border border-barber-darkBorder/60'

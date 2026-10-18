@@ -29,7 +29,7 @@ export default function ReminderModal({ appointment, onClose }) {
       id: 'hoy',
       title: 'Recordatorio Hoy',
       desc: 'Para enviar unas horas antes',
-      text: `Hola ${clientName}! Te escribo de David Barber Studio para recordarte tu turno de hoy a las ${appointment.time} hs (${appointment.serviceName}). Te esperamos en el sillón! Si tenés alguna demora o necesitás avisar algo, respondeme por acá.`
+      text: `Hola ${clientName}! Te escribo de ULTRA BARBER Studio para recordarte tu turno de hoy a las ${appointment.time} hs (${appointment.serviceName}). Te esperamos en el sillón! Si tenés alguna demora o necesitás avisar algo, respondeme por acá.`
     },
     {
       id: 'proximo',
@@ -41,7 +41,7 @@ export default function ReminderModal({ appointment, onClose }) {
       id: 'manana',
       title: 'Turno de Mañana',
       desc: 'Para enviar la noche anterior',
-      text: `Hola ${clientName}! Te recuerdo tu turno para mañana ${appointment.date} a las ${appointment.time} hs en David Barber Studio (${appointment.serviceName}). Te esperamos puntual. Saludos!`
+      text: `Hola ${clientName}! Te recuerdo tu turno para mañana ${appointment.date} a las ${appointment.time} hs en ULTRA BARBER Studio (${appointment.serviceName}). Te esperamos puntual. Saludos!`
     }
   ];
 

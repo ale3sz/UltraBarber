@@ -17,7 +17,7 @@ React 18 + Vite + Tailwind CSS (Frontend) y Node.js + Express + Native SQLite `n
 
 ## Product Purpose
 
-Sistema integral de reservas antifraude, membresía por puntos y gestión operativa para **David Barber Studio**, diseñado para funcionar con costo operativo $0/mes (sin pasarelas de SMS pagas ni servidores externos costosos) combinando una base de datos SQLite local transaccional, cuentas protegidas por PIN y validación humana vía WhatsApp.
+Sistema integral de reservas antifraude, membresía por puntos y gestión operativa para **ULTRA BARBER Studio**, diseñado para funcionar con costo operativo $0/mes (sin pasarelas de SMS pagas ni servidores externos costosos) combinando una base de datos SQLite local transaccional, cuentas protegidas por PIN y validación humana vía WhatsApp.
 
 ## Positioning
 

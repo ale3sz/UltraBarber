@@ -1,4 +1,4 @@
-# David Barber Studio - Sistema de Turnos, Membresía & Handshake WhatsApp
+# ULTRA BARBER Studio - Sistema de Turnos, Membresía & Handshake WhatsApp
 
 Aplicación web integral para barbería de autor con estética **Earth & Botanical Studio**, diseñada para una experiencia ágil tanto para los clientes como para el barbero David.
 

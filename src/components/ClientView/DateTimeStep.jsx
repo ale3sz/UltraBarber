@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, ArrowLeft, ArrowRight, Ban, Wine } from 'lucide-react';
 import { api } from '../../services/api';
+import { formatLocalDate } from '../../utils/date';
 
 export default function DateTimeStep({
   selectedDate,
@@ -48,7 +49,7 @@ export default function DateTimeStep({
 
       if (!effectiveWorkingDays.includes(dayOfWeek)) continue; // Día no laborable
 
-      const isoDate = d.toISOString().split('T')[0];
+      const isoDate = formatLocalDate(d);
       const weekdayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
       const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 

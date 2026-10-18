@@ -11,7 +11,7 @@ export default function BirthdaySection({
 
   const handleSendWhatsAppPromo = (client) => {
     const cleanPhone = (client.phone || '').replace(/\D/g, '');
-    const message = `Hola ${client.firstName || client.name || 'Socio'}! Feliz cumpleaños de parte de David Barber Studio! Te regalamos un beneficio especial en tu próximo corte de autor. ¿Querés agendar tu turno para esta semana?`;
+    const message = `Hola ${client.firstName || client.name || 'Socio'}! Feliz cumpleaños de parte de ULTRA BARBER Studio! Te regalamos un beneficio especial en tu próximo corte de autor. ¿Querés agendar tu turno para esta semana?`;
     const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };

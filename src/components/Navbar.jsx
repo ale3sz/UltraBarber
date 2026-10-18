@@ -12,6 +12,7 @@ import {
   Clock,
   ShieldCheck
 } from 'lucide-react';
+import InstagramIcon from './icons/InstagramIcon';
 
 export default function Navbar({
   activeView,
@@ -38,16 +39,16 @@ export default function Navbar({
               setActiveView('client');
               setClientSubTab('club');
             }}
-            className="flex items-center gap-3 text-left group focus:outline-none"
+            className="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-none min-w-0 shrink"
           >
-            <div className="w-10 h-10 rounded-2xl bg-barber-darkSurface dark:bg-barber-darkSurface border border-barber-darkBorder flex items-center justify-center text-barber-chai group-hover:border-barber-chai transition-colors">
-              <Scissors className="w-5 h-5 -rotate-45" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-barber-darkSurface dark:bg-barber-darkSurface border border-barber-darkBorder flex items-center justify-center text-barber-chai group-hover:border-barber-chai transition-colors shrink-0">
+              <Scissors className="w-4 h-4 sm:w-5 sm:h-5 -rotate-45" />
             </div>
-            <div>
-              <span className="font-display font-bold text-lg tracking-tight text-barber-lightText dark:text-barber-darkText block leading-none">
-                DAVID BARBER
+            <div className="min-w-0">
+              <span className="font-display font-bold text-base sm:text-lg tracking-tight text-barber-lightText dark:text-barber-darkText block leading-tight truncate">
+                ULTRA BARBER
               </span>
-              <span className="text-xs text-barber-lightMuted dark:text-barber-darkMuted font-medium block mt-0.5">
+              <span className="text-[10px] sm:text-xs text-barber-lightMuted dark:text-barber-darkMuted font-medium hidden min-[440px]:block truncate">
                 Studio &amp; Club Privado
               </span>
             </div>
@@ -61,8 +62,8 @@ export default function Navbar({
                 onClick={() => setClientSubTab('club')}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
                   clientSubTab === 'club'
-                    ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
-                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                    ? 'bg-neutral-900 dark:bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-barber-lightText dark:hover:text-white hover:bg-black/5 dark:hover:bg-neutral-800/50'
                 }`}
               >
                 <CreditCard className={`w-3.5 h-3.5 ${clientSubTab === 'club' ? 'text-[#D4AF37]' : ''}`} />
@@ -74,8 +75,8 @@ export default function Navbar({
                 onClick={() => setClientSubTab('book')}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
                   clientSubTab === 'book'
-                    ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
-                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                    ? 'bg-neutral-900 dark:bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-barber-lightText dark:hover:text-white hover:bg-black/5 dark:hover:bg-neutral-800/50'
                 }`}
               >
                 <CalendarPlus className={`w-3.5 h-3.5 ${clientSubTab === 'book' ? 'text-[#D4AF37]' : ''}`} />
@@ -87,8 +88,8 @@ export default function Navbar({
                 onClick={() => setClientSubTab('turns')}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
                   clientSubTab === 'turns'
-                    ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
-                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                    ? 'bg-neutral-900 dark:bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-barber-lightText dark:hover:text-white hover:bg-black/5 dark:hover:bg-neutral-800/50'
                 }`}
               >
                 <Clock className={`w-3.5 h-3.5 ${clientSubTab === 'turns' ? 'text-[#D4AF37]' : ''}`} />
@@ -98,21 +99,21 @@ export default function Navbar({
           )}
 
           {/* Right Status & Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {/* Active Client Session Pill */}
             {activeView === 'client' && loggedClient && (
-              <div className="flex items-center gap-2 pl-3 pr-1.5 py-1 rounded-xl bg-barber-lightBg dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder">
+              <div className="flex items-center gap-1.5 sm:gap-2 pl-2 sm:pl-3 pr-1 sm:pr-1.5 py-1 rounded-xl bg-barber-lightBg dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder shrink-0">
                 <UserCheck className="w-3.5 h-3.5 text-barber-matcha shrink-0" />
                 <span className="text-xs font-semibold text-barber-lightText dark:text-barber-darkText hidden sm:inline">
                   {loggedClient.firstName || loggedClient.name}
                 </span>
-                <span className="text-xs font-mono font-bold text-barber-chai tabular-nums">
+                <span className="text-xs font-mono font-bold text-barber-chai tabular-nums whitespace-nowrap">
                   {loggedClient.points} PTS
                 </span>
                 <button
                   type="button"
                   onClick={onLogoutClient}
-                  className="p-1.5 rounded-lg text-barber-lightMuted dark:text-barber-darkMuted hover:text-barber-lightText dark:hover:text-barber-darkText transition-colors"
+                  className="p-1 rounded-lg text-barber-lightMuted dark:text-barber-darkMuted hover:text-barber-lightText dark:hover:text-barber-darkText transition-colors"
                   title="Cerrar mi cuenta"
                   aria-label="Cerrar sesión de cliente"
                 >
@@ -160,6 +161,18 @@ export default function Navbar({
                 <LogOut className="w-4 h-4" />
               </button>
             )}
+
+            {/* Instagram Profile Link */}
+            <a
+              href="https://www.instagram.com/barber_f4de"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2.5 rounded-xl border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all flex items-center justify-center group"
+              title="Instagram @barber_f4de"
+              aria-label="Abrir Instagram @barber_f4de"
+            >
+              <InstagramIcon className="w-4 h-4 text-[#D4AF37] group-hover:scale-110 transition-transform" />
+            </a>
 
             {/* Theme Toggle */}
             <button

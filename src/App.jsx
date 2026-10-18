@@ -3,6 +3,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ClientView from './components/ClientView/ClientView';
 import AdminPanel from './components/AdminPanel/AdminPanel';
+import FloatingHelpButton from './components/FloatingHelpButton';
+import PwaInstallBanner from './components/PwaInstallBanner';
 import { api, getClientToken, getAdminToken } from './services/api';
 
 export default function App() {
@@ -83,6 +85,8 @@ export default function App() {
         pendingCount={pendingCount}
       />
 
+      <PwaInstallBanner />
+
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 pt-6 sm:pt-8">
         {activeView === 'client' ? (
           <ClientView
@@ -107,6 +111,8 @@ export default function App() {
           />
         )}
       </main>
+
+      <FloatingHelpButton studioConfig={studioConfig} />
 
       <Footer
         onOpenAdmin={() => setActiveView(activeView === 'admin' ? 'client' : 'admin')}

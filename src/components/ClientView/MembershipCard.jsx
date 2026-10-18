@@ -10,6 +10,7 @@ import {
   X
 } from 'lucide-react';
 import { getAssetUrl } from '../../utils/assets';
+import InstagramIcon from '../icons/InstagramIcon';
 
 const getImageSrc = getAssetUrl;
 
@@ -384,7 +385,7 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
 
       {/* Lookbook / Galería de Trabajos Reales del Estudio */}
       <div className="space-y-3 pt-1">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg sm:text-xl font-display font-bold text-barber-lightText dark:text-barber-darkText flex items-center gap-2">
             <Camera className="w-4 h-4 text-barber-chai" />
             <span>
@@ -394,9 +395,21 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
               </span>
             </span>
           </h2>
-          <span className="text-[11px] font-mono text-barber-lightMuted dark:text-barber-darkMuted">
-            TOCÁ PARA AMPLIAR
-          </span>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://www.instagram.com/barber_f4de"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 py-1 rounded-lg bg-neutral-800 border border-[#D4AF37]/50 hover:border-[#D4AF37] text-[11px] font-mono text-neutral-300 hover:text-white flex items-center gap-1.5 transition-colors shadow-sm"
+              title="Instagram oficial @barber_f4de"
+            >
+              <InstagramIcon className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>@barber_f4de</span>
+            </a>
+            <span className="text-[11px] font-mono text-barber-lightMuted dark:text-barber-darkMuted hidden sm:inline">
+              TOCÁ PARA AMPLIAR
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">

@@ -8,6 +8,7 @@ import {
   X,
   Scale
 } from 'lucide-react';
+import InstagramIcon from './icons/InstagramIcon';
 
 export default function Footer({ onOpenAdmin, adminUser }) {
   const [activeModal, setActiveModal] = useState(null); // 'terms' | 'privacy'
@@ -15,7 +16,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
   return (
     <>
       <footer className="w-full mt-20 border-t border-barber-lightBorder dark:border-barber-darkBorder bg-barber-lightSurface/50 dark:bg-barber-darkBg/50 text-barber-lightMuted dark:text-barber-darkMuted transition-colors">
-        <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
+        <div className="max-w-6xl mx-auto px-4 py-10 pb-28 md:pb-10 space-y-8">
           {/* Main Footer Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Column 1: Studio Identity */}
@@ -25,7 +26,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
                   <Scissors className="w-4 h-4 -rotate-45" />
                 </div>
                 <span className="font-display font-bold text-base tracking-tight text-barber-lightText dark:text-barber-darkText">
-                  DAVID BARBER STUDIO
+                  ULTRA BARBER STUDIO
                 </span>
               </div>
               <p className="text-xs leading-relaxed max-w-sm">
@@ -34,6 +35,18 @@ export default function Footer({ onOpenAdmin, adminUser }) {
               <p className="text-[11px] font-mono text-barber-chai">
                 Rosario, Santa Fe • Atención exclusivamente con turno previo
               </p>
+
+              <div className="pt-1">
+                <a
+                  href="https://www.instagram.com/barber_f4de"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-900 border border-[#D4AF37]/50 hover:border-[#D4AF37] text-xs font-mono text-neutral-300 hover:text-white transition-all shadow-sm"
+                >
+                  <InstagramIcon className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>Seguinos en Instagram: @barber_f4de</span>
+                </a>
+              </div>
             </div>
 
             {/* Column 2: Legal & Políticas */}
@@ -83,7 +96,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
           {/* Bottom Bar: Copyright & Discreet Staff Access */}
           <div className="pt-6 border-t border-barber-lightBorder/60 dark:border-barber-darkBorder/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
             <p className="text-center sm:text-left">
-              &copy; {new Date().getFullYear()} David Barber Studio. Todos los derechos reservados. Prohibida la reproducción total o parcial de contenidos, imágenes y logotipos sin autorización expresa.
+              &copy; {new Date().getFullYear()} ULTRA BARBER Studio. Todos los derechos reservados. Prohibida la reproducción total o parcial de contenidos, imágenes y logotipos sin autorización expresa.
             </p>
 
             {/* Discreet Staff Access Trigger */}
@@ -201,7 +214,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
                   Marco Legal (Ley N° 25.326 de la República Argentina)
                 </strong>
                 <p>
-                  David Barber Studio cumple con los principios de licitud, confidencialidad y seguridad consagrados en la Ley de Protección de Datos Personales N° 25.326.
+                  ULTRA BARBER Studio cumple con los principios de licitud, confidencialidad y seguridad consagrados en la Ley de Protección de Datos Personales N° 25.326.
                 </p>
               </div>
 
@@ -219,7 +232,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
                   Seguridad y Confidencialidad
                 </strong>
                 <p>
-                  Las contraseñas y códigos PIN de acceso son almacenados con algoritmos de hashing criptográfico unidireccional. David Barber Studio no comercializa, cede ni transfiere datos personales a terceras partes.
+                  Las contraseñas y códigos PIN de acceso son almacenados con algoritmos de hashing criptográfico unidireccional. ULTRA BARBER Studio no comercializa, cede ni transfiere datos personales a terceras partes.
                 </p>
               </div>
 

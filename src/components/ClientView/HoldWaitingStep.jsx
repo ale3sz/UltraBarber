@@ -11,6 +11,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { api } from '../../services/api';
+import AddToCalendarButton from './AddToCalendarButton';
 
 export default function HoldWaitingStep({
   appointmentData,
@@ -142,13 +143,19 @@ export default function HoldWaitingStep({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onResetToNewBooking}
-          className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-md"
-        >
-          Ver en Mis Turnos
-        </button>
+        <div className="space-y-2.5">
+          <AddToCalendarButton
+            appointment={appointment}
+            className="w-full flex justify-center"
+          />
+          <button
+            type="button"
+            onClick={onResetToNewBooking}
+            className="w-full py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-md"
+          >
+            Ver en Mis Turnos
+          </button>
+        </div>
       </div>
     );
   }

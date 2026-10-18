@@ -157,7 +157,7 @@ export function initDatabase() {
   // Seed default Config
   const defaultConfig = {
     barberName: 'David',
-    businessName: 'DAVID BARBER STUDIO',
+    businessName: 'ULTRA BARBER STUDIO',
     whatsappPhone: '5493413762115',
     holdDurationMinutes: 15,
     pointsForFreeCut: 10,
@@ -461,7 +461,8 @@ export function initDatabase() {
   // Seed active demo appointments for today if none exist
   const aptCount = db.prepare('SELECT COUNT(*) as count FROM appointments').get().count;
   if (aptCount === 0) {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const d = new Date();
+    const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const now = Date.now();
     const insertApt = db.prepare(`
       INSERT INTO appointments (id, code, dni, client_name, client_phone, service_id, service_name, selected_drink, price, date, time, status, created_at, expires_at, confirmed_at)
