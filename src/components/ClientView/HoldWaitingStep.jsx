@@ -145,7 +145,7 @@ export default function HoldWaitingStep({
         <button
           type="button"
           onClick={onResetToNewBooking}
-          className="w-full py-4 rounded-2xl bg-barber-matcha text-white font-display font-bold text-xs uppercase tracking-wider hover:brightness-105 transition-all"
+          className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-md"
         >
           Ver en Mis Turnos
         </button>
@@ -173,9 +173,9 @@ export default function HoldWaitingStep({
         <button
           type="button"
           onClick={onResetToNewBooking}
-          className="w-full py-4 rounded-2xl bg-barber-matcha text-white font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+          className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 transition-all shadow-md"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 text-[#D4AF37]" />
           <span>Elegir otro horario</span>
         </button>
       </div>
@@ -247,9 +247,9 @@ export default function HoldWaitingStep({
           <button
             type="button"
             onClick={handleOpenWhatsApp}
-            className="w-full py-4 px-6 rounded-2xl bg-barber-matcha hover:brightness-110 active:scale-[0.985] text-white font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-lg transition-all"
+            className="w-full py-4 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.985] text-white font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-lg transition-all"
           >
-            <MessageCircle className="w-5 h-5" />
+            <MessageCircle className="w-5 h-5 fill-white/20" />
             <span>Enviar confirmación por WhatsApp</span>
             <ExternalLink className="w-4 h-4" />
           </button>

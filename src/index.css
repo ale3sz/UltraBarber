@@ -71,9 +71,18 @@
 }
 
 /* Explicit Black & Gold Luxury Studio Color Binding */
-.bg-barber-matcha,
+.bg-barber-matcha {
+  background-color: #FFFFFF !important;
+  color: #0A0A0A !important;
+}
+
+.bg-barber-matcha:hover {
+  background-color: #E5E5E5 !important;
+}
+
 .bg-barber-chai {
   background-color: #D4AF37 !important;
+  color: #0A0A0A !important;
 }
 
 .text-barber-matcha,

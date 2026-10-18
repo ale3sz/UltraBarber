@@ -164,9 +164,9 @@ export default function ClientView({
                         setSubTab('book');
                         setBookingStep(3);
                       }}
-                      className="px-4 py-2.5 rounded-xl bg-barber-matcha text-white font-bold text-xs flex items-center gap-1.5"
+                      className="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
                     >
-                      <MessageCircle className="w-3.5 h-3.5" />
+                      <MessageCircle className="w-3.5 h-3.5 fill-white/20" />
                       <span>Confirmar por WhatsApp</span>
                     </button>
                   )}
@@ -319,10 +319,10 @@ export default function ClientView({
                   setSubTab('book');
                   setBookingStep(1);
                 }}
-                className="px-6 py-3.5 rounded-2xl bg-barber-matcha text-white font-display font-bold text-xs uppercase tracking-wider inline-flex items-center gap-2"
+                className="px-6 py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider inline-flex items-center gap-2 hover:bg-neutral-200 transition-all shadow-md"
               >
                 <span>Reservar Turno</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
               </button>
             </div>
           ) : (
@@ -339,7 +339,7 @@ export default function ClientView({
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2.5">
-                        <span className="font-mono font-bold text-sm text-barber-chai tabular-nums">
+                        <span className="font-mono font-bold text-sm text-[#D4AF37] tabular-nums">
                           #{apt.code}
                         </span>
                         <h3 className="font-display font-bold text-base text-barber-lightText dark:text-barber-darkText">
@@ -348,9 +348,9 @@ export default function ClientView({
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
                             isConfirmed
-                              ? 'bg-barber-matcha text-white'
+                              ? 'bg-neutral-800 text-white border border-[#D4AF37]/60'
                               : isPending
-                              ? 'bg-barber-chai text-barber-lightText'
+                              ? 'bg-neutral-800 text-[#D4AF37] border border-[#D4AF37]/60'
                               : isDone
                               ? 'bg-barber-darkBorder text-barber-pistache'
                               : 'bg-red-500/15 text-red-500'
@@ -382,9 +382,9 @@ export default function ClientView({
                             setSubTab('book');
                             setBookingStep(3);
                           }}
-                          className="px-4 py-2.5 rounded-xl bg-barber-matcha text-white text-xs font-bold flex items-center gap-1.5"
+                          className="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
                         >
-                          <MessageCircle className="w-3.5 h-3.5" />
+                          <MessageCircle className="w-3.5 h-3.5 fill-white/20" />
                           <span>Enviar WhatsApp</span>
                         </button>
                       )}

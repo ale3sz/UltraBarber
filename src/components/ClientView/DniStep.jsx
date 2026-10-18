@@ -76,10 +76,10 @@ export default function DniStep({
           <button
             type="button"
             onClick={onContinue}
-            className="w-full py-4 rounded-2xl bg-barber-matcha text-white font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:brightness-105 transition-all"
+            className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 transition-all shadow-md"
           >
             <span>Elegir servicio y horario</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
           </button>
         )}
       </div>
@@ -211,9 +211,9 @@ export default function DniStep({
           <button
             type="submit"
             disabled={isLoading || dniInput.length < 6}
-            className="px-5 py-3.5 rounded-2xl bg-barber-matcha text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:brightness-105 disabled:opacity-50 transition-all shrink-0"
+            className="px-5 py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shrink-0 shadow-md"
           >
-            <Search className="w-4 h-4" />
+            <Search className="w-4 h-4 text-[#D4AF37]" />
             <span>Validar</span>
           </button>
         </div>
@@ -298,10 +298,10 @@ export default function DniStep({
           <button
             type="submit"
             disabled={isLoading || pinInput.length < 4}
-            className="w-full py-4 rounded-2xl bg-barber-matcha text-white font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:brightness-105 disabled:opacity-50 transition-all"
+            className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shadow-md"
           >
             <span>Entrar a mi cuenta</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
           </button>
 
           <div className="flex items-center justify-between pt-1 text-xs">
@@ -417,10 +417,10 @@ export default function DniStep({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-4 rounded-2xl bg-barber-matcha text-white font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:brightness-105 transition-all"
+            className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shadow-md"
           >
             <span>Crear cuenta y reservar</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
           </button>
         </form>
       )}

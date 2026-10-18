@@ -304,10 +304,10 @@ export default function DateTimeStep({
           type="button"
           disabled={!selectedDate || !selectedTime || isSubmitting || isDayClosed}
           onClick={onRequestTurn}
-          className="px-7 py-4 rounded-2xl bg-barber-matcha text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:brightness-105 disabled:opacity-40 transition-all shadow-md"
+          className="px-7 py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shadow-md"
         >
           <span>{isSubmitting ? 'Bloqueando horario...' : 'Solicitar Turno'}</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
         </button>
       </div>
     </div>

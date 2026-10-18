@@ -61,11 +61,11 @@ export default function Navbar({
                 onClick={() => setClientSubTab('club')}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
                   clientSubTab === 'club'
-                    ? 'bg-barber-matcha text-white'
-                    : 'text-barber-lightText dark:text-barber-darkText hover:bg-barber-almond/40 dark:hover:bg-barber-darkBorder/60'
+                    ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                 }`}
               >
-                <CreditCard className="w-3.5 h-3.5" />
+                <CreditCard className={`w-3.5 h-3.5 ${clientSubTab === 'club' ? 'text-[#D4AF37]' : ''}`} />
                 <span>Mi Pase &amp; Puntos</span>
               </button>
 
@@ -74,11 +74,11 @@ export default function Navbar({
                 onClick={() => setClientSubTab('book')}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
                   clientSubTab === 'book'
-                    ? 'bg-barber-matcha text-white'
-                    : 'text-barber-lightText dark:text-barber-darkText hover:bg-barber-almond/40 dark:hover:bg-barber-darkBorder/60'
+                    ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                 }`}
               >
-                <CalendarPlus className="w-3.5 h-3.5" />
+                <CalendarPlus className={`w-3.5 h-3.5 ${clientSubTab === 'book' ? 'text-[#D4AF37]' : ''}`} />
                 <span>Reservar Turno</span>
               </button>
 
@@ -87,11 +87,11 @@ export default function Navbar({
                 onClick={() => setClientSubTab('turns')}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
                   clientSubTab === 'turns'
-                    ? 'bg-barber-matcha text-white'
-                    : 'text-barber-lightText dark:text-barber-darkText hover:bg-barber-almond/40 dark:hover:bg-barber-darkBorder/60'
+                    ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                    : 'text-barber-lightMuted dark:text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                 }`}
               >
-                <Clock className="w-3.5 h-3.5" />
+                <Clock className={`w-3.5 h-3.5 ${clientSubTab === 'turns' ? 'text-[#D4AF37]' : ''}`} />
                 <span>Mis Turnos</span>
               </button>
             </nav>
@@ -128,20 +128,20 @@ export default function Navbar({
                 onClick={() => setActiveView(activeView === 'admin' ? 'client' : 'admin')}
                 className={`relative px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 border transition-all ${
                   activeView === 'admin'
-                    ? 'bg-barber-chai text-barber-lightText border-barber-chai'
-                    : 'bg-barber-lightBg dark:bg-barber-darkSurface border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText hover:border-barber-chai'
+                    ? 'bg-neutral-800 text-white border-[#D4AF37]'
+                    : 'bg-barber-lightBg dark:bg-barber-darkSurface border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText hover:border-[#D4AF37]'
                 }`}
               >
                 {adminUser ? (
-                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
                 ) : (
-                  <Lock className="w-3.5 h-3.5 text-barber-chai" />
+                  <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
                 )}
                 <span className="hidden sm:inline">
                   {activeView === 'admin' ? 'Volver al Club' : 'Panel David'}
                 </span>
                 {adminUser && pendingCount > 0 && (
-                  <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-barber-matcha text-white tabular-nums">
+                  <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-white text-[#0A0A0A] tabular-nums shadow-sm">
                     {pendingCount}
                   </span>
                 )}
@@ -190,11 +190,11 @@ export default function Navbar({
             onClick={() => setClientSubTab('club')}
             className={`flex-1 py-2.5 rounded-xl flex flex-col items-center gap-1 text-[11px] font-semibold transition-all ${
               clientSubTab === 'club'
-                ? 'bg-barber-matcha text-white'
-                : 'text-barber-lightMuted dark:text-barber-darkMuted'
+                ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                : 'text-neutral-400 hover:text-white'
             }`}
           >
-            <CreditCard className="w-4 h-4" />
+            <CreditCard className={`w-4 h-4 ${clientSubTab === 'club' ? 'text-[#D4AF37]' : ''}`} />
             <span>Mi Pase</span>
           </button>
 
@@ -203,11 +203,11 @@ export default function Navbar({
             onClick={() => setClientSubTab('book')}
             className={`flex-1 py-2.5 rounded-xl flex flex-col items-center gap-1 text-[11px] font-semibold transition-all ${
               clientSubTab === 'book'
-                ? 'bg-barber-matcha text-white'
-                : 'text-barber-lightMuted dark:text-barber-darkMuted'
+                ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                : 'text-neutral-400 hover:text-white'
             }`}
           >
-            <CalendarPlus className="w-4 h-4" />
+            <CalendarPlus className={`w-4 h-4 ${clientSubTab === 'book' ? 'text-[#D4AF37]' : ''}`} />
             <span>Reservar</span>
           </button>
 
@@ -216,11 +216,11 @@ export default function Navbar({
             onClick={() => setClientSubTab('turns')}
             className={`flex-1 py-2.5 rounded-xl flex flex-col items-center gap-1 text-[11px] font-semibold transition-all ${
               clientSubTab === 'turns'
-                ? 'bg-barber-matcha text-white'
-                : 'text-barber-lightMuted dark:text-barber-darkMuted'
+                ? 'bg-neutral-800 text-white border border-[#D4AF37]/70 shadow-sm'
+                : 'text-neutral-400 hover:text-white'
             }`}
           >
-            <Clock className="w-4 h-4" />
+            <Clock className={`w-4 h-4 ${clientSubTab === 'turns' ? 'text-[#D4AF37]' : ''}`} />
             <span>Turnos</span>
           </button>
 

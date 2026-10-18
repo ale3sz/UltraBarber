@@ -374,10 +374,10 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
           <button
             type="button"
             onClick={onStartBooking}
-            className="px-6 py-3.5 rounded-full bg-gradient-to-r from-barber-chai to-barber-vanilla text-[#0A0A0A] font-display font-extrabold text-xs uppercase tracking-wider flex items-center gap-2.5 hover:brightness-105 active:scale-95 transition-all shadow-md shadow-barber-chai/20"
+            className="px-6 py-3.5 rounded-full bg-white text-[#0A0A0A] font-display font-extrabold text-xs uppercase tracking-wider flex items-center gap-2.5 hover:bg-neutral-200 active:scale-95 transition-all shadow-lg border border-white/20"
           >
             <span>SACÁ TU TURNO</span>
-            <ArrowRight className="w-4 h-4 text-[#0A0A0A]" />
+            <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
           </button>
         </div>
       </div>
