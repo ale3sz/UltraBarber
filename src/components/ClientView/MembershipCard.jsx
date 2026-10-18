@@ -16,10 +16,10 @@ const getImageSrc = getAssetUrl;
 const STUDIO_GALLERY = [
   {
     id: 'look-1',
-    src: getAssetUrl('imagenes/corte-bebida.jpg'),
-    title: 'Corte + Bebida (Monster Energy)',
-    subtitle: 'Fade comprimido + diseño a navaja',
-    tag: 'CORTE + BEBIDA'
+    src: getAssetUrl('imagenes/corte-freestyle.jpg'),
+    title: 'Fade Comprimido & Freestyle',
+    subtitle: 'Diseño geométrico a navaja y degradé',
+    tag: 'DISEÑO FREESTYLE'
   },
   {
     id: 'look-2',

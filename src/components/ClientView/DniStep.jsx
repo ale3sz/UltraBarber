@@ -194,7 +194,7 @@ export default function DniStep({
         >
           Número de DNI (sin puntos)
         </label>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2.5">
           <input
             id="dni-input"
             type="tel"
@@ -205,13 +205,13 @@ export default function DniStep({
               setCheckResult(null);
               if (errorMsg) setErrorMsg('');
             }}
-            placeholder="40123456"
-            className="flex-1 px-4 py-3.5 rounded-2xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-base font-mono tracking-wider tabular-nums focus:outline-none focus:border-barber-matcha"
+            placeholder="Ingresá tu DNI (ej: 40123456)"
+            className="w-full flex-1 min-w-0 px-4 py-3.5 rounded-2xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-base font-mono tracking-wider tabular-nums focus:outline-none focus:border-white"
           />
           <button
             type="submit"
             disabled={isLoading || dniInput.length < 6}
-            className="px-5 py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shrink-0 shadow-md"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shrink-0 shadow-md"
           >
             <Search className="w-4 h-4 text-[#D4AF37]" />
             <span>Validar</span>
