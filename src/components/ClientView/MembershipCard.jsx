@@ -376,8 +376,8 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
         )}
       </div>
 
-      {/* Hero Booking Action Banner con Integración Fluida */}
-      <div className="relative rounded-lg overflow-hidden border border-white/[0.08] bg-[#141416]">
+      {/* Hero Booking Action Banner con Integración Fluida (Mobile only; on desktop it is placed in the right sidebar) */}
+      <div className="lg:hidden relative rounded-lg overflow-hidden border border-white/[0.08] bg-[#141416]">
         <img
           src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
           alt="David en el estudio"

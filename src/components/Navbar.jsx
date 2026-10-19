@@ -31,7 +31,7 @@ export default function Navbar({
     <>
       {/* Top Studio Header */}
       <header className="sticky top-0 z-40 w-full bg-[#0B0B0C]/90 backdrop-blur-md border-b border-white/[0.08] transition-colors">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           {/* Brand Identity */}
           <button
             type="button"
