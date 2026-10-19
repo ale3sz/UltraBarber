@@ -169,7 +169,9 @@ export function initDatabase() {
     whatsappPhone: '5493413762115',
     holdDurationMinutes: 15,
     pointsForFreeCut: 10,
-    address: 'Av. Santa Fe 3240 • Studio Privado',
+    address: 'Eva Perón 52 • Studio Privado',
+    city: 'Capitán Bermúdez',
+    googleMapsUrl: 'https://www.google.com/maps/dir/?api=1&destination=-32.8300541,-60.7128648',
     instagram: '@davidbarber.studio',
     workHours: {
       start: '09:00',
@@ -241,6 +243,11 @@ export function initDatabase() {
 
   // Asegurar que el WhatsApp de David sea el real (5493413762115)
   db.prepare("UPDATE config SET value = ? WHERE key = 'whatsappPhone' AND (value = '\"5491123456789\"' OR value = '\"3413762115\"')").run(JSON.stringify('5493413762115'));
+
+  // Asegurar que la dirección sea la real de Capitán Bermúdez
+  db.prepare("UPDATE config SET value = ? WHERE key = 'address'").run(JSON.stringify('Eva Perón 52 • Studio Privado'));
+  db.prepare("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)").run('city', JSON.stringify('Capitán Bermúdez'));
+  db.prepare("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)").run('googleMapsUrl', JSON.stringify('https://www.google.com/maps/dir/?api=1&destination=-32.8300541,-60.7128648'));
 
   // Seed Services from precios.txt
   const serviceCount = db.prepare('SELECT COUNT(*) as count FROM services').get().count;

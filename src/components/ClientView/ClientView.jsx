@@ -216,7 +216,7 @@ export default function ClientView({
                       {studioConfig.businessName || 'ULTRA BARBER STUDIO'}
                     </strong>
                     <span className="text-[#8A898E] text-xs">
-                      {studioConfig.address || 'Av. Santa Fe 3240 • Studio Privado'}, Rosario
+                      {studioConfig.address || 'Eva Perón 52 • Studio Privado'}, {studioConfig.city || 'Capitán Bermúdez'}
                     </span>
                   </div>
                 </div>
@@ -226,7 +226,7 @@ export default function ClientView({
                     LUN A SÁB • 09 A 20 HS
                   </span>
                   <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent((studioConfig.address || 'Av. Santa Fe 3240') + ', Rosario, Santa Fe')}`}
+                    href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/dir/?api=1&destination=-32.8300541,-60.7128648'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm shrink-0"
@@ -364,7 +364,7 @@ export default function ClientView({
                     {studioConfig.businessName || 'ULTRA BARBER STUDIO'}
                   </strong>
                   <span className="text-[#8A898E] text-xs">
-                    {studioConfig.address || 'Av. Santa Fe 3240 • Studio Privado'}, Rosario
+                    {studioConfig.address || 'Eva Perón 52 • Studio Privado'}, {studioConfig.city || 'Capitán Bermúdez'}
                   </span>
                 </div>
               </div>
@@ -374,7 +374,7 @@ export default function ClientView({
                   LUN A SÁB • 09 A 20 HS
                 </span>
                 <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent((studioConfig.address || 'Av. Santa Fe 3240') + ', Rosario, Santa Fe')}`}
+                  href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/dir/?api=1&destination=-32.8300541,-60.7128648'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm"

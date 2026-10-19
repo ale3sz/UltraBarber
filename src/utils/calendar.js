@@ -5,8 +5,8 @@ export function createCalendarEventData(appointment, studioConfig = {}) {
   const drink = appointment?.selectedDrink ? ` con ${appointment.selectedDrink}` : '';
   const title = `Turno: ${service}${drink} • ULTRA BARBER`;
   const location = studioConfig?.address 
-    ? `${studioConfig.address}, Rosario, Santa Fe` 
-    : 'Av. Santa Fe 3240, Rosario, Santa Fe';
+    ? `${studioConfig.address}, ${studioConfig?.city || 'Capitán Bermúdez'}, Santa Fe` 
+    : 'Eva Perón 52, Capitán Bermúdez, Santa Fe';
   
   const description = [
     `Turno #${appointment?.code || ''}`,

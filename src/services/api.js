@@ -53,7 +53,9 @@ const MOCK_CONFIG = {
   whatsappPhone: '5493413762115',
   holdDurationMinutes: 15,
   pointsForFreeCut: 10,
-  address: 'Av. Santa Fe 3240 • Studio Privado',
+  address: 'Eva Perón 52 • Studio Privado',
+  city: 'Capitán Bermúdez',
+  googleMapsUrl: 'https://www.google.com/maps/dir/?api=1&destination=-32.8300541,-60.7128648',
   instagram: '@davidbarber.studio',
   workHours: {
     start: '09:00',

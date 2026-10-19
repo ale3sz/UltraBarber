@@ -27,7 +27,7 @@ export default function SettingsModal({
   const [activeTab, setActiveTab] = useState('annual'); // 'annual' | 'schedule' | 'club' | 'general' | 'prices' | 'security'
   const [whatsappPhone, setWhatsappPhone] = useState(config.whatsappPhone || '5493413762115');
   const [holdDurationMinutes, setHoldDurationMinutes] = useState(config.holdDurationMinutes || 15);
-  const [address, setAddress] = useState(config.address || 'Av. Santa Fe 3240 • Studio Privado');
+  const [address, setAddress] = useState(config.address || 'Eva Perón 52 • Studio Privado');
 
   // Working days (0: Dom, 1: Lun, 2: Mar, 3: Mié, 4: Jue, 5: Vie, 6: Sáb)
   const [workingDays, setWorkingDays] = useState(config.workingDays || [1, 2, 3, 4, 5, 6]);

@@ -33,7 +33,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
                 Studio privado de autor especializado en cortes fade, perfilado de barba a navaja y diseño capilar de alta precisión. Club de socios con beneficios exclusivos por visita.
               </p>
               <p className="text-[11px] font-mono text-[#D4AF37]">
-                Rosario, Santa Fe • Atención exclusivamente con turno previo
+                Capitán Bermúdez, Santa Fe • Atención exclusivamente con turno previo
               </p>
 
               <div className="pt-1">

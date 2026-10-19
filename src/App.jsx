@@ -5,9 +5,23 @@ import ClientView from './components/ClientView/ClientView';
 import AdminPanel from './components/AdminPanel/AdminPanel';
 import FloatingHelpButton from './components/FloatingHelpButton';
 import PwaInstallBanner from './components/PwaInstallBanner';
+import ComingSoon from './components/ComingSoon';
 import { api, getClientToken, getAdminToken } from './services/api';
 
 export default function App() {
+  // Modo "Próximamente / En Construcción" activado por defecto para el público.
+  // Permite ingresar a la app completa mediante:
+  // 1. Parámetro en URL: ?preview=1 o ?full=1
+  // 2. Click en "Acceso privado" en el footer de ComingSoon
+  // 3. Tocando 4 veces el logo de tijeras
+  const [showComingSoon, setShowComingSoon] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return !params.has('preview') && !params.has('full');
+    }
+    return true;
+  });
+
   const [activeView, setActiveView] = useState('client'); // 'client' | 'admin'
   const [clientSubTab, setClientSubTab] = useState('club'); // 'club' | 'book' | 'turns'
 
@@ -70,6 +84,10 @@ export default function App() {
     setAdminUser(null);
     setActiveView('client');
   };
+
+  if (showComingSoon) {
+    return <ComingSoon onEnterApp={() => setShowComingSoon(false)} />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-barber-lightBg dark:bg-barber-darkBg text-barber-lightText dark:text-barber-darkText transition-colors duration-200">
