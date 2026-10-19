@@ -413,6 +413,30 @@ export function initDatabase() {
       'Productos de cuidado para cabello y barba',
       '1 bebida a elección (agua mineral, gaseosa o cerveza)'
     ]));
+
+    // Asegurar que el servicio de Colorimetría exista en la base de datos
+    db.prepare(`
+      INSERT OR IGNORE INTO services (id, name, tagline, price, duration, points_earned, drink_included, includes_json, image_url, badge, sort_order, active)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    `).run(
+      'colorimetria',
+      'Colorimetría & Textura Técnica',
+      'Iluminación, Reflejos & Decoloración',
+      0,
+      120,
+      1,
+      1,
+      JSON.stringify([
+        'Decoloración y matización técnica',
+        'Iluminación y reflejos personalizados',
+        'Lavado, baño de luz y nutrición capilar profunda',
+        'Peinado y finalización con productos profesionales',
+        'Presupuesto y disponibilidad por WhatsApp con David'
+      ]),
+      '/imagenes/IMG_0989.JPG.jpeg',
+      'CONSULTA DIRECTA',
+      6
+    );
   }
 
   // Seed Demo Clients

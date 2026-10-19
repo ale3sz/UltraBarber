@@ -629,7 +629,7 @@ export default function DailyAgenda({
                   >
                     {services.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.name} (${s.price})
+                        {s.name} {s.price > 0 ? `($${s.price.toLocaleString('es-AR')})` : '(A coordinar)'}
                       </option>
                     ))}
                   </select>
