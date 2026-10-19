@@ -75,7 +75,7 @@ const PORTFOLIO_ITEMS = [
     category: 'freestyle',
     tag: 'COLOR & TÉCNICA',
     featured: false,
-    serviceId: 'corte'
+    serviceId: 'colorimetria'
   }
 ];
 
@@ -235,13 +235,13 @@ export default function AuthorPortfolio({ onSelectService, onStartBooking }) {
                 </p>
               </div>
 
-              {/* Botón CTA: Elegir este estilo */}
+              {/* Botón CTA: Elegir este estilo / Consultar */}
               <button
                 type="button"
                 onClick={() => handleSelectStyle(item.serviceId)}
                 className="w-full py-2.5 px-4 rounded-xl bg-white/[0.08] hover:bg-[#D4AF37] text-[#EDEDED] hover:text-black font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 border border-white/[0.12] hover:border-[#D4AF37] transition-all shadow-sm active:scale-[0.98]"
               >
-                <span>Elegir este estilo</span>
+                <span>{item.serviceId === 'colorimetria' ? 'Consultar este servicio' : 'Elegir este estilo'}</span>
                 <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
               </button>
             </div>
@@ -328,7 +328,7 @@ export default function AuthorPortfolio({ onSelectService, onStartBooking }) {
                 }}
                 className="px-5 py-3 rounded-xl bg-[#D4AF37] hover:bg-[#c29e2f] text-black font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-md shrink-0"
               >
-                <span>Pedir este corte</span>
+                <span>{activePhoto.serviceId === 'colorimetria' ? 'Consultar por WhatsApp' : 'Pedir este corte'}</span>
                 <ArrowRight className="w-4 h-4 stroke-[2]" />
               </button>
             </div>

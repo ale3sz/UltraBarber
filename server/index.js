@@ -107,7 +107,8 @@ function formatService(row) {
     imageUrl: row.image_url || '',
     badge: row.badge || '',
     sortOrder: row.sort_order || 0,
-    active: Boolean(row.active)
+    active: Boolean(row.active),
+    directConsult: Boolean(row.price === 0 || row.id === 'colorimetria')
   };
 }
 

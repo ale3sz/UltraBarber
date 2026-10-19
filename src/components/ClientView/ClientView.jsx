@@ -130,7 +130,11 @@ export default function ClientView({
                 const found = services.find((s) => s.id === svcId);
                 if (found) setSelectedService(found);
                 setSubTab('book');
-                setBookingStep(2);
+                if (svcId === 'colorimetria' || found?.directConsult) {
+                  setBookingStep(1);
+                } else {
+                  setBookingStep(2);
+                }
               }}
               onStartBooking={() => {
                 setSubTab('book');
@@ -303,7 +307,11 @@ export default function ClientView({
             const found = services.find((s) => s.id === svcId);
             if (found) setSelectedService(found);
             setSubTab('book');
-            setBookingStep(2);
+            if (svcId === 'colorimetria' || found?.directConsult) {
+              setBookingStep(1);
+            } else {
+              setBookingStep(2);
+            }
           }}
           onStartBooking={() => {
             setSubTab('book');
@@ -350,6 +358,7 @@ export default function ClientView({
                   setSelectedDrink={setSelectedDrink}
                   onBack={() => setSubTab('club')}
                   onContinue={() => setBookingStep(2)}
+                  whatsappPhone={studioConfig?.whatsappPhone || '5493413762115'}
                 />
               )}
 

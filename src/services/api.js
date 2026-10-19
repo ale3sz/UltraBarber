@@ -214,6 +214,26 @@ const MOCK_SERVICES = [
       '1 bebida a elección (agua mineral, gaseosa o cerveza)'
     ],
     sortOrder: 5
+  },
+  {
+    id: 'colorimetria',
+    name: 'Colorimetría & Textura Técnica',
+    tagline: 'Iluminación, Reflejos & Decoloración',
+    price: 0,
+    directConsult: true,
+    duration: 120,
+    pointsEarned: 1,
+    drinkIncluded: true,
+    badge: 'CONSULTA DIRECTA',
+    imageUrl: getAssetUrl('imagenes/IMG_0989.JPG.jpeg'),
+    includes: [
+      'Decoloración y matización técnica',
+      'Iluminación y reflejos personalizados',
+      'Lavado, baño de luz y nutrición capilar profunda',
+      'Peinado y finalización con productos profesionales',
+      'Presupuesto y disponibilidad por WhatsApp con David'
+    ],
+    sortOrder: 6
   }
 ];
 

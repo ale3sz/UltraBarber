@@ -529,15 +529,23 @@ export default function SettingsModal({
                   <span className="font-semibold text-barber-darkText">{s.name}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-mono text-barber-chai font-bold">$</span>
-                  <input
-                    type="number"
-                    value={servicePrices[s.id] ?? s.price}
-                    onChange={(e) =>
-                      setServicePrices((prev) => ({ ...prev, [s.id]: e.target.value }))
-                    }
-                    className="w-28 px-3 py-1.5 rounded-xl bg-barber-darkSurface border border-barber-darkBorder text-barber-darkText font-mono font-bold text-right tabular-nums"
-                  />
+                  {s.id === 'colorimetria' || s.directConsult ? (
+                    <span className="px-2.5 py-1 rounded-lg bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#D4AF37] font-mono text-[10px] font-bold uppercase tracking-wider">
+                      A coordinar (WhatsApp)
+                    </span>
+                  ) : (
+                    <>
+                      <span className="font-mono text-barber-chai font-bold">$</span>
+                      <input
+                        type="number"
+                        value={servicePrices[s.id] ?? s.price}
+                        onChange={(e) =>
+                          setServicePrices((prev) => ({ ...prev, [s.id]: e.target.value }))
+                        }
+                        className="w-28 px-3 py-1.5 rounded-xl bg-barber-darkSurface border border-barber-darkBorder text-barber-darkText font-mono font-bold text-right tabular-nums"
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             ))}
