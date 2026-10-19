@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
+import MagneticButton from './common/MagneticButton';
 
 export default function FloatingHelpButton({ studioConfig }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,10 +52,9 @@ export default function FloatingHelpButton({ studioConfig }) {
         </div>
       )}
 
-      <button
-        type="button"
+      <MagneticButton
         onClick={() => setIsOpen(!isOpen)}
-        className="group px-3.5 py-2.5 rounded-md bg-[#141416]/95 hover:bg-[#1a1a1d] text-[#EDEDED] card-hairline shadow-lg flex items-center gap-2 transition-all active:scale-95 backdrop-blur-md"
+        className="group px-3.5 py-2.5 rounded-md bg-[#141416]/95 hover:bg-[#1a1a1d] text-[#EDEDED] card-hairline shadow-lg flex items-center gap-2 backdrop-blur-md"
         title="Consultas y dudas por WhatsApp"
         aria-label="Botón de dudas por WhatsApp"
       >
@@ -72,7 +72,7 @@ export default function FloatingHelpButton({ studioConfig }) {
         <span className="sm:hidden text-xs font-mono text-[#EDEDED]">
           Dudas
         </span>
-      </button>
+      </MagneticButton>
     </div>
   );
 }

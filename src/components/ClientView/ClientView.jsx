@@ -7,6 +7,7 @@ import HoldWaitingStep from './HoldWaitingStep';
 import { api } from '../../services/api';
 import AddToCalendarButton from './AddToCalendarButton';
 import { getAssetUrl } from '../../utils/assets';
+import MagneticButton from '../common/MagneticButton';
 import {
   Calendar,
   Clock,
@@ -31,6 +32,7 @@ export default function ClientView({
   studioConfig = {}
 }) {
   const [bookingStep, setBookingStep] = useState(1); // 1: Service, 2: DateTime, 3: HoldWaiting
+  const [guestMode, setGuestMode] = useState('socio'); // 'socio' | 'primera_vez'
   const [services, setServices] = useState([]);
   const [drinks, setDrinks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,14 +115,21 @@ export default function ClientView({
 
   return (
     <div className="max-w-6xl w-full mx-auto pb-28 md:pb-16 space-y-8">
-      {/* SUBTAB 1: MI PASE & CLUB */}
+      {/* SUBTAB 1: MI PASE & CLUB (BENTO GRID) */}
       {subTab === 'club' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Main Column (Pase de Socio & Galería Lookbook de Autor) */}
-          <div className="lg:col-span-7 xl:col-span-7 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Main Column: Pase de Socio Black Card & Galería Lookbook de Autor */}
+          <div className="lg:col-span-7 space-y-6">
             <MembershipCard
               client={loggedClient}
               studioConfig={studioConfig}
+              guestMode={guestMode}
+              onSelectService={(svcId) => {
+                const found = services.find((s) => s.id === svcId);
+                if (found) setSelectedService(found);
+                setSubTab('book');
+                setBookingStep(2);
+              }}
               onStartBooking={() => {
                 setSubTab('book');
                 setBookingStep(1);
@@ -130,118 +139,11 @@ export default function ClientView({
                 if (el) el.focus();
               }}
             />
-
-            {/* Mobile-Only Stack for Active Turn, DNI Auth and Studio Info */}
-            <div className="lg:hidden space-y-6">
-              {loggedClient && activeTurns.length > 0 && (
-                <div className="p-5 sm:p-6 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="micro-technical text-[#D4AF37] block mb-0.5">TURNO EN CURSO</span>
-                      <h2 className="text-base sm:text-lg font-display font-bold text-[#EDEDED]">
-                        Próxima visita al <span className="font-editorial italic font-normal text-[#D4AF37]">estudio</span>
-                      </h2>
-                    </div>
-                    <span className="badge-champagne font-mono font-bold uppercase tracking-wider text-[11px] tabular-nums">
-                      #{activeTurns[0].code} • {activeTurns[0].status}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#8A898E]">
-                    <div>
-                      <strong className="text-sm text-[#EDEDED] block font-display">
-                        {activeTurns[0].serviceName}
-                        {activeTurns[0].selectedDrink ? ` • ${activeTurns[0].selectedDrink}` : ''}
-                      </strong>
-                      <span className="font-mono tabular-nums text-xs text-[#8A898E]">
-                        {activeTurns[0].date} • {activeTurns[0].time} hs
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2">
-                      <AddToCalendarButton appointment={activeTurns[0]} studioConfig={studioConfig} />
-
-                      {activeTurns[0].status === 'pendiente' && (
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            const statusData = await api.getAppointmentStatus(activeTurns[0].id);
-                            setAppointmentResponse({
-                              appointment: statusData,
-                              code: statusData.code,
-                              expiresAt: statusData.expiresAt,
-                              rawMessage: statusData.rawMessage,
-                              whatsappUrl: statusData.whatsappUrl
-                            });
-                            setSubTab('book');
-                            setBookingStep(3);
-                          }}
-                          className="px-3.5 py-2 rounded-md bg-[#25D366] hover:bg-[#20ba5a] text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5 fill-white/20" />
-                          <span>WhatsApp</span>
-                        </button>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => handleCancelTurn(activeTurns[0].id)}
-                        className="px-3 py-2 rounded-md border border-white/[0.08] hover:border-red-500/40 text-[#8A898E] hover:text-red-400 text-xs font-mono transition-colors"
-                      >
-                        Cancelar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <DniStep
-                loggedClient={loggedClient}
-                onAuthSuccess={(client, apts) => onAuthSuccess(client, apts)}
-                onAdminAuthSuccess={onAdminAuthSuccess}
-                onLogoutClient={onLogoutClient}
-                onContinue={() => {
-                  setSubTab('book');
-                  setBookingStep(1);
-                }}
-              />
-
-              <div className="p-5 rounded-lg bg-[#141416] card-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-md bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#D4AF37] shrink-0">
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <strong className="text-[#EDEDED] block font-display font-bold text-sm tracking-tight">
-                      {studioConfig.businessName || 'ULTRA BARBER STUDIO'}
-                    </strong>
-                    <span className="text-[#8A898E] text-xs">
-                      {studioConfig.address || 'Eva Perón 52 • Studio Privado'}, {studioConfig.city || 'Capitán Bermúdez'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-white/[0.08]">
-                  <span className="micro-technical text-[#D4AF37]">
-                    LUN A SÁB • 09 A 20 HS
-                  </span>
-                  <a
-                    href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/dir/?api=1&destination=-32.8300541,-60.7128648'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm shrink-0"
-                  >
-                    <Navigation className="w-3.5 h-3.5 text-[#0B0B0C]" />
-                    <span>Cómo llegar</span>
-                  </a>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Desktop-Only Sticky Sidebar (Columna Derecha: Reserva Directa, Turno Activo, Identificación y Ubicación) */}
-          <div className="hidden lg:flex flex-col lg:col-span-5 xl:col-span-5 space-y-6 sticky top-24">
-            {/* 1. Turno Activo Card Desktop (si existe) */}
+          {/* Right Column / Sticky Sidebar: Turno Activo, Hero CTA con MagneticButton, Identificación y Ubicación */}
+          <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+            {/* 1. Turno Activo Card (si existe) */}
             {loggedClient && activeTurns.length > 0 && (
               <div className="p-5 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] space-y-4">
                 <div className="flex items-center justify-between">
@@ -304,7 +206,7 @@ export default function ClientView({
               </div>
             )}
 
-            {/* 2. Hero Card de Reserva Directa Desktop */}
+            {/* 2. Hero Card de Reserva Directa con MagneticButton */}
             <div className="relative rounded-lg overflow-hidden border border-white/[0.08] bg-[#141416]">
               <img
                 src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
@@ -327,23 +229,24 @@ export default function ClientView({
                   </p>
                 </div>
 
-                <button
-                  type="button"
+                <MagneticButton
                   onClick={() => {
                     setSubTab('book');
                     setBookingStep(1);
                   }}
-                  className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white active:scale-[0.98] text-[#0B0B0C] font-mono font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all shadow-sm"
+                  className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span>Sacá tu turno</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#0B0B0C] stroke-[2]" />
-                </button>
+                </MagneticButton>
               </div>
             </div>
 
-            {/* 3. DniStep (Identificación / Cuenta de Socio) */}
+            {/* 3. DniStep (Identificación / Cuenta de Socio con toggle Ya soy socio / Primera vez) */}
             <DniStep
               loggedClient={loggedClient}
+              guestMode={guestMode}
+              setGuestMode={setGuestMode}
               onAuthSuccess={(client, apts) => onAuthSuccess(client, apts)}
               onAdminAuthSuccess={onAdminAuthSuccess}
               onLogoutClient={onLogoutClient}
@@ -364,7 +267,7 @@ export default function ClientView({
                     {studioConfig.businessName || 'ULTRA BARBER STUDIO'}
                   </strong>
                   <span className="text-[#8A898E] text-xs">
-                    {studioConfig.address || 'Eva Perón 52 • Studio Privado'}, {studioConfig.city || 'Capitán Bermúdez'}
+                    {studioConfig.address || 'Eva Perón 52 • Studio Privado'}, Capitán Bermúdez
                   </span>
                 </div>
               </div>
@@ -374,7 +277,7 @@ export default function ClientView({
                   LUN A SÁB • 09 A 20 HS
                 </span>
                 <a
-                  href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/dir/?api=1&destination=-32.8300541,-60.7128648'}
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(studioConfig.address || 'Eva Perón 52, Capitán Bermúdez, Santa Fe')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm"
@@ -392,7 +295,7 @@ export default function ClientView({
       {subTab === 'book' && (
         <div className="max-w-4xl mx-auto space-y-6">
           {bookingError && (
-            <div className="p-4 rounded-2xl bg-red-500/15 border border-red-500/30 text-xs text-red-600 dark:text-red-300 font-semibold">
+            <div className="p-4 rounded-md bg-red-500/10 border border-red-500/20 text-xs text-red-400 font-mono">
               {bookingError}
             </div>
           )}
@@ -402,6 +305,8 @@ export default function ClientView({
             <div className="max-w-md mx-auto">
               <DniStep
                 loggedClient={loggedClient}
+                guestMode={guestMode}
+                setGuestMode={setGuestMode}
                 onAuthSuccess={(client, apts) => {
                   onAuthSuccess(client, apts);
                   setBookingStep(1);
@@ -412,7 +317,7 @@ export default function ClientView({
               />
             </div>
           ) : (
-            <>
+            <div key={bookingStep} className="animate-stepper-morph">
               {bookingStep === 1 && (
                 <ServiceStep
                   services={services}
@@ -455,7 +360,7 @@ export default function ClientView({
                   />
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
       )}
