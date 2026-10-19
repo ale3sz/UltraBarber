@@ -4,6 +4,7 @@ import DniStep from './DniStep';
 import ServiceStep from './ServiceStep';
 import DateTimeStep from './DateTimeStep';
 import HoldWaitingStep from './HoldWaitingStep';
+import AuthorPortfolio from './AuthorPortfolio';
 import { api } from '../../services/api';
 import AddToCalendarButton from './AddToCalendarButton';
 import { getAssetUrl } from '../../utils/assets';
@@ -115,9 +116,10 @@ export default function ClientView({
 
   return (
     <div className="max-w-6xl w-full mx-auto pb-28 md:pb-16 space-y-8">
-      {/* SUBTAB 1: MI PASE & CLUB (BENTO GRID) */}
+      {/* SUBTAB 1: MI PASE & CLUB (BENTO GRID & PORTFOLIO DE AUTOR) */}
       {subTab === 'club' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="space-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Main Column: Pase de Socio Black Card & Galería Lookbook de Autor */}
           <div className="lg:col-span-7 space-y-6">
             <MembershipCard
@@ -294,6 +296,21 @@ export default function ClientView({
             </div>
           </div>
         </div>
+
+        {/* Galería / Lookbook de Autor de Ancho Completo */}
+        <AuthorPortfolio
+          onSelectService={(svcId) => {
+            const found = services.find((s) => s.id === svcId);
+            if (found) setSelectedService(found);
+            setSubTab('book');
+            setBookingStep(2);
+          }}
+          onStartBooking={() => {
+            setSubTab('book');
+            setBookingStep(1);
+          }}
+        />
+      </div>
       )}
 
       {/* SUBTAB 2: RESERVAR TURNO */}
