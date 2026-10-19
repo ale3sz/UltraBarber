@@ -7,7 +7,8 @@ import {
   Gift,
   Camera,
   Maximize2,
-  X
+  X,
+  Scissors
 } from 'lucide-react';
 import { getAssetUrl } from '../../utils/assets';
 import InstagramIcon from '../icons/InstagramIcon';
@@ -109,17 +110,20 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
   else if (cuts >= 6) tierTitle = 'Silver & Gold · Nivel 2';
 
   return (
-    <div className="space-y-5">
-      {/* Top User Greeting Row (Inspired by Reference Video) */}
+    <div className="space-y-6">
+      {/* Top User Greeting Row with Editorial Typography */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-full bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-chai flex items-center justify-center text-barber-chai font-display font-bold text-base">
+          <div className="w-10 h-10 rounded-md bg-[#141416] border border-white/[0.08] flex items-center justify-center text-[#D4AF37] font-display font-bold text-sm">
             {client ? (client.firstName || client.name?.split(' ')[0] || 'S').charAt(0).toUpperCase() : 'D'}
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
+            <span className="micro-technical block text-[9px] text-[#8A898E]">
+              CLUB PRIVADO · ACCESO
+            </span>
+            <h1 className="text-xl sm:text-2xl font-display font-bold text-[#EDEDED] leading-tight">
               Hola,{' '}
-              <span className="font-editorial italic font-normal text-barber-chai">
+              <span className="font-editorial italic font-normal text-[#D4AF37]">
                 {client ? (client.firstName || client.name?.split(' ')[0] || 'Socio') : 'Invitado'}
               </span>
             </h1>
@@ -128,11 +132,11 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
 
         <div className="flex items-center gap-2">
           <div
-            className="px-3 py-1.5 rounded-full bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder flex items-center gap-1.5"
+            className="px-2.5 py-1 rounded bg-[#141416] border border-white/[0.08] flex items-center gap-1.5"
             title="Cortes históricos completados"
           >
-            <Flame className="w-4 h-4 text-barber-chai fill-barber-chai" />
-            <span className="font-mono font-bold text-sm text-barber-lightText dark:text-barber-darkText tabular-nums">
+            <Flame className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
+            <span className="font-mono text-xs text-[#EDEDED] tabular-nums font-semibold">
               {cuts}
             </span>
           </div>
@@ -141,131 +145,148 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
             <button
               type="button"
               onClick={() => setShowQrModal(true)}
-              className="p-2.5 rounded-full bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder text-barber-chai hover:border-barber-chai transition-colors"
-              title="Mostrar credencial QR en barbería"
-              aria-label="Mostrar código QR de socio"
+              className="p-2 rounded bg-[#141416] border border-white/[0.08] text-[#8A898E] hover:text-[#D4AF37] hover:border-[#D4AF37]/50 transition-colors"
+              title="Mostrar credencial QR de socio"
+              aria-label="Mostrar credencial QR de socio"
             >
-              <QrCode className="w-4 h-4" />
+              <QrCode className="w-4 h-4 stroke-[1.5]" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Two-Tab Club Pass Container (Puntos | Premios) */}
-      <div>
-        <div className="flex items-center gap-2 mb-0">
+      {/* Two-Tab Club Pass Container (Pase de Socio | Canjes) */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 border-b border-white/[0.08] pb-1">
           <button
             type="button"
             onClick={() => setActiveTab('puntos')}
-            className={`px-5 py-2.5 rounded-t-2xl text-xs font-bold tracking-wide transition-colors ${
+            className={`pb-2 px-1 text-[11px] font-mono uppercase tracking-[0.15em] transition-colors relative ${
               activeTab === 'puntos'
-                ? 'bg-barber-darkSurface text-barber-chai border-t border-x border-barber-darkBorder'
-                : 'text-barber-lightMuted dark:text-barber-darkMuted hover:text-barber-lightText dark:hover:text-barber-darkText'
+                ? 'text-[#EDEDED] font-bold after:absolute after:bottom-[-5px] after:left-0 after:right-0 after:h-[2px] after:bg-[#D4AF37]'
+                : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
-            Puntos
+            Pase de Socio
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('premios')}
-            className={`px-5 py-2.5 rounded-t-2xl text-xs font-bold tracking-wide transition-colors ${
+            className={`pb-2 px-3 text-[11px] font-mono uppercase tracking-[0.15em] transition-colors relative ${
               activeTab === 'premios'
-                ? 'bg-barber-darkSurface text-barber-chai border-t border-x border-barber-darkBorder'
-                : 'text-barber-lightMuted dark:text-barber-darkMuted hover:text-barber-lightText dark:hover:text-barber-darkText'
+                ? 'text-[#EDEDED] font-bold after:absolute after:bottom-[-5px] after:left-0 after:right-0 after:h-[2px] after:bg-[#D4AF37]'
+                : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
-            Premios
+            Beneficios &amp; Canjes
           </button>
         </div>
 
         {activeTab === 'puntos' ? (
-          <div className="relative rounded-3xl rounded-tl-none overflow-hidden border border-barber-chai/40 club-shadow bg-barber-darkSurface text-barber-darkText animate-enter">
-            {/* Subtle botanical warm ambient glow behind the card */}
-            <div className="absolute -top-16 -right-16 w-48 h-48 bg-barber-matcha/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-barber-chai/15 rounded-full blur-3xl pointer-events-none" />
-
-            {/* Upper Dark Obsidian Section */}
-            <div className="relative p-6 sm:p-7 z-10">
-              <div className="flex items-baseline justify-between gap-4">
-                <div className="flex items-baseline gap-2.5">
-                  <span className="text-6xl sm:text-7xl font-display font-bold tracking-tight text-barber-darkText tabular-nums leading-none">
-                    {points}
-                  </span>
-                  <span className="text-sm font-mono font-bold uppercase tracking-widest text-barber-pistache">
-                    PTS
-                  </span>
+          /* Módulo Inspirado en Tarjeta Física Black Card / Apple Wallet */
+          <div className="black-card p-5 sm:p-6 text-[#EDEDED] space-y-6 animate-enter">
+            {/* Header: Marca y Badge Quirúrgico */}
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-[#D4AF37]">
+                  <Scissors className="w-3.5 h-3.5 -rotate-45 stroke-[1.5]" />
                 </div>
-
-                <div className="text-right">
-                  <span className="text-xs font-mono text-barber-pistache block tabular-nums">
-                    {cuts} {cuts === 1 ? 'VISITA REGISTRADA' : 'VISITAS REGISTRADAS'}
+                <div>
+                  <span className="text-[10px] font-mono tracking-[0.2em] uppercase font-bold text-[#EDEDED] block leading-none">
+                    ULTRA BARBER
                   </span>
-                  <span className="text-xs text-barber-chai font-semibold block mt-0.5">
-                    +1 corte = +1 punto
+                  <span className="text-[8px] font-mono tracking-[0.2em] text-[#8A898E] uppercase block mt-0.5">
+                    PRIVATE CLUB PASS
                   </span>
                 </div>
               </div>
 
-              {/* Progress toward 10-point reward */}
-              <div className="mt-6">
-                <div className="w-full h-2 rounded-full bg-barber-darkBg/80 border border-barber-darkBorder overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-barber-gold to-barber-goldLight rounded-full transition-all duration-700 ease-out"
-                    style={{ width: `${points >= milestone ? 100 : progressPct}%` }}
-                  />
-                </div>
-                <p className="mt-2.5 text-xs font-mono uppercase tracking-wider text-barber-pistache flex items-center justify-between">
-                  <span>
-                    {!client
-                      ? 'INGRESÁ CON TU DNI + PIN PARA VER TU BALANCE REAL'
-                      : remainingForFree === 0
-                      ? 'CORTE BONIFICADO DISPONIBLE PARA CANJEAR'
-                      : `FALTAN ${remainingForFree} ${remainingForFree === 1 ? 'PUNTO' : 'PUNTOS'} PARA TU PRÓXIMO CORTE`}
-                  </span>
-                  <span className="tabular-nums font-bold text-barber-chai">
-                    {points % milestone}/10
-                  </span>
-                </p>
+              <div className="badge-champagne">
+                {tierTitle.split('·')[0].trim()}
               </div>
             </div>
 
-            {/* Lower Gold Metallic Band (Black & Gold Pass Footer) */}
-            <button
-              type="button"
-              onClick={() => (client ? setShowQrModal(true) : onRequestLogin && onRequestLogin())}
-              className="relative z-10 w-full px-6 py-4 bg-gradient-to-r from-barber-chai via-barber-vanilla to-barber-chai text-barber-carob flex items-center justify-between text-left hover:brightness-105 active:scale-[0.99] transition-all"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-9 h-11 rounded-lg bg-barber-darkBg text-barber-chai border border-barber-chai/50 flex items-center justify-center shadow-md -rotate-6 transform transition-transform group-hover:rotate-0">
-                  <Award className="w-5 h-5 text-barber-chai" />
-                </div>
-                <div>
-                  <span className="font-display font-bold text-sm text-barber-lightText block leading-tight">
-                    {tierTitle}
+            {/* Middle: Saldo de Puntos & Chip Táctil */}
+            <div className="flex items-end justify-between pt-1">
+              <div>
+                <span className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                  BALANCE DISPONIBLE
+                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl sm:text-6xl font-display font-bold tracking-tight text-[#EDEDED] tabular-nums leading-none">
+                    {points}
                   </span>
-                  <span className="font-mono text-xs font-semibold text-barber-carob tracking-wider block mt-0.5 tabular-nums">
-                    {client ? `SOCIO DNI N° ${client.dni}` : 'TOCÁ PARA INGRESAR A TU CUENTA'}
+                  <span className="text-xs font-mono font-bold tracking-widest text-[#D4AF37]">
+                    PTS
                   </span>
                 </div>
               </div>
 
-              <div className="w-8 h-8 rounded-full bg-barber-lightText/10 flex items-center justify-center">
-                <ArrowRight className="w-4 h-4 text-barber-lightText" />
+              {/* Emulated tactile chip */}
+              <div className="w-10 h-7 rounded border border-white/20 bg-gradient-to-br from-white/10 to-white/5 p-1 flex flex-col justify-between opacity-80">
+                <div className="h-[1px] w-full bg-white/20" />
+                <div className="flex justify-between">
+                  <div className="w-2 h-2 border border-white/20 rounded-sm" />
+                  <div className="w-2 h-2 border border-white/20 rounded-sm" />
+                </div>
+                <div className="h-[1px] w-full bg-white/20" />
               </div>
-            </button>
+            </div>
+
+            {/* Barra de Avance Milimétrica (2px) */}
+            <div className="space-y-2 pt-1">
+              <div className="h-[2px] w-full bg-white/[0.08] overflow-hidden">
+                <div
+                  className="h-full bg-[#D4AF37] transition-all duration-700 ease-out"
+                  style={{ width: `${points >= milestone ? 100 : progressPct}%` }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.12em] uppercase text-[#8A898E]">
+                <span>
+                  {!client
+                    ? 'ACCEDÉ CON DNI + PIN PARA VER TUS PUNTOS'
+                    : remainingForFree === 0
+                    ? 'CORTE BONIFICADO DISPONIBLE'
+                    : `FALTAN ${remainingForFree} PARA CORTE BONIFICADO`}
+                </span>
+                <span className="text-[#EDEDED] font-bold tabular-nums">
+                  {points % milestone} / 10
+                </span>
+              </div>
+            </div>
+
+            {/* Datos de Socio y Botón de Apertura */}
+            <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-display font-bold tracking-wider text-[#EDEDED] block uppercase">
+                  {client ? `${client.firstName || client.name || 'SOCIO'} ${client.lastName || ''}`.trim() : 'SOCIO INVITADO'}
+                </span>
+                <span className="text-[10px] font-mono tracking-widest text-[#8A898E] block mt-0.5 tabular-nums">
+                  {client ? `DNI N° ${client.dni}` : 'IDENTIFICATE PARA VINCULAR'}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => (client ? setShowQrModal(true) : onRequestLogin && onRequestLogin())}
+                className="px-3 py-1.5 rounded bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] hover:border-[#D4AF37]/50 text-[10px] font-mono tracking-[0.12em] uppercase text-[#EDEDED] flex items-center gap-1.5 transition-all"
+              >
+                <QrCode className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.5]" />
+                <span>{client ? 'Credencial QR' : 'Entrar'}</span>
+              </button>
+            </div>
           </div>
         ) : (
-          /* Premios & Beneficios Dinámicos */
-          <div className="rounded-3xl rounded-tl-none p-6 bg-barber-darkSurface border border-barber-darkBorder club-shadow text-barber-darkText space-y-6 animate-enter">
-            {/* 1. Canjeables con Puntos y Stock */}
+          /* Pestaña de Premios & Canjes */
+          <div className="card-hairline rounded-lg p-5 text-[#EDEDED] space-y-6 animate-enter">
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-display font-bold text-barber-darkText flex items-center gap-2">
-                  <Gift className="w-4 h-4 text-barber-chai" />
-                  <span>Canjes de Productos &amp; Cortes</span>
-                </h3>
-                <span className="text-[11px] font-mono text-barber-pistache">
-                  {points} pts disponibles
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/[0.08]">
+                <span className="micro-technical text-[10px] text-[#EDEDED]">
+                  CATÁLOGO DE CANJE
+                </span>
+                <span className="text-[11px] font-mono text-[#D4AF37] font-bold">
+                  {points} PTS DISPONIBLES
                 </span>
               </div>
 
@@ -277,39 +298,39 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
                   return (
                     <div
                       key={item.id}
-                      className="p-4 rounded-2xl bg-barber-darkBg border border-barber-darkBorder flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                      className="p-3.5 rounded bg-[#101012] border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <strong className="text-sm font-semibold text-barber-darkText">
+                          <strong className="text-sm font-semibold text-[#EDEDED]">
                             {item.name}
                           </strong>
                           {item.hasStockLimit && (
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider ${
                               item.stock > 0
-                                ? 'bg-barber-matcha/20 text-barber-matcha'
-                                : 'bg-red-500/20 text-red-400'
+                                ? 'bg-white/[0.06] text-[#8A898E]'
+                                : 'bg-red-500/15 text-red-400'
                             }`}>
                               {item.stock > 0 ? `${item.stock} en stock` : 'Agotado'}
                             </span>
                           )}
                         </div>
-                        <p className="text-barber-pistache leading-relaxed">
+                        <p className="text-[#8A898E] text-xs leading-relaxed">
                           {item.description}
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-barber-darkBorder/60">
-                        <span className="font-mono font-bold text-sm text-barber-chai tabular-nums">
+                      <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/[0.06]">
+                        <span className="font-mono font-bold text-sm text-[#D4AF37] tabular-nums">
                           {item.pointsCost} PTS
                         </span>
 
-                        <span className={`px-3 py-1.5 rounded-xl font-mono text-[11px] font-bold uppercase ${
+                        <span className={`px-2.5 py-1 rounded text-[10px] font-mono uppercase tracking-wider ${
                           isOutOfStock
-                            ? 'bg-barber-darkBorder text-barber-pistache/50'
+                            ? 'bg-white/[0.04] text-[#8A898E]/50'
                             : canAfford
-                            ? 'bg-barber-matcha text-white'
-                            : 'bg-barber-darkSurface text-barber-pistache border border-barber-darkBorder'
+                            ? 'bg-[#D4AF37] text-[#0B0B0C] font-bold'
+                            : 'bg-white/[0.04] text-[#8A898E] border border-white/[0.08]'
                         }`}>
                           {isOutOfStock ? 'Sin stock' : canAfford ? 'Canjeable' : 'Puntos insuficientes'}
                         </span>
@@ -320,30 +341,30 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
               </div>
             </div>
 
-            {/* 2. Beneficios de Miembro */}
-            <div className="pt-4 border-t border-barber-darkBorder">
-              <h3 className="text-base font-display font-bold text-barber-darkText mb-3">
-                Beneficios permanentes del Studio
-              </h3>
+            {/* Beneficios Permanentes */}
+            <div className="pt-3 border-t border-white/[0.08]">
+              <span className="micro-technical block text-[10px] text-[#8A898E] mb-3">
+                BENEFICIOS DE SOCIO
+              </span>
 
-              <ul className="divide-y divide-barber-darkBorder text-xs">
+              <ul className="divide-y divide-white/[0.06] text-xs">
                 {clubBenefits.map((b) => (
-                  <li key={b.id} className="py-3 flex items-center justify-between gap-4">
+                  <li key={b.id} className="py-2.5 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-barber-darkBg border border-barber-darkBorder flex items-center justify-center text-barber-chai shrink-0">
-                        <Award className="w-4 h-4" />
+                      <div className="w-7 h-7 rounded bg-[#101012] border border-white/[0.08] flex items-center justify-center text-[#D4AF37] shrink-0">
+                        <Award className="w-3.5 h-3.5 stroke-[1.5]" />
                       </div>
                       <div>
-                        <strong className="text-barber-darkText font-semibold block text-sm">
+                        <strong className="text-[#EDEDED] font-semibold block text-xs">
                           {b.title}
                         </strong>
-                        <span className="text-barber-pistache">
+                        <span className="text-[#8A898E] text-[11px]">
                           {b.description}
                         </span>
                       </div>
                     </div>
                     {b.badge && (
-                      <span className="px-2.5 py-1 rounded-lg bg-barber-darkBg border border-barber-darkBorder font-mono font-bold text-barber-chai shrink-0 text-[10px]">
+                      <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] font-mono text-[#D4AF37] text-[10px] tracking-wider shrink-0">
                         {b.badge}
                       </span>
                     )}
@@ -355,43 +376,49 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
         )}
       </div>
 
-      {/* Hero Booking Action Banner (Con foto real del estudio de David) */}
-      <div className="relative rounded-3xl overflow-hidden border border-barber-lightBorder dark:border-barber-darkBorder bg-barber-darkSurface club-shadow">
+      {/* Hero Booking Action Banner con Integración Fluida */}
+      <div className="relative rounded-lg overflow-hidden border border-white/[0.08] bg-[#141416]">
         <img
           src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
-          alt="David trabajando en el sillón del estudio"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-45"
+          alt="David en el estudio"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-25"
         />
-        <div className="relative z-10 p-6 sm:p-7 bg-gradient-to-r from-barber-darkBg via-barber-darkBg/90 to-barber-darkBg/30 flex flex-col items-start justify-between gap-5">
-          <div className="max-w-xs">
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-barber-darkText leading-snug">
-              Tu próximo corte te está esperando
+        <div className="relative z-10 p-5 sm:p-6 bg-gradient-to-r from-[#0B0B0C] via-[#0B0B0C]/90 to-transparent flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1 max-w-sm">
+            <span className="micro-technical block text-[9px] text-[#8A898E]">
+              01 / 03 PASO INICIAL · RESERVA SIN SEÑA
+            </span>
+            <h2 className="text-lg sm:text-xl font-display font-bold text-[#EDEDED] leading-snug">
+              Tu próximo corte te{' '}
+              <span className="font-editorial italic font-normal text-[#D4AF37]">
+                espera
+              </span>
             </h2>
-            <p className="text-xs text-barber-pistache mt-1.5">
-              Elegí servicio y horario en tres toques. Confirmación directa con David por WhatsApp.
+            <p className="text-xs text-[#8A898E]">
+              Confirmación directa por WhatsApp con David.
             </p>
           </div>
 
           <button
             type="button"
             onClick={onStartBooking}
-            className="px-6 py-3.5 rounded-full bg-white text-[#0A0A0A] font-display font-extrabold text-xs uppercase tracking-wider flex items-center gap-2.5 hover:bg-neutral-200 active:scale-95 transition-all shadow-lg border border-white/20"
+            className="px-5 py-3 rounded-md bg-[#EDEDED] hover:bg-white active:scale-[0.98] text-[#0B0B0C] font-mono font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-2 transition-all shadow-sm shrink-0"
           >
-            <span>SACÁ TU TURNO</span>
-            <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+            <span>Sacá tu turno</span>
+            <ArrowRight className="w-3.5 h-3.5 text-[#0B0B0C] stroke-[2]" />
           </button>
         </div>
       </div>
 
-      {/* Lookbook / Galería de Trabajos Reales del Estudio */}
+      {/* Lookbook / Trabajos de Autor */}
       <div className="space-y-3 pt-1">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg sm:text-xl font-display font-bold text-barber-lightText dark:text-barber-darkText flex items-center gap-2">
-            <Camera className="w-4 h-4 text-barber-chai" />
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-1 border-b border-white/[0.08]">
+          <h2 className="text-base sm:text-lg font-display font-bold text-[#EDEDED] flex items-center gap-2">
+            <Camera className="w-4 h-4 text-[#D4AF37] stroke-[1.5]" />
             <span>
-              Trabajos reales en el{' '}
-              <span className="font-editorial italic font-normal text-barber-chai">
-                sillón
+              Trabajos de{' '}
+              <span className="font-editorial italic font-normal text-[#D4AF37]">
+                autor
               </span>
             </span>
           </h2>
@@ -400,47 +427,45 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
               href="https://www.instagram.com/barber_f4de"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-2.5 py-1 rounded-lg bg-neutral-800 border border-[#D4AF37]/50 hover:border-[#D4AF37] text-[11px] font-mono text-neutral-300 hover:text-white flex items-center gap-1.5 transition-colors shadow-sm"
-              title="Instagram oficial @barber_f4de"
+              className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/[0.08] hover:border-[#D4AF37]/50 text-[10px] font-mono text-[#8A898E] hover:text-[#EDEDED] flex items-center gap-1.5 transition-colors"
+              title="Instagram @barber_f4de"
             >
               <InstagramIcon className="w-3.5 h-3.5 text-[#D4AF37]" />
               <span>@barber_f4de</span>
             </a>
-            <span className="text-[11px] font-mono text-barber-lightMuted dark:text-barber-darkMuted hidden sm:inline">
-              TOCÁ PARA AMPLIAR
-            </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
+        {/* Grilla de 4 Fotos Contenidas y Oscuras */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
           {STUDIO_GALLERY.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setSelectedPhoto(item)}
-              className="group relative aspect-[3/4] rounded-2xl sm:rounded-3xl overflow-hidden border border-barber-lightBorder dark:border-barber-darkBorder bg-barber-darkSurface text-left club-shadow focus:outline-none focus:ring-2 focus:ring-barber-chai"
+              className="group relative aspect-[3/4] rounded-md overflow-hidden border border-white/[0.08] bg-[#141416] text-left focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
             >
               <img
                 src={getImageSrc(item.src)}
                 alt={item.title}
-                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 ease-out"
+                className="w-full h-full object-cover object-top filter contrast-[1.05] group-hover:scale-105 transition-transform duration-500 ease-out"
                 loading="lazy"
               />
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-barber-darkBg via-barber-darkBg/60 to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/70 to-transparent pointer-events-none" />
 
-              <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-barber-darkBg/85 backdrop-blur-md border border-barber-chai/40 text-[9px] font-mono font-bold text-barber-chai uppercase tracking-wider hidden sm:inline-block">
+              <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-[#0B0B0C]/85 backdrop-blur-md border border-white/[0.1] text-[8px] font-mono text-[#D4AF37] uppercase tracking-wider hidden sm:inline-block">
                 {item.tag}
               </span>
 
-              <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-barber-darkBg/75 backdrop-blur-md border border-barber-darkBorder flex items-center justify-center text-barber-darkText opacity-80 group-hover:opacity-100 group-hover:border-barber-chai transition-all">
-                <Maximize2 className="w-3 h-3" />
+              <div className="absolute top-2 right-2 w-5 h-5 rounded bg-[#0B0B0C]/80 border border-white/[0.1] flex items-center justify-center text-[#EDEDED] opacity-60 group-hover:opacity-100 transition-opacity">
+                <Maximize2 className="w-2.5 h-2.5 stroke-[1.5]" />
               </div>
 
-              <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3.5">
-                <p className="font-display font-bold text-xs sm:text-sm text-barber-darkText leading-tight">
+              <div className="absolute inset-x-0 bottom-0 p-2.5">
+                <p className="font-display font-bold text-xs text-[#EDEDED] leading-tight line-clamp-1">
                   {item.title}
                 </p>
-                <p className="text-[10px] sm:text-xs text-barber-pistache line-clamp-1 mt-0.5">
+                <p className="text-[10px] font-mono text-[#8A898E] line-clamp-1 mt-0.5">
                   {item.subtitle}
                 </p>
               </div>
@@ -449,17 +474,17 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
         </div>
       </div>
 
-      {/* Modal Lightbox para ver foto del corte en tamaño completo */}
+      {/* Modal Lightbox */}
       {selectedPhoto && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-enter"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-enter"
           onClick={() => setSelectedPhoto(null)}
         >
           <div
-            className="w-full max-w-md rounded-3xl overflow-hidden bg-barber-darkSurface border border-barber-darkBorder text-barber-darkText club-shadow"
+            className="w-full max-w-sm rounded-lg overflow-hidden bg-[#141416] border border-white/[0.12] text-[#EDEDED]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative aspect-[4/5] w-full bg-barber-darkBg">
+            <div className="relative aspect-[4/5] w-full bg-[#0B0B0C]">
               <img
                 src={getImageSrc(selectedPhoto.src)}
                 alt={selectedPhoto.title}
@@ -468,22 +493,22 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
               <button
                 type="button"
                 onClick={() => setSelectedPhoto(null)}
-                className="absolute top-3.5 right-3.5 p-2 rounded-full bg-barber-darkBg/85 backdrop-blur-md border border-barber-darkBorder text-barber-darkText hover:border-barber-chai transition-colors"
+                className="absolute top-3 right-3 p-1.5 rounded-md bg-[#0B0B0C]/85 border border-white/[0.1] text-[#EDEDED]"
                 aria-label="Cerrar vista previa"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 stroke-[1.5]" />
               </button>
-              <span className="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-lg bg-barber-darkBg/85 backdrop-blur-md border border-barber-chai/40 text-[10px] font-mono font-bold text-barber-chai uppercase tracking-wider">
+              <span className="absolute top-3 left-3 px-2 py-0.5 rounded bg-[#0B0B0C]/85 border border-white/[0.1] text-[9px] font-mono text-[#D4AF37] uppercase tracking-wider">
                 {selectedPhoto.tag}
               </span>
             </div>
 
-            <div className="p-5 flex items-center justify-between gap-4">
+            <div className="p-4 flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-display font-bold text-barber-darkText">
+                <h3 className="text-sm font-display font-bold text-[#EDEDED]">
                   {selectedPhoto.title}
                 </h3>
-                <p className="text-xs text-barber-pistache mt-0.5">
+                <p className="text-xs text-[#8A898E] mt-0.5">
                   {selectedPhoto.subtitle}
                 </p>
               </div>
@@ -494,57 +519,55 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
                   setSelectedPhoto(null);
                   onStartBooking();
                 }}
-                className="px-4 py-2.5 rounded-xl bg-barber-matcha text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 hover:brightness-105 active:scale-95 transition-all"
+                className="px-3.5 py-2 rounded-md bg-[#EDEDED] text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-white"
               >
                 <span>Reservar</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal de Credencial Digital QR para mostrar en el local */}
+      {/* Modal Credencial Digital QR */}
       {showQrModal && client && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-3xl bg-barber-darkSurface border border-barber-darkBorder p-6 text-center space-y-5 text-barber-darkText club-shadow">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-display font-bold text-barber-darkText">
-                Pase Digital de Socio
-              </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter">
+          <div className="w-full max-w-xs rounded-lg bg-[#141416] border border-white/[0.12] p-5 text-center space-y-4 text-[#EDEDED]">
+            <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+              <span className="micro-technical text-[9px]">PASE DIGITAL DE SOCIO</span>
               <button
                 type="button"
                 onClick={() => setShowQrModal(false)}
-                className="p-2 rounded-xl text-barber-pistache hover:text-barber-darkText"
+                className="p-1 text-[#8A898E] hover:text-[#EDEDED]"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 stroke-[1.5]" />
               </button>
             </div>
 
-            {/* Simulated Crisp SVG QR Code */}
-            <div className="w-44 h-44 mx-auto p-4 rounded-2xl bg-barber-lightBg flex flex-col items-center justify-center border-2 border-barber-chai">
-              <QrCode className="w-28 h-28 text-barber-lightText stroke-[1.5]" />
-              <span className="mt-1 font-mono text-xs font-bold text-barber-lightText tabular-nums">
+            {/* Crisp SVG QR Code */}
+            <div className="w-36 h-36 mx-auto p-3 rounded bg-white flex flex-col items-center justify-center">
+              <QrCode className="w-24 h-24 text-black stroke-[1.5]" />
+              <span className="mt-1 font-mono text-[10px] font-bold text-black tabular-nums">
                 DNI {client?.dni || ''}
               </span>
             </div>
 
             <div className="space-y-1">
-              <p className="font-display font-bold text-lg text-barber-darkText">
+              <p className="font-display font-bold text-sm text-[#EDEDED] uppercase">
                 {client ? `${client.firstName || client.name || 'Socio'} ${client.lastName || ''}`.trim() : 'Socio Invitado'}
               </p>
-              <p className="text-xs font-mono text-barber-chai tabular-nums">
-                {points} PUNTOS DISPONIBLES • {cuts} CORTES
+              <p className="text-[11px] font-mono text-[#D4AF37] tabular-nums">
+                {points} PTS DISPONIBLES • {cuts} CORTES
               </p>
-              <p className="text-xs text-barber-pistache pt-1">
-                Mostrale este pase a David al momento de cobrar para sumar o canjear tus puntos.
+              <p className="text-[10px] text-[#8A898E] pt-1">
+                Presentá este pase a David para sumar o canjear tus puntos.
               </p>
             </div>
 
             <button
               type="button"
               onClick={() => setShowQrModal(false)}
-              className="w-full py-3 rounded-2xl bg-barber-matcha text-white font-semibold text-xs uppercase tracking-wider"
+              className="w-full py-2.5 rounded bg-white/[0.08] hover:bg-white/[0.12] text-[#EDEDED] font-mono text-xs uppercase tracking-wider"
             >
               Listo
             </button>

@@ -96,50 +96,51 @@ export default function HoldWaitingStep({
   // CASE 1: CONFIRMED BY DAVID
   if (status === 'confirmado') {
     return (
-      <div className="p-6 sm:p-8 rounded-3xl bg-barber-darkSurface border border-barber-matcha club-shadow text-center space-y-6 text-barber-darkText">
-        <div className="w-16 h-16 rounded-full bg-barber-matcha text-white flex items-center justify-center mx-auto">
-          <CheckCircle2 className="w-9 h-9" />
+      <div className="p-6 sm:p-8 rounded-lg card-hairline bg-[#141416] text-center space-y-6 text-[#EDEDED]">
+        <div className="w-14 h-14 rounded-md bg-[#EDEDED] text-[#0B0B0C] flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-8 h-8" />
         </div>
 
         <div>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-barber-darkText">
-            Turno confirmado por David
+          <span className="micro-technical text-[#D4AF37] block mb-1.5">CONFIRMACIÓN OFICIAL</span>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED] tracking-tight">
+            Turno confirmado por <span className="font-editorial italic font-normal text-[#D4AF37]">David</span>
           </h2>
-          <p className="text-xs sm:text-sm text-barber-pistache mt-1.5">
-            Tu horario quedó reservado en la agenda oficial del estudio.
+          <p className="text-xs text-[#8A898E] mt-1.5 max-w-sm mx-auto">
+            Tu horario quedó registrado en la agenda del club privado.
           </p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-barber-darkBg border border-barber-darkBorder text-left space-y-2.5 text-xs">
-          <div className="flex justify-between items-center pb-2 border-b border-barber-darkBorder">
-            <span className="text-barber-pistache">Código de turno</span>
-            <strong className="font-mono text-base font-bold text-barber-chai tabular-nums">
+        <div className="p-4 rounded-md bg-[#0B0B0C] card-hairline text-left space-y-2 text-xs">
+          <div className="flex justify-between items-center pb-2 border-b border-white/[0.08]">
+            <span className="micro-technical text-[#8A898E]">CÓDIGO DE RESERVA</span>
+            <strong className="font-mono text-base font-bold text-[#D4AF37] tabular-nums">
               #{code}
             </strong>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-barber-pistache">Socio</span>
-            <strong className="text-barber-darkText">{appointment.clientName}</strong>
+            <span className="text-[#8A898E]">Socio</span>
+            <strong className="text-[#EDEDED]">{appointment.clientName}</strong>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-barber-pistache">Servicio</span>
-            <strong className="text-barber-darkText">{appointment.serviceName}</strong>
+            <span className="text-[#8A898E]">Servicio</span>
+            <strong className="text-[#EDEDED]">{appointment.serviceName}</strong>
           </div>
           {appointment.selectedDrink && (
             <div className="flex justify-between items-center">
-              <span className="text-barber-pistache">Bebida elegida</span>
-              <strong className="text-barber-chai">{appointment.selectedDrink}</strong>
+              <span className="text-[#8A898E]">Cortesía bar</span>
+              <strong className="text-[#D4AF37]">{appointment.selectedDrink}</strong>
             </div>
           )}
           <div className="flex justify-between items-center">
-            <span className="text-barber-pistache">Fecha y hora</span>
-            <strong className="text-barber-darkText font-mono tabular-nums">
+            <span className="text-[#8A898E]">Fecha y hora</span>
+            <strong className="text-[#EDEDED] font-mono tabular-nums">
               {appointment.date} • {appointment.time} hs
             </strong>
           </div>
-          <div className="flex justify-between items-center pt-2 border-t border-barber-darkBorder">
-            <span className="text-barber-pistache">Puntos al finalizar</span>
-            <span className="text-barber-matcha font-mono font-bold">+1 PTO</span>
+          <div className="flex justify-between items-center pt-2 border-t border-white/[0.08]">
+            <span className="text-[#8A898E]">Puntos al finalizar</span>
+            <span className="text-[#D4AF37] font-mono font-bold">+1 PTO</span>
           </div>
         </div>
 
@@ -151,7 +152,7 @@ export default function HoldWaitingStep({
           <button
             type="button"
             onClick={onResetToNewBooking}
-            className="w-full py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-md"
+            className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] transition-all"
           >
             Ver en Mis Turnos
           </button>
@@ -163,16 +164,17 @@ export default function HoldWaitingStep({
   // CASE 2: EXPIRED AFTER 15 MINUTES
   if (isExpired || status === 'expirado') {
     return (
-      <div className="p-6 sm:p-8 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-red-500/40 club-shadow text-center space-y-5">
-        <div className="w-14 h-14 rounded-2xl bg-red-500/15 text-red-500 flex items-center justify-center mx-auto">
-          <AlertTriangle className="w-7 h-7" />
+      <div className="p-6 sm:p-8 rounded-lg card-hairline bg-[#141416] text-center space-y-5">
+        <div className="w-12 h-12 rounded-md bg-red-500/10 border border-red-500/30 text-red-400 flex items-center justify-center mx-auto">
+          <AlertTriangle className="w-6 h-6" />
         </div>
 
         <div>
-          <h2 className="text-2xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
-            El bloqueo de 15 minutos expiró
+          <span className="micro-technical text-red-400 block mb-1">TIEMPO EXPIRADO</span>
+          <h2 className="text-xl sm:text-2xl font-display font-bold text-[#EDEDED] tracking-tight">
+            El bloqueo de 15 min <span className="font-editorial italic font-normal text-red-400">expiró</span>
           </h2>
-          <p className="text-xs sm:text-sm text-barber-lightMuted dark:text-barber-darkMuted mt-1.5">
+          <p className="text-xs text-[#8A898E] mt-1.5 max-w-sm mx-auto">
             No se registró la confirmación a tiempo y el horario volvió a quedar libre en la agenda.
           </p>
         </div>
@@ -180,9 +182,9 @@ export default function HoldWaitingStep({
         <button
           type="button"
           onClick={onResetToNewBooking}
-          className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 transition-all shadow-md"
+          className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all"
         >
-          <ArrowLeft className="w-4 h-4 text-[#D4AF37]" />
+          <ArrowLeft className="w-4 h-4 text-[#0B0B0C]" />
           <span>Elegir otro horario</span>
         </button>
       </div>
@@ -196,36 +198,37 @@ export default function HoldWaitingStep({
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-mono">
           <div>
-            <span className="text-barber-chai font-bold">03</span>
-            <span className="text-barber-lightMuted dark:text-barber-darkMuted"> / 03</span>
+            <span className="text-[#D4AF37] font-bold">03</span>
+            <span className="text-[#8A898E]"> / 03</span>
+            <span className="micro-technical text-[#8A898E] ml-2">CONFIRMACIÓN</span>
           </div>
-          <span className="font-editorial italic text-sm text-barber-lightMuted dark:text-barber-darkMuted">
-            Verificación por WhatsApp
+          <span className="font-editorial italic text-xs text-[#8A898E]">
+            Validación WhatsApp
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-2 h-1">
-          <div className="bg-barber-matcha rounded-full" />
-          <div className="bg-barber-matcha rounded-full" />
-          <div className="bg-barber-chai rounded-full" />
+        <div className="grid grid-cols-3 gap-1.5 h-[2px]">
+          <div className="bg-[#EDEDED] rounded-none" />
+          <div className="bg-[#EDEDED] rounded-none" />
+          <div className="bg-[#D4AF37] rounded-none" />
         </div>
       </div>
 
-      <div className="rounded-3xl p-6 sm:p-7 bg-barber-darkSurface border border-barber-chai/50 club-shadow text-barber-darkText space-y-6 animate-enter">
+      <div className="rounded-lg p-6 sm:p-7 bg-[#141416] card-hairline text-[#EDEDED] space-y-6 animate-enter">
         {/* Top Status & Live Countdown */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-barber-darkBorder">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
           <div className="flex items-center gap-2.5">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-barber-chai opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-barber-chai" />
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4AF37] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D4AF37]" />
             </span>
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-barber-chai">
-              Horario bloqueado por 15 min
+            <span className="micro-technical text-[#D4AF37]">
+              BLOQUEO ACTIVO • 15 MIN
             </span>
           </div>
 
-          <div className="px-3.5 py-1.5 rounded-full bg-barber-darkBg border border-barber-darkBorder flex items-center gap-2 text-barber-chai shadow-inner">
-            <Clock className="w-4 h-4" />
-            <span className="text-sm font-mono font-bold tabular-nums">
+          <div className="px-3 py-1 rounded-md bg-[#0B0B0C] card-hairline flex items-center gap-2 text-[#D4AF37]">
+            <Clock className="w-3.5 h-3.5" />
+            <span className="text-xs font-mono font-bold tabular-nums">
               {formatTime(timeLeft)}
             </span>
           </div>
@@ -233,16 +236,17 @@ export default function HoldWaitingStep({
 
         {/* Big 4-Digit Code Display */}
         <div className="text-center space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-barber-darkText">
-            Confirmá tu código con David
+          <span className="micro-technical text-[#8A898E] block">PASO OBLIGATORIO</span>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED] tracking-tight">
+            Confirmá tu código con <span className="font-editorial italic font-normal text-[#D4AF37]">David</span>
           </h2>
-          <p className="text-xs text-barber-pistache max-w-md mx-auto">
-            Tocá el botón de abajo para abrir WhatsApp con el mensaje prearmado. En cuanto David presione Confirmar, tu turno queda fijo.
+          <p className="text-xs text-[#8A898E] max-w-md mx-auto">
+            Tocá el botón de abajo para enviar el mensaje prearmado. Cuando David confirme, tu lugar queda asegurado.
           </p>
 
-          <div className="py-4">
-            <div className="inline-block px-8 py-4 rounded-2xl bg-barber-darkBg border-2 border-barber-chai shadow-lg shadow-barber-chai/10">
-              <span className="text-4xl sm:text-5xl font-mono font-extrabold tracking-widest text-barber-chai tabular-nums">
+          <div className="py-3">
+            <div className="inline-block px-7 py-3 rounded-md bg-[#0B0B0C] card-hairline border-white/[0.15]">
+              <span className="text-3xl sm:text-4xl font-mono font-extrabold tracking-[0.2em] text-[#EDEDED] tabular-nums">
                 #{code}
               </span>
             </div>
@@ -250,54 +254,54 @@ export default function HoldWaitingStep({
         </div>
 
         {/* Primary WhatsApp Handshake Button */}
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           <button
             type="button"
             onClick={handleOpenWhatsApp}
-            className="w-full py-4 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.985] text-white font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-lg transition-all"
+            className="w-full py-3.5 px-6 rounded-md bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.99] text-white font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2.5 transition-all shadow-sm"
           >
-            <MessageCircle className="w-5 h-5 fill-white/20" />
+            <MessageCircle className="w-4 h-4 fill-white/20" />
             <span>Enviar confirmación por WhatsApp</span>
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-3.5 h-3.5" />
           </button>
 
           <button
             type="button"
             onClick={handleCopyMessage}
-            className="w-full py-3 px-4 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-xs font-semibold text-barber-pistache hover:text-barber-darkText flex items-center justify-center gap-2 transition-colors"
+            className="w-full py-2.5 px-4 rounded-md bg-[#0B0B0C] card-hairline text-xs font-mono text-[#8A898E] hover:text-[#EDEDED] flex items-center justify-center gap-2 transition-colors"
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 text-barber-matcha" />
-                <span className="text-barber-matcha">Mensaje copiado al portapapeles</span>
+                <Check className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span className="text-[#D4AF37]">Mensaje copiado al portapapeles</span>
               </>
             ) : (
               <>
-                <Copy className="w-4 h-4" />
-                <span>Copiar texto del mensaje manualmente</span>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copiar texto del mensaje</span>
               </>
             )}
           </button>
         </div>
 
         {/* Pre-built Message Preview */}
-        <div className="p-4 rounded-2xl bg-barber-darkBg border border-barber-darkBorder text-left space-y-1">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-barber-pistache block">
-            Mensaje prearmado:
+        <div className="p-3.5 rounded-md bg-[#0B0B0C] card-hairline text-left space-y-1">
+          <span className="micro-technical text-[#8A898E] block">
+            MENSAJE PREARMADO:
           </span>
-          <p className="text-xs font-mono text-barber-darkText leading-relaxed">
+          <p className="text-[11px] font-mono text-[#EDEDED]/90 leading-relaxed">
             &ldquo;{rawMessage}&rdquo;
           </p>
         </div>
 
-        <div className="pt-2 border-t border-barber-darkBorder flex items-center justify-between text-xs text-barber-pistache">
-          <span>Esperando confirmación en vivo...</span>
+        <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-xs text-[#8A898E]">
+          <span className="text-[11px]">Sincronizando estado en vivo...</span>
           <button
             type="button"
             onClick={onResetToNewBooking}
-            className="text-barber-chai font-semibold hover:underline"
+            className="text-xs font-mono text-[#D4AF37] hover:underline"
           >
-            Ver Mis Turnos
+            Ver Mis Turnos &rarr;
           </button>
         </div>
       </div>

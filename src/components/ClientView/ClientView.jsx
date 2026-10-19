@@ -129,24 +129,27 @@ export default function ClientView({
 
           {/* Active Turn Alert Card on Home if Client has Pending/Confirmed Turn */}
           {loggedClient && activeTurns.length > 0 && (
-            <div className="p-5 sm:p-6 rounded-3xl bg-barber-darkSurface border border-barber-chai club-shadow text-barber-darkText space-y-4">
+            <div className="p-5 sm:p-6 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-display font-bold text-barber-darkText">
-                  Tu próximo turno activo
-                </h2>
-                <span className="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-barber-matcha text-white tabular-nums">
+                <div>
+                  <span className="micro-technical text-[#D4AF37] block mb-0.5">TURNO EN CURSO</span>
+                  <h2 className="text-base sm:text-lg font-display font-bold text-[#EDEDED]">
+                    Próxima visita al <span className="font-editorial italic font-normal text-[#D4AF37]">estudio</span>
+                  </h2>
+                </div>
+                <span className="badge-champagne font-mono font-bold uppercase tracking-wider text-[11px] tabular-nums">
                   #{activeTurns[0].code} • {activeTurns[0].status}
                 </span>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-barber-pistache">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#8A898E]">
                 <div>
-                  <strong className="text-sm text-barber-darkText block">
+                  <strong className="text-sm text-[#EDEDED] block font-display">
                     {activeTurns[0].serviceName}
-                    {activeTurns[0].selectedDrink ? ` (${activeTurns[0].selectedDrink})` : ''}
+                    {activeTurns[0].selectedDrink ? ` • ${activeTurns[0].selectedDrink}` : ''}
                   </strong>
-                  <span className="font-mono tabular-nums">
-                    Fecha: {activeTurns[0].date} a las {activeTurns[0].time} hs
+                  <span className="font-mono tabular-nums text-xs text-[#8A898E]">
+                    {activeTurns[0].date} • {activeTurns[0].time} hs
                   </span>
                 </div>
 
@@ -168,17 +171,17 @@ export default function ClientView({
                         setSubTab('book');
                         setBookingStep(3);
                       }}
-                      className="px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                      className="px-3.5 py-2 rounded-md bg-[#25D366] hover:bg-[#20ba5a] text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
                     >
                       <MessageCircle className="w-3.5 h-3.5 fill-white/20" />
-                      <span>Confirmar por WhatsApp</span>
+                      <span>WhatsApp</span>
                     </button>
                   )}
 
                   <button
                     type="button"
                     onClick={() => handleCancelTurn(activeTurns[0].id)}
-                    className="px-3 py-2 rounded-xl border border-barber-darkBorder text-barber-pistache hover:text-red-400 text-xs font-semibold"
+                    className="px-3 py-2 rounded-md border border-white/[0.08] hover:border-red-500/40 text-[#8A898E] hover:text-red-400 text-xs font-mono transition-colors"
                   >
                     Cancelar
                   </button>
@@ -199,32 +202,32 @@ export default function ClientView({
           />
 
           {/* Studio Location & Info Strip con Cómo llegar */}
-          <div className="p-5 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+          <div className="p-5 rounded-lg bg-[#141416] card-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-neutral-800 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] shrink-0">
-                <MapPin className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-md bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#D4AF37] shrink-0">
+                <MapPin className="w-4 h-4" />
               </div>
               <div>
-                <strong className="text-barber-lightText dark:text-barber-darkText block font-semibold text-sm">
+                <strong className="text-[#EDEDED] block font-display font-bold text-sm tracking-tight">
                   {studioConfig.businessName || 'ULTRA BARBER STUDIO'}
                 </strong>
-                <span className="text-barber-lightMuted dark:text-barber-darkMuted text-xs">
+                <span className="text-[#8A898E] text-xs">
                   {studioConfig.address || 'Av. Santa Fe 3240 • Studio Privado'}, Rosario
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-barber-lightBorder/50 dark:border-barber-darkBorder/50">
-              <span className="font-mono text-[#D4AF37] font-semibold text-[11px]">
-                Lun a Sáb • 09 a 20 hs
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-white/[0.08]">
+              <span className="micro-technical text-[#D4AF37]">
+                LUN A SÁB • 09 A 20 HS
               </span>
               <a
                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent((studioConfig.address || 'Av. Santa Fe 3240') + ', Rosario, Santa Fe')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-2 rounded-xl bg-white text-[#0A0A0A] hover:bg-neutral-200 font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm shrink-0"
+                className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm shrink-0"
               >
-                <Navigation className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <Navigation className="w-3.5 h-3.5 text-[#0B0B0C]" />
                 <span>Cómo llegar</span>
               </a>
             </div>
@@ -303,13 +306,14 @@ export default function ClientView({
       {subTab === 'turns' && (
         <div className="space-y-6">
           <div>
-            <h2 className="text-3xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
+            <span className="micro-technical text-[#D4AF37] block mb-1">REGISTRO DE SOCIO</span>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED] tracking-tight">
               Mis{' '}
-              <span className="font-editorial italic font-normal text-barber-chai">
+              <span className="font-editorial italic font-normal text-[#D4AF37]">
                 turnos
               </span>
             </h2>
-            <p className="text-xs sm:text-sm text-barber-lightMuted dark:text-barber-darkMuted mt-1">
+            <p className="text-xs text-[#8A898E] mt-1">
               Seguimiento en vivo de tus reservas y registro histórico de cortes.
             </p>
           </div>
@@ -321,14 +325,14 @@ export default function ClientView({
               onLogoutClient={onLogoutClient}
             />
           ) : clientAppointments.length === 0 ? (
-            <div className="p-8 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder text-center space-y-4">
-              <Calendar className="w-8 h-8 text-barber-chai mx-auto" />
+            <div className="p-8 rounded-lg bg-[#141416] card-hairline text-center space-y-4">
+              <Calendar className="w-8 h-8 text-[#D4AF37] mx-auto" />
               <div>
-                <h3 className="text-lg font-display font-bold text-barber-lightText dark:text-barber-darkText">
+                <h3 className="text-base font-display font-bold text-[#EDEDED]">
                   Todavía no tenés turnos registrados
                 </h3>
-                <p className="text-xs text-barber-lightMuted dark:text-barber-darkMuted mt-1">
-                  Reservá tu próximo corte en tres toques y sumá puntos en tu pase de socio.
+                <p className="text-xs text-[#8A898E] mt-1 max-w-sm mx-auto">
+                  Reservá tu próximo corte en tres toques y acumulá visitas en tu membresía privada.
                 </p>
               </div>
               <button
@@ -337,14 +341,14 @@ export default function ClientView({
                   setSubTab('book');
                   setBookingStep(1);
                 }}
-                className="px-6 py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider inline-flex items-center gap-2 hover:bg-neutral-200 transition-all shadow-md"
+                className="px-5 py-3 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] inline-flex items-center gap-2 transition-all shadow-sm"
               >
                 <span>Reservar Turno</span>
-                <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+                <ArrowRight className="w-4 h-4 text-[#0B0B0C]" />
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {clientAppointments.map((apt) => {
                 const isPending = apt.status === 'pendiente';
                 const isConfirmed = apt.status === 'confirmado';
@@ -353,34 +357,34 @@ export default function ClientView({
                 return (
                   <div
                     key={apt.id}
-                    className="p-5 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="p-4 sm:p-5 rounded-lg bg-[#141416] card-hairline flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2.5">
-                        <span className="font-mono font-bold text-sm text-[#D4AF37] tabular-nums">
+                        <span className="font-mono font-bold text-xs text-[#D4AF37] tabular-nums">
                           #{apt.code}
                         </span>
-                        <h3 className="font-display font-bold text-base text-barber-lightText dark:text-barber-darkText">
+                        <h3 className="font-display font-bold text-sm text-[#EDEDED]">
                           {apt.serviceName}
                         </h3>
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                          className={`px-2 py-0.5 rounded-sm text-[10px] font-mono uppercase tracking-wider ${
                             isConfirmed
-                              ? 'bg-neutral-800 text-white border border-[#D4AF37]/60'
+                              ? 'bg-white/[0.08] text-[#EDEDED] border border-white/[0.15]'
                               : isPending
-                              ? 'bg-neutral-800 text-[#D4AF37] border border-[#D4AF37]/60'
+                              ? 'bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30'
                               : isDone
-                              ? 'bg-barber-darkBorder text-barber-pistache'
-                              : 'bg-red-500/15 text-red-500'
+                              ? 'bg-white/[0.04] text-[#8A898E]'
+                              : 'bg-red-500/10 text-red-400 border border-red-500/20'
                           }`}
                         >
                           {apt.status}
                         </span>
                       </div>
 
-                      <p className="text-xs font-mono text-barber-lightMuted dark:text-barber-darkMuted tabular-nums">
-                        {apt.date} a las {apt.time} hs • ${apt.price?.toLocaleString('es-AR')}
-                        {apt.selectedDrink ? ` • Bebida: ${apt.selectedDrink}` : ''}
+                      <p className="text-xs font-mono text-[#8A898E] tabular-nums">
+                        {apt.date} • {apt.time} hs • ${apt.price?.toLocaleString('es-AR')}
+                        {apt.selectedDrink ? ` • Cortesía: ${apt.selectedDrink}` : ''}
                       </p>
                     </div>
 
@@ -404,10 +408,10 @@ export default function ClientView({
                             setSubTab('book');
                             setBookingStep(3);
                           }}
-                          className="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                          className="px-3 py-2 rounded-md bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-display font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
                         >
                           <MessageCircle className="w-3.5 h-3.5 fill-white/20" />
-                          <span>Enviar WhatsApp</span>
+                          <span>WhatsApp</span>
                         </button>
                       )}
 
@@ -415,7 +419,7 @@ export default function ClientView({
                         <button
                           type="button"
                           onClick={() => handleCancelTurn(apt.id)}
-                          className="px-3.5 py-2.5 rounded-xl border border-barber-lightBorder dark:border-barber-darkBorder text-xs font-semibold text-barber-lightMuted dark:text-barber-darkMuted hover:text-red-500 flex items-center gap-1.5"
+                          className="px-3 py-2 rounded-md border border-white/[0.08] hover:border-red-500/40 text-xs font-mono text-[#8A898E] hover:text-red-400 flex items-center gap-1.5 transition-colors"
                         >
                           <XCircle className="w-3.5 h-3.5" />
                           <span>Cancelar</span>
@@ -423,8 +427,8 @@ export default function ClientView({
                       )}
 
                       {isDone && (
-                        <span className="text-xs font-mono font-bold text-barber-matcha flex items-center gap-1">
-                          <CheckCircle2 className="w-4 h-4" />
+                        <span className="text-xs font-mono font-bold text-[#D4AF37] flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
                           +1 PTO SUMADO
                         </span>
                       )}

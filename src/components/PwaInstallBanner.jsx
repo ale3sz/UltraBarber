@@ -60,17 +60,17 @@ export default function PwaInstallBanner() {
 
   return (
     <>
-      <div className="bg-neutral-900 border-b border-[#D4AF37]/40 px-4 py-2.5 text-xs text-white flex items-center justify-between gap-3 sticky top-16 z-30 animate-enter">
+      <div className="bg-[#141416] border-b border-white/[0.08] px-4 py-2.5 text-xs text-[#EDEDED] flex items-center justify-between gap-3 sticky top-16 z-30 animate-enter">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-lg bg-neutral-800 border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shrink-0">
-            <Smartphone className="w-4 h-4" />
+          <div className="w-7 h-7 rounded-md bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#D4AF37] shrink-0">
+            <Smartphone className="w-3.5 h-3.5" />
           </div>
           <div className="truncate">
-            <strong className="font-bold text-white block truncate">
-              Instalá David Barber Studio
+            <strong className="font-display font-bold text-[#EDEDED] block truncate text-xs">
+              Membresía Digital en Pantalla de Inicio
             </strong>
-            <span className="text-[11px] text-neutral-400 block truncate">
-              Acceso directo rápido y turnos siempre a mano
+            <span className="text-[11px] text-[#8A898E] block truncate font-mono">
+              Acceso directo rápido a tus turnos y beneficios
             </span>
           </div>
         </div>
@@ -79,15 +79,15 @@ export default function PwaInstallBanner() {
           <button
             type="button"
             onClick={handleInstallClick}
-            className="px-3 py-1.5 rounded-lg bg-white text-[#0A0A0A] hover:bg-neutral-200 font-display font-bold text-[11px] uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
+            className="px-3 py-1.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-[10px] uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm"
           >
-            <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <Download className="w-3 h-3 text-[#0B0B0C]" />
             <span>Instalar</span>
           </button>
           <button
             type="button"
             onClick={handleDismiss}
-            className="p-1 rounded-lg text-neutral-400 hover:text-white transition-colors"
+            className="p-1 rounded-md text-[#8A898E] hover:text-[#EDEDED] transition-colors"
             aria-label="Cerrar aviso de instalación"
           >
             <X className="w-4 h-4" />
@@ -101,37 +101,38 @@ export default function PwaInstallBanner() {
           onClick={() => setShowIosGuide(false)}
         >
           <div
-            className="w-full max-w-sm rounded-3xl bg-neutral-900 border border-neutral-700 p-6 text-white text-center space-y-4 shadow-2xl"
+            className="w-full max-w-sm rounded-lg bg-[#141416] card-hairline p-6 text-[#EDEDED] text-center space-y-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-12 h-12 rounded-2xl bg-neutral-800 border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] mx-auto">
-              <Smartphone className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-md bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#D4AF37] mx-auto">
+              <Smartphone className="w-5 h-5" />
             </div>
 
             <div>
-              <h3 className="font-display font-bold text-lg text-white">
-                Cómo instalar en iPhone
+              <span className="micro-technical text-[#D4AF37] block mb-1">ACCESO APPLE WALLET STYLE</span>
+              <h3 className="font-display font-bold text-base text-[#EDEDED]">
+                Instalar en iPhone
               </h3>
-              <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
-                Seguí estos 2 pasos en Safari para agregar la app a tu pantalla de inicio:
+              <p className="text-xs text-[#8A898E] mt-1 leading-relaxed">
+                Seguí estos 2 pasos en Safari para tener el pase directo:
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-neutral-800/80 border border-neutral-700 text-left text-xs space-y-2.5">
+            <div className="p-4 rounded-md bg-[#0B0B0C] card-hairline text-left text-xs space-y-2.5">
               <div className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-[#D4AF37] text-[#0A0A0A] font-bold font-mono text-xs flex items-center justify-center shrink-0">
+                <span className="w-4 h-4 rounded-sm bg-[#EDEDED] text-[#0B0B0C] font-bold font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">
                   1
                 </span>
-                <p className="text-neutral-300">
-                  Tocá el botón <strong>Compartir</strong> (el ícono del cuadradito con flecha hacia arriba) en la barra inferior de Safari.
+                <p className="text-[#8A898E]">
+                  Tocá el botón <strong className="text-[#EDEDED]">Compartir</strong> (ícono de recuadro con flecha) en Safari.
                 </p>
               </div>
               <div className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-[#D4AF37] text-[#0A0A0A] font-bold font-mono text-xs flex items-center justify-center shrink-0">
+                <span className="w-4 h-4 rounded-sm bg-[#EDEDED] text-[#0B0B0C] font-bold font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">
                   2
                 </span>
-                <p className="text-neutral-300">
-                  Deslizá y elegí <strong>"Agregar a pantalla de inicio"</strong>.
+                <p className="text-[#8A898E]">
+                  Elegí <strong className="text-[#EDEDED]">"Agregar a pantalla de inicio"</strong>.
                 </p>
               </div>
             </div>
@@ -139,7 +140,7 @@ export default function PwaInstallBanner() {
             <button
               type="button"
               onClick={() => setShowIosGuide(false)}
-              className="w-full py-3 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all shadow-md"
+              className="w-full py-3 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] transition-all"
             >
               Entendido
             </button>

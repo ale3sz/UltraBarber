@@ -8,42 +8,52 @@ export default {
   theme: {
     extend: {
       colors: {
+        carbon: {
+          bg: '#0B0B0C',
+          surface: '#141416',
+          elevated: '#1A1A1E',
+          border: 'rgba(255, 255, 255, 0.08)',
+          borderSubtle: 'rgba(255, 255, 255, 0.04)',
+        },
+        pearl: '#EDEDED',
+        mutedGrey: '#8A898E',
+        champagne: '#D4AF37',
         barber: {
-          // Swatches base (Black, White & Gold Luxury Studio)
-          gold: '#D4AF37',             // Dorado pulido clásico
-          goldLight: '#F3E5AB',        // Champagne / Dorado claro
-          goldDark: '#AA820A',         // Dorado oscuro / bronce
-          matcha: '#D4AF37',           // Mapeado a Dorado para acentos principales
-          pistache: '#A3A3A3',         // Gris plata neutro para texto secundario
-          almond: '#E5E5E5',           // Borde claro neutro
-          vanilla: '#F3E5AB',          // Champagne
-          chai: '#D4AF37',             // Dorado de autor
-          carob: '#0A0A0A',            // Negro puro profundo
-
-          // Modo Claro (Blanco puro, texto negro, detalles dorado)
-          lightBg: '#FAFAFA',          // Fondo blanco limpio
-          lightSurface: '#FFFFFF',     // Tarjetas y modales blancos
-          lightBorder: '#E5E5E5',      // Separadores gris claro
-          lightText: '#0A0A0A',        // Texto negro nítido
-          lightMuted: '#737373',       // Texto secundario gris
-          lightPrimary: '#0A0A0A',     // Botones negros de alto impacto
-          lightSecondary: '#D4AF37',   // Acentos dorados
-
-          // Modo Oscuro (Negro obsidiana, blanco puro, detalles dorado)
-          darkBg: '#0A0A0A',           // Fondo negro azabache
-          darkSurface: '#141414',      // Tarjetas negro carbón
-          darkBorder: '#262626',       // Separadores gris oscuro
-          darkText: '#FFFFFF',         // Texto blanco puro
-          darkMuted: '#A3A3A3',        // Texto secundario gris plata
-          darkPrimary: '#D4AF37',      // Botones principales dorados
-          darkSecondary: '#D4AF37',    // Acentos dorados
+          // Exact Art Direction Palette
+          gold: '#D4AF37',             // Oro champán satinado
+          goldLight: '#E8D595',        // Champán claro
+          goldDark: '#997B1C',         // Champán tenue
+          matcha: '#D4AF37',
+          pistache: '#8A898E',         // Gris apagado editorial
+          almond: 'rgba(255, 255, 255, 0.08)',
+          vanilla: '#D4AF37',
+          chai: '#D4AF37',             // Acento oro champán satinado
+          carob: '#0B0B0C',            // Negro carbón mate
+          darkBg: '#0B0B0C',           // Fondo negro carbón mate
+          darkSurface: '#141416',      // Superficie tarjeta carbón
+          darkBorder: 'rgba(255, 255, 255, 0.08)', // Borde sutil 1px
+          darkText: '#EDEDED',         // Blanco perla
+          darkMuted: '#8A898E',        // Gris apagado
+          darkPrimary: '#EDEDED',      // Botón principal
+          darkSecondary: '#D4AF37',    // Acento oro champán
+          lightBg: '#0B0B0C',          // Modo uniforme de lujo
+          lightSurface: '#141416',
+          lightBorder: 'rgba(255, 255, 255, 0.08)',
+          lightText: '#EDEDED',
+          lightMuted: '#8A898E',
+          lightPrimary: '#EDEDED',
+          lightSecondary: '#D4AF37',
         }
       },
       fontFamily: {
-        display: ['"Archivo"', 'sans-serif'],
+        display: ['"Archivo"', 'system-ui', 'sans-serif'],
         editorial: ['"Newsreader"', 'Georgia', 'serif'],
         sans: ['"Work Sans"', 'system-ui', 'sans-serif'],
         mono: ['"Azeret Mono"', 'monospace'],
+      },
+      letterSpacing: {
+        editorial: '0.15em',
+        tightest: '-0.03em',
       }
     }
   },

@@ -36,17 +36,20 @@ export default function DniStep({
   // If client already has an active JWT session
   if (loggedClient) {
     return (
-      <div className="p-6 sm:p-7 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder club-shadow space-y-5">
+      <div className="card-hairline rounded-lg p-5 sm:p-6 text-[#EDEDED] space-y-5 animate-enter">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-barber-matcha text-white flex items-center justify-center">
-              <UserCheck className="w-6 h-6" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-md bg-[#101012] border border-white/[0.08] text-[#D4AF37] flex items-center justify-center">
+              <UserCheck className="w-5 h-5 stroke-[1.5]" />
             </div>
             <div>
-              <h2 className="text-xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
+              <span className="micro-technical block text-[9px] text-[#8A898E]">
+                SESIÓN ACTIVA
+              </span>
+              <h2 className="text-base sm:text-lg font-display font-bold text-[#EDEDED] leading-tight">
                 {loggedClient.firstName || loggedClient.name} {loggedClient.lastName || ''}
               </h2>
-              <p className="text-xs font-mono text-barber-lightMuted dark:text-barber-darkMuted tabular-nums">
+              <p className="text-[11px] font-mono text-[#8A898E] tabular-nums mt-0.5">
                 DNI {loggedClient.dni} • {loggedClient.phone}
               </p>
             </div>
@@ -55,19 +58,19 @@ export default function DniStep({
           <button
             type="button"
             onClick={onLogoutClient}
-            className="px-3 py-2 rounded-xl border border-barber-lightBorder dark:border-barber-darkBorder text-xs font-semibold text-barber-lightMuted dark:text-barber-darkMuted hover:text-barber-lightText dark:hover:text-barber-darkText flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1.5 rounded-md border border-white/[0.08] text-[10px] font-mono tracking-wider uppercase text-[#8A898E] hover:text-[#EDEDED] hover:border-white/20 flex items-center gap-1.5 transition-colors"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Otro DNI</span>
+            <RotateCcw className="w-3 h-3 stroke-[1.5]" />
+            <span>Cambiar</span>
           </button>
         </div>
 
-        <div className="p-4 rounded-2xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder flex items-center justify-between text-xs">
-          <span className="text-barber-lightMuted dark:text-barber-darkMuted font-medium flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-barber-matcha" />
-            Cuenta verificada con PIN personal
+        <div className="p-3.5 rounded-md bg-[#101012] border border-white/[0.06] flex items-center justify-between text-xs">
+          <span className="text-[#8A898E] flex items-center gap-2 text-[11px]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.5]" />
+            Cuenta verificada con PIN
           </span>
-          <span className="font-mono font-bold text-barber-chai tabular-nums">
+          <span className="font-mono font-bold text-[#D4AF37] text-[11px] tabular-nums">
             {loggedClient.points} PTS • {loggedClient.totalCuts} CORTES
           </span>
         </div>
@@ -76,10 +79,10 @@ export default function DniStep({
           <button
             type="button"
             onClick={onContinue}
-            className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 transition-all shadow-md"
+            className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
           >
             <span>Elegir servicio y horario</span>
-            <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
           </button>
         )}
       </div>
@@ -119,7 +122,7 @@ export default function DniStep({
     setIsLoading(true);
     setErrorMsg('');
     try {
-      const res = await api.loginClient(checkResult.dni, pinInput.trim());
+      const res = await api.loginClientWithPin(checkResult.dni, pinInput.trim());
       onAuthSuccess(res.client, res.appointments || []);
       if (onContinue) onContinue();
     } catch (err) {
@@ -138,7 +141,7 @@ export default function DniStep({
       return;
     }
     if (cleanPin.length !== 4) {
-      setErrorMsg('Creá un PIN numérico de 4 dígitos (ej: 1234) para proteger tu DNI.');
+      setErrorMsg('Creá un PIN numérico de 4 dígitos para proteger tu cuenta.');
       return;
     }
 
@@ -176,13 +179,19 @@ export default function DniStep({
   };
 
   return (
-    <div className="p-4 sm:p-7 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder club-shadow space-y-6">
+    <div className="card-hairline rounded-lg p-5 sm:p-6 text-[#EDEDED] space-y-5 animate-enter">
       <div>
-        <h2 className="text-xl sm:text-2xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
-          Identificación de socio
+        <span className="micro-technical block text-[9px] text-[#8A898E]">
+          01 / 02 AUTENTICACIÓN · PRIVADA
+        </span>
+        <h2 className="text-lg sm:text-xl font-display font-bold text-[#EDEDED] mt-0.5">
+          Identificación de{' '}
+          <span className="font-editorial italic font-normal text-[#D4AF37]">
+            socio
+          </span>
         </h2>
-        <p className="text-xs sm:text-sm text-barber-lightMuted dark:text-barber-darkMuted mt-1">
-          Tu cuenta está protegida con tu DNI y un PIN de 4 dígitos para que nadie más pueda usar tu nombre ni tus puntos.
+        <p className="text-xs text-[#8A898E] mt-1">
+          Tu cuenta está protegida con tu DNI y un PIN de 4 dígitos para resguardar tus visitas y puntos.
         </p>
       </div>
 
@@ -190,7 +199,7 @@ export default function DniStep({
       <form onSubmit={handleCheckDni} className="space-y-3">
         <label
           htmlFor="dni-input"
-          className="block text-xs font-semibold text-barber-lightText dark:text-barber-darkText"
+          className="micro-technical block text-[10px] text-[#8A898E]"
         >
           Número de DNI (sin puntos)
         </label>
@@ -206,22 +215,22 @@ export default function DniStep({
               if (errorMsg) setErrorMsg('');
             }}
             placeholder="Ingresá tu DNI (ej: 40123456)"
-            className="w-full flex-1 min-w-0 px-4 py-3 sm:py-3.5 rounded-2xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-base font-mono tracking-wider tabular-nums focus:outline-none focus:border-white"
+            className="w-full flex-1 min-w-0 px-3.5 py-3 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] placeholder-[#8A898E]/40 text-sm font-mono tracking-wider tabular-nums focus:outline-none focus:border-[#D4AF37] transition-colors"
           />
           <button
             type="submit"
             disabled={isLoading || dniInput.length < 6}
-            className="w-full sm:w-auto px-6 py-3 sm:py-3.5 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shrink-0 shadow-md"
+            className="w-full sm:w-auto px-5 py-3 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 disabled:opacity-40 transition-all shrink-0 active:scale-[0.98]"
           >
-            <Search className="w-4 h-4 text-[#D4AF37]" />
-            <span>Validar</span>
+            <Search className="w-3.5 h-3.5 text-[#0B0B0C] stroke-[2]" />
+            <span>Validar DNI</span>
           </button>
         </div>
 
-        {/* Demo Quick Fill Button */}
+        {/* Demo Quick Fill */}
         {!checkResult && (
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 text-xs text-barber-lightMuted dark:text-barber-darkMuted">
-            <span className="w-full sm:w-auto text-[11px] uppercase tracking-wider font-semibold opacity-70">Demo rápido:</span>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 text-xs">
+            <span className="micro-technical text-[9px] text-[#8A898E]">Demo rápido:</span>
             <button
               type="button"
               onClick={() => {
@@ -229,7 +238,7 @@ export default function DniStep({
                 api.checkDni('40123456').then(setCheckResult);
                 setPinInput('1234');
               }}
-              className="px-2.5 py-1 rounded-lg bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder font-mono text-[11px] sm:text-xs text-barber-chai font-semibold hover:border-barber-chai transition-colors truncate max-w-full"
+              className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] hover:border-[#D4AF37]/50 font-mono text-[10px] text-[#8A898E] hover:text-[#EDEDED] transition-colors"
             >
               Lucas (DNI 40123456 • PIN 1234)
             </button>
@@ -240,7 +249,7 @@ export default function DniStep({
                 api.checkDni('38999888').then(setCheckResult);
                 setPinInput('1234');
               }}
-              className="px-2.5 py-1 rounded-lg bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder font-mono text-[11px] sm:text-xs text-barber-chai font-semibold hover:border-barber-chai transition-colors truncate max-w-full"
+              className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] hover:border-[#D4AF37]/50 font-mono text-[10px] text-[#8A898E] hover:text-[#EDEDED] transition-colors"
             >
               Mateo (10 PTS • PIN 1234)
             </button>
@@ -249,7 +258,7 @@ export default function DniStep({
       </form>
 
       {errorMsg && (
-        <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs text-red-600 dark:text-red-300 font-medium">
+        <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20 text-xs text-red-400 font-mono">
           {errorMsg}
         </div>
       )}
@@ -258,16 +267,16 @@ export default function DniStep({
       {checkResult && checkResult.exists && (
         <form
           onSubmit={handleLoginPin}
-          className="pt-4 border-t border-barber-lightBorder dark:border-barber-darkBorder space-y-4"
+          className="pt-4 border-t border-white/[0.08] space-y-4 animate-enter"
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <Lock className="w-4 h-4 text-barber-chai" />
-              <span className="text-sm font-bold text-barber-lightText dark:text-barber-darkText">
+            <div className="flex items-center gap-2">
+              <Lock className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.5]" />
+              <span className="text-xs font-display font-bold text-[#EDEDED]">
                 Hola, {checkResult.maskedName}
               </span>
             </div>
-            <span className="text-xs font-mono text-barber-lightMuted dark:text-barber-darkMuted">
+            <span className="text-[10px] font-mono text-[#8A898E]">
               Celular {checkResult.phoneHint}
             </span>
           </div>
@@ -275,9 +284,9 @@ export default function DniStep({
           <div>
             <label
               htmlFor="pin-login-input"
-              className="block text-xs font-semibold text-barber-lightText dark:text-barber-darkText mb-1.5"
+              className="micro-technical block text-[9px] text-[#8A898E] mb-1.5"
             >
-              Ingresá tu PIN personal de 4 dígitos
+              PIN PERSONAL (4 DÍGITOS)
             </label>
             <input
               id="pin-login-input"
@@ -290,7 +299,7 @@ export default function DniStep({
                 if (errorMsg) setErrorMsg('');
               }}
               placeholder="••••"
-              className="w-full px-4 py-3.5 rounded-2xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText text-center text-2xl font-mono tracking-[0.5em] focus:outline-none focus:border-barber-matcha"
+              className="w-full px-4 py-3 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] text-center text-xl font-mono tracking-[0.5em] focus:outline-none focus:border-[#D4AF37] transition-colors"
               autoFocus
             />
           </div>
@@ -298,45 +307,45 @@ export default function DniStep({
           <button
             type="submit"
             disabled={isLoading || pinInput.length < 4}
-            className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shadow-md"
+            className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 disabled:opacity-40 transition-all shadow-sm active:scale-[0.98]"
           >
             <span>Entrar a mi cuenta</span>
-            <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
           </button>
 
           <div className="flex items-center justify-between pt-1 text-xs">
-            <span className="text-barber-lightMuted dark:text-barber-darkMuted">
-              PIN de cuentas demo: <strong className="font-mono text-barber-chai">1234</strong>
+            <span className="text-[10px] font-mono text-[#8A898E]">
+              PIN demo: <strong className="text-[#D4AF37]">1234</strong>
             </span>
             <button
               type="button"
               onClick={handleForgotPin}
-              className="text-barber-matcha font-semibold hover:underline flex items-center gap-1"
+              className="text-[#D4AF37] text-[11px] font-mono hover:underline flex items-center gap-1"
             >
-              <MessageCircle className="w-3.5 h-3.5" />
+              <MessageCircle className="w-3 h-3 stroke-[1.5]" />
               <span>Olvidé mi PIN</span>
             </button>
           </div>
         </form>
       )}
 
-      {/* CASE B: New Client -> Register Data + Choose 4-digit PIN */}
+      {/* CASE B: New Client -> Register Data */}
       {checkResult && !checkResult.exists && (
         <form
           onSubmit={handleRegister}
-          className="pt-4 border-t border-barber-lightBorder dark:border-barber-darkBorder space-y-4"
+          className="pt-4 border-t border-white/[0.08] space-y-4 animate-enter"
         >
-          <div className="flex items-center gap-2.5">
-            <UserPlus className="w-4 h-4 text-barber-chai" />
-            <h3 className="text-base font-display font-bold text-barber-lightText dark:text-barber-darkText">
-              Activá tu pase de socio (DNI {checkResult.dni})
+          <div className="flex items-center gap-2">
+            <UserPlus className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.5]" />
+            <h3 className="text-xs font-mono uppercase tracking-[0.12em] font-bold text-[#EDEDED]">
+              Activar Pase de Socio (DNI {checkResult.dni})
             </h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-barber-lightText dark:text-barber-darkText mb-1">
-                Nombre *
+              <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                NOMBRE *
               </label>
               <input
                 type="text"
@@ -344,13 +353,13 @@ export default function DniStep({
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Agustín"
-                className="w-full px-3.5 py-3 rounded-xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-sm focus:outline-none focus:border-barber-matcha"
+                className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] placeholder-[#8A898E]/40 text-xs focus:outline-none focus:border-[#D4AF37]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-barber-lightText dark:text-barber-darkText mb-1">
-                Apellido *
+              <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                APELLIDO *
               </label>
               <input
                 type="text"
@@ -358,46 +367,46 @@ export default function DniStep({
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Gómez"
-                className="w-full px-3.5 py-3 rounded-xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-sm focus:outline-none focus:border-barber-matcha"
+                className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] placeholder-[#8A898E]/40 text-xs focus:outline-none focus:border-[#D4AF37]"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-barber-lightText dark:text-barber-darkText mb-1 flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-barber-matcha" />
-                <span>WhatsApp *</span>
+              <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+                <Phone className="w-3 h-3 text-[#D4AF37]" />
+                <span>WHATSAPP *</span>
               </label>
               <input
                 type="tel"
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+54 9 11 5555-1234"
-                className="w-full px-3.5 py-3 rounded-xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-sm font-mono focus:outline-none focus:border-barber-matcha"
+                placeholder="+54 9 341 555-1234"
+                className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] placeholder-[#8A898E]/40 text-xs font-mono focus:outline-none focus:border-[#D4AF37]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-barber-lightText dark:text-barber-darkText mb-1 flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-barber-chai" />
-                <span>Fecha de Nacimiento *</span>
+              <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-[#D4AF37]" />
+                <span>FECHA DE NACIMIENTO *</span>
               </label>
               <input
                 type="date"
                 required
                 value={birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
-                className="w-full px-3.5 py-3 rounded-xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText text-sm focus:outline-none focus:border-barber-matcha"
+                className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] text-xs focus:outline-none focus:border-[#D4AF37]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-barber-lightText dark:text-barber-darkText mb-1 flex items-center gap-1.5">
-              <KeyRound className="w-3.5 h-3.5 text-barber-chai" />
-              <span>Elegí tu PIN de seguridad (4 números) *</span>
+            <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+              <KeyRound className="w-3 h-3 text-[#D4AF37]" />
+              <span>PIN DE SEGURIDAD (4 NÚMEROS) *</span>
             </label>
             <input
               type="password"
@@ -407,20 +416,17 @@ export default function DniStep({
               value={newPin}
               onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
               placeholder="Ej: 2580"
-              className="w-full px-4 py-3 rounded-xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText placeholder-barber-lightMuted dark:placeholder-barber-darkMuted text-base font-mono tracking-widest focus:outline-none focus:border-barber-matcha"
+              className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] text-xs font-mono tracking-widest focus:outline-none focus:border-[#D4AF37]"
             />
-            <p className="text-xs text-barber-lightMuted dark:text-barber-darkMuted mt-1">
-              Con este PIN nadie más podrá entrar con tu DNI ni usar tus puntos.
-            </p>
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shadow-md"
+            className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 disabled:opacity-40 transition-all shadow-sm active:scale-[0.98]"
           >
             <span>Crear cuenta y reservar</span>
-            <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
           </button>
         </form>
       )}

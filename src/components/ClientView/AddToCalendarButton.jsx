@@ -30,11 +30,11 @@ export default function AddToCalendarButton({ appointment, studioConfig, classNa
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className="px-3.5 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white border border-[#D4AF37]/50 text-xs font-semibold flex items-center gap-2 transition-all shadow-sm active:scale-95"
+        className="px-3 py-2 rounded-md bg-[#0B0B0C] hover:bg-[#141416] text-[#EDEDED] card-hairline text-xs font-mono flex items-center gap-2 transition-all active:scale-95"
         title="Agendar turno en tu calendario"
       >
         <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
-        <span>Agregar a mi calendario</span>
+        <span>Calendario</span>
       </button>
 
       {isOpen && (
@@ -47,19 +47,19 @@ export default function AddToCalendarButton({ appointment, studioConfig, classNa
             }}
           />
           <div
-            className="absolute left-0 sm:right-0 sm:left-auto top-full mt-2 w-56 p-2 rounded-2xl bg-neutral-900 border border-neutral-700 text-white shadow-2xl z-50 text-xs space-y-1 animate-enter"
+            className="absolute left-0 sm:right-0 sm:left-auto top-full mt-2 w-56 p-1.5 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] shadow-2xl z-50 text-xs space-y-1 animate-enter"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-neutral-400 border-b border-neutral-800">
-              Elegir calendario
+            <p className="px-3 py-1.5 micro-technical text-[#8A898E] border-b border-white/[0.08]">
+              SINCRONIZAR
             </p>
             <button
               type="button"
               onClick={handleGoogle}
-              className="w-full px-3 py-2.5 rounded-xl hover:bg-neutral-800 flex items-center justify-between text-left transition-colors group"
+              className="w-full px-3 py-2 rounded-md hover:bg-white/[0.05] flex items-center justify-between text-left transition-colors group"
             >
               <div className="flex items-center gap-2">
-                <span className="font-bold text-white">Google Calendar</span>
+                <span className="font-semibold text-[#EDEDED]">Google Calendar</span>
               </div>
               <ExternalLink className="w-3.5 h-3.5 text-[#D4AF37] group-hover:translate-x-0.5 transition-transform" />
             </button>
@@ -67,13 +67,13 @@ export default function AddToCalendarButton({ appointment, studioConfig, classNa
             <button
               type="button"
               onClick={handleApple}
-              className="w-full px-3 py-2.5 rounded-xl hover:bg-neutral-800 flex items-center justify-between text-left transition-colors group"
+              className="w-full px-3 py-2 rounded-md hover:bg-white/[0.05] flex items-center justify-between text-left transition-colors group"
             >
               <div className="flex items-center gap-2">
-                <span className="font-bold text-white">Apple / iCal / Outlook</span>
+                <span className="font-semibold text-[#EDEDED]">Apple / iCal / Outlook</span>
               </div>
               {downloaded ? (
-                <Check className="w-3.5 h-3.5 text-green-400" />
+                <Check className="w-3.5 h-3.5 text-[#D4AF37]" />
               ) : (
                 <Download className="w-3.5 h-3.5 text-[#D4AF37] group-hover:translate-y-0.5 transition-transform" />
               )}

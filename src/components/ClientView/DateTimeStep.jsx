@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, ArrowLeft, ArrowRight, Ban, Wine } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, ArrowRight, Ban } from 'lucide-react';
 import { api } from '../../services/api';
 import { formatLocalDate } from '../../utils/date';
 
@@ -29,7 +29,7 @@ export default function DateTimeStep({
       ? studioConfig.workingDays
       : [1, 2, 3, 4, 5, 6];
 
-    // Helper inside useMemo to get ISO Week Key
+    // Helper to get ISO Week Key
     const getIsoWeek = (d) => {
       const target = new Date(d.valueOf());
       const dayNr = target.getDay() || 7;
@@ -39,7 +39,7 @@ export default function DateTimeStep({
       return `${target.getFullYear()}-W${String(weekNo).padStart(2, '0')}`;
     };
 
-    // Check up to 21 calendar days to find the next 6 open working days
+    // Check up to 21 calendar days to find next 6 open working days
     for (let i = 0; i < 21 && days.length < 6; i++) {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
@@ -47,7 +47,7 @@ export default function DateTimeStep({
       const weekKey = getIsoWeek(d);
       const effectiveWorkingDays = weeklySchedule[weekKey]?.workingDays || defaultWorkingDays;
 
-      if (!effectiveWorkingDays.includes(dayOfWeek)) continue; // Día no laborable
+      if (!effectiveWorkingDays.includes(dayOfWeek)) continue;
 
       const isoDate = formatLocalDate(d);
       const weekdayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -106,15 +106,14 @@ export default function DateTimeStep({
     const isBusy = busySlots.includes(time);
     const isSelected = selectedTime === time;
 
-    // Si David deshabilitó el turno globalmente, no se muestra o se muestra como no laborable
     if (isDisabledByDavid) {
       return (
         <div
           key={time}
-          className="py-3 px-2 rounded-2xl text-xs font-mono tabular-nums border border-barber-lightBorder/40 dark:border-barber-darkBorder/40 bg-barber-lightBg/50 dark:bg-barber-darkBg/50 text-barber-lightMuted/40 dark:text-barber-darkMuted/40 flex flex-col items-center justify-center cursor-not-allowed select-none"
+          className="py-2.5 px-2 rounded-md text-[11px] font-mono tabular-nums border border-white/[0.04] bg-[#0B0B0C] text-[#8A898E]/30 flex flex-col items-center justify-center cursor-not-allowed select-none"
         >
-          <span>{time} hs</span>
-          <span className="text-[10px] font-sans">Pausa</span>
+          <span>{time}</span>
+          <span className="text-[9px] font-sans">Pausa</span>
         </div>
       );
     }
@@ -125,18 +124,18 @@ export default function DateTimeStep({
         type="button"
         disabled={isBusy || isDayClosed}
         onClick={() => setSelectedTime(time)}
-        className={`py-3.5 px-3 rounded-2xl text-xs sm:text-sm font-mono tabular-nums border transition-all duration-150 active:scale-[0.97] flex flex-col items-center justify-center ${
+        className={`py-2.5 px-2 rounded-md text-xs font-mono tabular-nums border transition-all active:scale-[0.98] flex flex-col items-center justify-center ${
           isSelected
-            ? 'bg-barber-matcha text-white border-barber-matcha font-bold shadow-md ring-2 ring-barber-matcha scale-[1.02]'
+            ? 'bg-[#D4AF37] text-[#0B0B0C] font-bold border-[#D4AF37] shadow-sm'
             : isBusy
-            ? 'bg-barber-lightBg dark:bg-barber-darkBg border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightMuted dark:text-barber-darkMuted opacity-60 cursor-not-allowed line-through'
-            : 'bg-barber-lightSurface dark:bg-barber-darkSurface border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText hover:border-barber-chai hover:shadow-sm'
+            ? 'bg-[#0B0B0C] border-white/[0.04] text-[#8A898E]/40 cursor-not-allowed line-through'
+            : 'bg-[#101012] border-white/[0.08] text-[#EDEDED] hover:border-white/20'
         }`}
       >
-        <span>{time} hs</span>
+        <span>{time}</span>
         {isBusy && (
-          <span className="text-[10px] font-sans font-semibold text-barber-lightMuted dark:text-barber-darkMuted mt-0.5">
-            Reservado
+          <span className="text-[9px] font-sans text-[#8A898E]/50">
+            Ocupado
           </span>
         )}
       </button>
@@ -149,42 +148,41 @@ export default function DateTimeStep({
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-mono">
           <div>
-            <span className="text-barber-chai font-bold">02</span>
-            <span className="text-barber-lightMuted dark:text-barber-darkMuted"> / 03</span>
+            <span className="text-[#D4AF37] font-bold">02</span>
+            <span className="text-[#8A898E]"> / 03 SEGUNDO PASO</span>
           </div>
-          <span className="font-editorial italic text-sm text-barber-lightMuted dark:text-barber-darkMuted">
-            Agenda y Horario
+          <span className="micro-technical text-[9px] text-[#8A898E]">
+            AGENDA DE AUTOR
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-2 h-1">
-          <div className="bg-barber-matcha rounded-full" />
-          <div className="bg-barber-chai rounded-full" />
-          <div className="bg-barber-lightBorder dark:bg-barber-darkBorder rounded-full" />
+        <div className="grid grid-cols-3 gap-1.5 h-[2px]">
+          <div className="bg-[#D4AF37]" />
+          <div className="bg-[#D4AF37]" />
+          <div className="bg-white/[0.08]" />
         </div>
       </div>
 
       {/* Main Editorial Title */}
       <div>
-        <h2 className="text-3xl sm:text-4xl font-display font-bold text-barber-lightText dark:text-barber-darkText">
+        <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED] leading-tight">
           ¿Cuándo te{' '}
-          <span className="font-editorial italic font-normal text-barber-chai">
+          <span className="font-editorial italic font-normal text-[#D4AF37]">
             esperamos
           </span>{' '}
           en el sillón?
         </h2>
-        <p className="text-xs sm:text-sm text-barber-lightMuted dark:text-barber-darkMuted mt-1">
-          Al solicitar tu horario se bloquea por 15 minutos mientras enviás el código de confirmación por WhatsApp.
+        <p className="text-xs text-[#8A898E] mt-1">
+          Al solicitar, tu horario se bloquea por 15 minutos mientras confirmás por WhatsApp con David.
         </p>
       </div>
 
       {/* Day Selector Grid */}
-      <div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-barber-lightText dark:text-barber-darkText mb-2.5">
-          <Calendar className="w-4 h-4 text-barber-chai" />
-          <span>Seleccioná el día</span>
-        </div>
+      <div className="space-y-2">
+        <span className="micro-technical block text-[9px] text-[#8A898E]">
+          ELEGÍ EL DÍA
+        </span>
 
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {availableDays.map((d) => {
             const isSelected = selectedDate === d.isoDate;
             return (
@@ -195,31 +193,23 @@ export default function DateTimeStep({
                   setSelectedDate(d.isoDate);
                   setSelectedTime('');
                 }}
-                className={`p-3 rounded-2xl border text-center transition-all duration-150 active:scale-[0.97] ${
+                className={`p-2.5 rounded-md border text-center transition-all active:scale-[0.98] ${
                   isSelected
-                    ? 'bg-barber-chai text-barber-lightText border-barber-chai font-bold shadow-md ring-2 ring-barber-chai/40'
-                    : 'bg-barber-lightSurface dark:bg-barber-darkSurface border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText hover:border-barber-chai hover:shadow-sm'
+                    ? 'bg-[#D4AF37] text-[#0B0B0C] border-[#D4AF37] font-bold shadow-sm'
+                    : 'bg-[#101012] border-white/[0.08] text-[#EDEDED] hover:border-white/20'
                 }`}
               >
-                <span
-                  className={`text-[11px] uppercase font-semibold block ${
-                    isSelected
-                      ? 'text-barber-lightText'
-                      : 'text-barber-lightMuted dark:text-barber-darkMuted'
-                  }`}
-                >
+                <span className={`text-[10px] font-mono uppercase block ${
+                  isSelected ? 'text-[#0B0B0C]' : 'text-[#8A898E]'
+                }`}>
                   {d.dayName}
                 </span>
-                <span className="text-xl font-display font-bold block my-0.5 tabular-nums">
+                <span className="text-lg font-display font-bold block my-0.5 tabular-nums">
                   {d.dayNumber}
                 </span>
-                <span
-                  className={`text-[10px] font-mono uppercase block ${
-                    isSelected
-                      ? 'text-barber-carob font-bold'
-                      : 'text-barber-lightMuted dark:text-barber-darkMuted'
-                  }`}
-                >
+                <span className={`text-[9px] font-mono uppercase block ${
+                  isSelected ? 'text-[#0B0B0C]' : 'text-[#8A898E]'
+                }`}>
                   {d.monthName}
                 </span>
               </button>
@@ -230,40 +220,40 @@ export default function DateTimeStep({
 
       {/* Closed Day Alert or Time Slots */}
       {isDayClosed ? (
-        <div className="p-6 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder text-center space-y-2">
-          <Ban className="w-8 h-8 text-barber-chai mx-auto" />
-          <h3 className="text-base font-display font-bold text-barber-lightText dark:text-barber-darkText">
+        <div className="p-5 rounded-md card-hairline text-center space-y-2">
+          <Ban className="w-6 h-6 text-[#D4AF37] mx-auto stroke-[1.5]" />
+          <h3 className="text-sm font-display font-bold text-[#EDEDED]">
             Agenda cerrada en esta fecha
           </h3>
-          <p className="text-xs text-barber-lightMuted dark:text-barber-darkMuted">
+          <p className="text-xs text-[#8A898E]">
             {closedReason || 'David no atiende en esta fecha. Por favor elegí otro día de la semana.'}
           </p>
         </div>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-4">
           <div>
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-xs font-semibold text-barber-lightText dark:text-barber-darkText flex items-center gap-2">
-                <Clock className="w-4 h-4 text-barber-matcha" />
-                Turno Mañana
+            <div className="flex items-center justify-between mb-2">
+              <span className="micro-technical text-[9px] text-[#8A898E] flex items-center gap-1.5">
+                <Clock className="w-3 h-3 text-[#D4AF37] stroke-[1.5]" />
+                TURNO MAÑANA
               </span>
               {loadingSlots && (
-                <span className="text-xs font-mono text-barber-matcha">
-                  Actualizando agenda...
+                <span className="text-[10px] font-mono text-[#D4AF37]">
+                  Actualizando...
                 </span>
               )}
             </div>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
               {morningSlots.map(renderSlotButton)}
             </div>
           </div>
 
           <div>
-            <span className="text-xs font-semibold text-barber-lightText dark:text-barber-darkText flex items-center gap-2 mb-2.5">
-              <Clock className="w-4 h-4 text-barber-chai" />
-              Turno Tarde
+            <span className="micro-technical block text-[9px] text-[#8A898E] mb-2 flex items-center gap-1.5">
+              <Clock className="w-3 h-3 text-[#D4AF37] stroke-[1.5]" />
+              TURNO TARDE
             </span>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {afternoonSlots.map(renderSlotButton)}
             </div>
           </div>
@@ -272,18 +262,18 @@ export default function DateTimeStep({
 
       {/* Selected Summary Strip */}
       {selectedService && selectedTime && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-barber-darkSurface border border-barber-chai text-barber-darkText flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-4 rounded-md card-hairline flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-enter">
           <div>
-            <span className="font-display font-bold text-base text-barber-darkText block">
+            <span className="font-display font-bold text-sm text-[#EDEDED] block">
               {selectedService.name}
               {selectedService.drinkIncluded && selectedDrink ? ` + ${selectedDrink}` : ''}
             </span>
-            <span className="text-xs font-mono text-barber-pistache tabular-nums">
+            <span className="text-[11px] font-mono text-[#8A898E] tabular-nums">
               Fecha: {selectedDate} • Horario: {selectedTime} hs • Barbero: David
             </span>
           </div>
-          <div className="text-left sm:text-right">
-            <span className="text-xl font-display font-bold text-barber-chai tabular-nums">
+          <div>
+            <span className="text-lg font-display font-bold text-[#D4AF37] tabular-nums">
               ${selectedService.price.toLocaleString('es-AR')}
             </span>
           </div>
@@ -295,20 +285,20 @@ export default function DateTimeStep({
         <button
           type="button"
           onClick={onBack}
-          className="px-4 py-3.5 rounded-2xl border border-barber-lightBorder dark:border-barber-darkBorder text-xs font-semibold text-barber-lightText dark:text-barber-darkText hover:border-barber-chai flex items-center gap-2 transition-colors"
+          className="px-4 py-2.5 rounded-md border border-white/[0.08] text-xs font-mono uppercase tracking-wider text-[#8A898E] hover:text-[#EDEDED] hover:border-white/20 flex items-center gap-2 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Cambiar Servicio</span>
+          <ArrowLeft className="w-3.5 h-3.5 stroke-[2]" />
+          <span>Volver</span>
         </button>
 
         <button
           type="button"
           disabled={!selectedDate || !selectedTime || isSubmitting || isDayClosed}
           onClick={onRequestTurn}
-          className="px-7 py-4 rounded-2xl bg-white text-[#0A0A0A] font-display font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-neutral-200 disabled:opacity-40 transition-all shadow-md"
+          className="px-6 py-3 rounded-md bg-[#EDEDED] hover:bg-white active:scale-[0.98] text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center gap-2 disabled:opacity-40 transition-all shadow-sm"
         >
-          <span>{isSubmitting ? 'Bloqueando horario...' : 'Solicitar Turno'}</span>
-          <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+          <span>{isSubmitting ? 'Bloqueando...' : 'Solicitar Turno'}</span>
+          <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
         </button>
       </div>
     </div>
