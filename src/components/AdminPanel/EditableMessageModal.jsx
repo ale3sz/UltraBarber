@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { MessageCircle, Copy, Check, X, Sparkles, Send } from 'lucide-react';
 
 export default function EditableMessageModal({
@@ -52,8 +53,8 @@ export default function EditableMessageModal({
     setMessage(tpl.text);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-enter">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter">
       <div className="w-full max-w-lg rounded-2xl bg-[#141416] border border-white/[0.1] shadow-2xl text-[#EDEDED] p-5 sm:p-6 space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
@@ -183,6 +184,7 @@ export default function EditableMessageModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

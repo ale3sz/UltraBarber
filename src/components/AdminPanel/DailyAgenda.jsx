@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Calendar,
   DollarSign,
@@ -550,8 +551,8 @@ export default function DailyAgenda({
       )}
 
       {/* Modal: Nuevo Turno Manual */}
-      {showManualModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-enter">
+      {showManualModal && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter">
           <div className="w-full max-w-md rounded-2xl bg-[#141416] border border-white/[0.1] p-6 text-[#EDEDED] shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
               <div>
@@ -667,12 +668,13 @@ export default function DailyAgenda({
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal: Bloquear Horario */}
-      {showBlockModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-enter">
+      {showBlockModal && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter">
           <div className="w-full max-w-sm rounded-2xl bg-[#141416] border border-white/[0.1] p-6 text-[#EDEDED] shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
               <div>
@@ -736,7 +738,8 @@ export default function DailyAgenda({
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal Reutilizable de Mensajes Editables */}

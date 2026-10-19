@@ -15,6 +15,7 @@ import {
   Gift
 } from 'lucide-react';
 import { api } from '../../services/api';
+import { createPortal } from 'react-dom';
 import AnnualCalendarSchedule from './AnnualCalendarSchedule';
 import ClubBenefitsSettings from './ClubBenefitsSettings';
 
@@ -209,14 +210,14 @@ export default function SettingsModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-      <div className="w-full max-w-4xl rounded-3xl bg-barber-darkSurface border border-barber-darkBorder text-barber-darkText club-shadow flex flex-col max-h-[90vh] overflow-hidden">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-enter">
+      <div className="w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-[#141416] border border-white/[0.12] text-[#EDEDED] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         {/* Sticky Header */}
-        <div className="flex items-center justify-between p-6 pb-4 border-b border-barber-darkBorder shrink-0 bg-barber-darkSurface">
+        <div className="flex items-center justify-between p-5 sm:p-6 pb-4 border-b border-white/[0.08] shrink-0 bg-[#141416]">
           <div className="flex items-center gap-2.5">
-            <Shield className="w-5 h-5 text-barber-chai" />
-            <h3 className="text-lg font-display font-bold text-barber-darkText">
+            <Shield className="w-5 h-5 text-[#D4AF37]" />
+            <h3 className="text-lg font-display font-bold text-[#EDEDED]">
               Configuración &amp; Barbería • Panel de David
             </h3>
           </div>
@@ -645,6 +646,7 @@ export default function SettingsModal({
         )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
