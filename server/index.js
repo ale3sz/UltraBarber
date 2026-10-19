@@ -132,6 +132,55 @@ function generate4DigitCode() {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
+// Valid official commercial slots for Ultra Barber Studio
+const VALID_COMMERCIAL_SLOTS = [
+  '09:00', '09:45', '10:30', '11:15', '12:00', '12:45',
+  '14:00', '14:45', '15:30', '16:15', '17:00', '17:45', '18:30', '19:15'
+];
+
+function timeToMinutes(timeStr) {
+  if (!timeStr || typeof timeStr !== 'string' || !timeStr.includes(':')) return 0;
+  const [h, m] = timeStr.split(':').map(Number);
+  return (h || 0) * 60 + (m || 0);
+}
+
+// Security: Rate limiting and brute force lockout for 4-digit PIN login
+function checkLoginRateLimit(identifier) {
+  const now = Date.now();
+  const row = db.prepare('SELECT failed_attempts, locked_until FROM login_security WHERE identifier = ?').get(identifier);
+  if (!row) return { allowed: true };
+  if (row.locked_until && row.locked_until > now) {
+    const remainingMinutes = Math.ceil((row.locked_until - now) / 60000);
+    return {
+      allowed: false,
+      remainingMinutes,
+      error: `Demasiados intentos fallidos. Tu cuenta está bloqueada temporalmente por ${remainingMinutes} min por seguridad. Contactá a David por WhatsApp para asistencia.`
+    };
+  }
+  return { allowed: true, failedAttempts: row.failed_attempts || 0 };
+}
+
+function recordFailedLogin(identifier) {
+  const now = Date.now();
+  const row = db.prepare('SELECT failed_attempts FROM login_security WHERE identifier = ?').get(identifier);
+  const attempts = (row?.failed_attempts || 0) + 1;
+  const lockedUntil = attempts >= 5 ? now + 15 * 60 * 1000 : 0;
+  db.prepare(`
+    INSERT INTO login_security (identifier, failed_attempts, locked_until, last_attempt)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(identifier) DO UPDATE SET
+      failed_attempts = ?,
+      locked_until = ?,
+      last_attempt = ?
+  `).run(identifier, attempts, lockedUntil, now, attempts, lockedUntil, now);
+
+  return { attempts, isLocked: attempts >= 5, remainingAttempts: Math.max(0, 5 - attempts) };
+}
+
+function resetLoginSecurity(identifier) {
+  db.prepare('DELETE FROM login_security WHERE identifier = ?').run(identifier);
+}
+
 // Auth Middlewares
 function getBearerToken(req) {
   const auth = req.headers.authorization || '';
@@ -184,7 +233,7 @@ app.get('/api/services', (req, res) => {
 // 2. CLIENT AUTHENTICATION & ANTI-IMPERSONATION (DNI + 4-DIGIT PIN)
 // ============================================================================
 
-// Step 1: Check DNI safely (NEVER leaks private data without PIN!)
+// Step 1: Check DNI safely (NEVER leaks private data or phone digits without PIN!)
 app.get('/api/clients/check/:dni', (req, res) => {
   const cleanDni = (req.params.dni || '').trim().replace(/\D/g, '');
   const rawParam = (req.params.dni || '').trim().toLowerCase();
@@ -214,21 +263,18 @@ app.get('/api/clients/check/:dni', (req, res) => {
     return res.json({ exists: false, dni: cleanDni });
   }
 
-  // Mask name and phone so strangers cannot spy on other people's data
+  // Mask name for privacy; NEVER leak phone digits (Auditoría Hallazgo 2.1)
   const maskedLastName = row.last_name ? `${row.last_name.charAt(0)}.` : '';
-  const cleanPhone = (row.phone || '').replace(/\D/g, '');
-  const last4Phone = cleanPhone.slice(-4);
 
   res.json({
     exists: true,
     dni: cleanDni,
     hasPin: Boolean(row.pin_hash),
-    maskedName: `${row.first_name} ${maskedLastName}`,
-    phoneHint: last4Phone ? `terminado en ***${last4Phone}` : ''
+    maskedName: `${row.first_name} ${maskedLastName}`
   });
 });
 
-// Step 2A: Login with DNI + 4-digit PIN
+// Step 2A: Login with DNI + 4-digit PIN (With Progressive Lockout Protection - Auditoría Hallazgo 2.2)
 app.post('/api/clients/login', (req, res) => {
   const { dni, pin } = req.body;
   const cleanDni = (dni || '').trim().replace(/\D/g, '');
@@ -238,16 +284,31 @@ app.post('/api/clients/login', (req, res) => {
     return res.status(400).json({ error: 'Ingresá tu DNI y tu PIN de 4 dígitos' });
   }
 
+  // Check rate limit by DNI
+  const rateLimit = checkLoginRateLimit(cleanDni);
+  if (!rateLimit.allowed) {
+    return res.status(429).json({ error: rateLimit.error });
+  }
+
   const row = db.prepare('SELECT * FROM clients WHERE dni = ?').get(cleanDni);
   if (!row) {
+    recordFailedLogin(cleanDni);
     return res.status(404).json({ error: 'Cliente no encontrado' });
   }
 
   if (row.pin_hash !== hashSecret(cleanPin)) {
+    const failInfo = recordFailedLogin(cleanDni);
+    if (failInfo.isLocked) {
+      return res.status(429).json({
+        error: 'Alcanzaste 5 intentos erróneos. Tu cuenta ha sido bloqueada temporalmente por 15 minutos por seguridad. Tocá "Olvidé mi PIN" para escribirle a David.'
+      });
+    }
     return res.status(401).json({
-      error: 'PIN incorrecto. Si sos vos y te olvidaste el PIN, tocá "Olvidé mi PIN" para recuperarlo por WhatsApp.'
+      error: `PIN incorrecto (te quedan ${failInfo.remainingAttempts} intento${failInfo.remainingAttempts === 1 ? '' : 's'}). Si no lo recordás, tocá "Olvidé mi PIN" para recuperarlo por WhatsApp.`
     });
   }
+
+  resetLoginSecurity(cleanDni);
 
   const token = signToken({ role: 'client', dni: row.dni, clientId: row.id });
   const appointments = db
@@ -316,7 +377,7 @@ app.post('/api/clients/register', (req, res) => {
   });
 });
 
-// Step 2C: Set initial PIN for a walk-in client created by David (verifying last 4 digits of phone)
+// Step 2C: Set initial PIN for a walk-in client created by David (Auditoría Hallazgo 2.1: Prevenir secuestro si ya tiene PIN)
 app.post('/api/clients/setup-pin', (req, res) => {
   const { dni, last4Phone, newPin } = req.body;
   const cleanDni = (dni || '').trim().replace(/\D/g, '');
@@ -324,6 +385,13 @@ app.post('/api/clients/setup-pin', (req, res) => {
 
   const row = db.prepare('SELECT * FROM clients WHERE dni = ?').get(cleanDni);
   if (!row) return res.status(404).json({ error: 'Cliente no encontrado' });
+
+  // Security: Prevent account takeover if PIN is already set
+  if (row.pin_hash) {
+    return res.status(403).json({
+      error: 'El cliente ya posee un PIN de seguridad configurado. El blanqueo de PIN solo lo puede realizar David desde el panel de administración.'
+    });
+  }
 
   const clientPhoneDigits = (row.phone || '').replace(/\D/g, '');
   if (clientPhoneDigits.slice(-4) !== (last4Phone || '').trim()) {
@@ -479,8 +547,10 @@ app.get('/api/appointments/busy-slots', (req, res) => {
   const now = Date.now();
   const activeApts = db
     .prepare(`
-      SELECT time, status, expires_at FROM appointments
-      WHERE date = ? AND (status = 'confirmado' OR (status = 'pendiente' AND expires_at > ?))
+      SELECT a.time, a.status, a.expires_at, COALESCE(s.duration, 45) as duration
+      FROM appointments a
+      LEFT JOIN services s ON a.service_id = s.id
+      WHERE a.date = ? AND (a.status = 'confirmado' OR (a.status = 'pendiente' AND a.expires_at > ?))
     `)
     .all(date, now);
 
@@ -495,22 +565,49 @@ app.get('/api/appointments/busy-slots', (req, res) => {
     ? (blockedRows.find(b => b.time === 'ALL')?.reason || 'Día cerrado')
     : (!isWorkingDay ? 'David no atiende en este día de la semana' : null);
 
-  const busySlots = [
-    ...activeApts.map(a => a.time),
-    ...blockedRows.filter(b => b.time !== 'ALL').map(b => b.time),
-    ...disabledSlots
-  ];
+  // Auditoría Hallazgo 3.2: Calcular solapamientos por duración real del servicio (ej: 60 min vs 45 min)
+  const occupiedSlots = new Set();
+  for (const apt of activeApts) {
+    const aptStart = timeToMinutes(apt.time);
+    const aptEnd = aptStart + (apt.duration || 45);
+    for (const slot of VALID_COMMERCIAL_SLOTS) {
+      const slotStart = timeToMinutes(slot);
+      const slotEnd = slotStart + 45;
+      if (slotStart < aptEnd && aptStart < slotEnd) {
+        occupiedSlots.add(slot);
+      }
+    }
+  }
+
+  // Agregar slots bloqueados puntualmente por David y deshabilitados por configuración
+  for (const b of blockedRows) {
+    if (b.time !== 'ALL') occupiedSlots.add(b.time);
+  }
+  for (const ds of disabledSlots) {
+    occupiedSlots.add(ds);
+  }
+
+  // Filtrar también horarios que ya hayan transcurrido si la fecha consultada es hoy
+  const todayStr = getLocalDateString();
+  if (date === todayStr) {
+    const currentMinutes = new Date().getHours() * 60 + new Date().getMinutes();
+    for (const slot of VALID_COMMERCIAL_SLOTS) {
+      if (timeToMinutes(slot) <= currentMinutes + 15) {
+        occupiedSlots.add(slot);
+      }
+    }
+  }
 
   res.json({
     date,
-    busySlots: Array.from(new Set(busySlots)),
+    busySlots: Array.from(occupiedSlots),
     isDayClosed,
     closedReason,
     disabledSlots
   });
 });
 
-// Request Appointment (Requires Authenticated Client Session)
+// Request Appointment (Requires Authenticated Client Session - Hardened for Auditoría 2.4, 3.1, 3.2, 4.1)
 app.post('/api/appointments/request', (req, res) => {
   checkExpiredAppointments();
   const session = getOptionalClient(req);
@@ -525,12 +622,38 @@ app.post('/api/appointments/request', (req, res) => {
     return res.status(400).json({ error: 'Seleccioná servicio, fecha y horario' });
   }
 
+  // Auditoría Hallazgo 4.1: Validación estricta de dominios de fecha y horario comercial
+  if (!VALID_COMMERCIAL_SLOTS.includes(time)) {
+    return res.status(400).json({
+      error: 'Horario comercial inválido. Elegí uno de los horarios habilitados del estudio.'
+    });
+  }
+
+  const slotTimestamp = new Date(`${date}T${time}:00`).getTime();
+  const now = Date.now();
+  if (isNaN(slotTimestamp) || slotTimestamp < now + 15 * 60 * 1000) {
+    return res.status(400).json({
+      error: 'La fecha y horario seleccionados deben ser posteriores al momento actual (mínimo 15 minutos de antelación).'
+    });
+  }
+
   const clientRow = db.prepare('SELECT * FROM clients WHERE dni = ?').get(session.dni);
   if (!clientRow) {
     return res.status(404).json({ error: 'Cliente no encontrado' });
   }
 
-  const now = Date.now();
+  // Auditoría Hallazgo 2.4: Prevención de acaparamiento cíclico (Hold Hoarding)
+  const oneDayAgo = now - 24 * 60 * 60 * 1000;
+  const recentAbusiveCancels = db.prepare(`
+    SELECT COUNT(*) as count FROM appointments
+    WHERE dni = ? AND status IN ('cancelado', 'expirado') AND created_at > ?
+  `).get(clientRow.dni, oneDayAgo)?.count || 0;
+
+  if (recentAbusiveCancels >= 3) {
+    return res.status(429).json({
+      error: 'Has alcanzado el límite de cancelaciones web en las últimas 24 horas. Para solicitar un nuevo turno, comunicate directamente con David por WhatsApp.'
+    });
+  }
 
   const config = getConfigObject();
   const { workingDays, disabledSlots } = getScheduleForDate(config, date);
@@ -559,17 +682,39 @@ app.post('/api/appointments/request', (req, res) => {
     });
   }
 
-  // Check if slot is already taken
-  const occupied = db
-    .prepare(`
-      SELECT id FROM appointments
-      WHERE date = ? AND time = ? AND (status = 'confirmado' OR (status = 'pendiente' AND expires_at > ?))
-    `)
-    .get(date, time, now);
+  const serviceRow = db.prepare('SELECT * FROM services WHERE id = ?').get(serviceId);
+  if (!serviceRow) {
+    return res.status(404).json({ error: 'Servicio no válido' });
+  }
 
-  if (occupied) {
+  // Auditoría Hallazgo 3.2: Verificar solapamiento por duración real del servicio
+  const requestedDuration = Number(serviceRow.duration) || 45;
+  const newStartMin = timeToMinutes(time);
+  const newEndMin = newStartMin + requestedDuration;
+
+  // Límite horario del estudio (20:00 hs = 1200 minutos)
+  if (newEndMin > 1200) {
     return res.status(409).json({
-      error: 'Ese horario acaba de ser tomado o está bloqueado en confirmación. Elegí otro horario libre.'
+      error: 'La duración de este servicio excede el horario de cierre del estudio (20:00 hs). Por favor seleccioná un horario anterior.'
+    });
+  }
+
+  const activeAppointmentsOnDate = db.prepare(`
+    SELECT a.id, a.time, COALESCE(s.duration, 45) as duration
+    FROM appointments a
+    LEFT JOIN services s ON a.service_id = s.id
+    WHERE a.date = ? AND (a.status = 'confirmado' OR (a.status = 'pendiente' AND a.expires_at > ?))
+  `).all(date, now);
+
+  const hasOverlap = activeAppointmentsOnDate.some(a => {
+    const aStart = timeToMinutes(a.time);
+    const aEnd = aStart + a.duration;
+    return newStartMin < aEnd && aStart < newEndMin;
+  });
+
+  if (hasOverlap) {
+    return res.status(409).json({
+      error: 'Ese horario o parte de la duración de este servicio se solapa con otro turno reservado. Por favor elegí otro horario disponible.'
     });
   }
 
@@ -584,37 +729,42 @@ app.post('/api/appointments/request', (req, res) => {
     });
   }
 
-  const serviceRow = db.prepare('SELECT * FROM services WHERE id = ?').get(serviceId);
-  if (!serviceRow) {
-    return res.status(404).json({ error: 'Servicio no válido' });
-  }
-
   const holdMinutes = Number(config.holdDurationMinutes) || 15;
   const code = generate4DigitCode();
   const expiresAt = now + holdMinutes * 60 * 1000;
   const aptId = `apt_${now}_${code}`;
   const fullName = `${clientRow.first_name} ${clientRow.last_name}`;
 
-  db.prepare(`
-    INSERT INTO appointments (
-      id, code, dni, client_name, client_phone, service_id, service_name,
-      selected_drink, price, date, time, status, created_at, expires_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?, ?)
-  `).run(
-    aptId,
-    code,
-    clientRow.dni,
-    fullName,
-    clientRow.phone,
-    serviceRow.id,
-    serviceRow.name,
-    serviceRow.drink_included ? (selectedDrink || 'Cerveza') : null,
-    serviceRow.price,
-    date,
-    time,
-    now,
-    expiresAt
-  );
+  // Auditoría Hallazgo 3.1: Atomicidad y captura de restricción UNIQUE en SQLite contra Race Conditions
+  try {
+    db.prepare(`
+      INSERT INTO appointments (
+        id, code, dni, client_name, client_phone, service_id, service_name,
+        selected_drink, price, date, time, status, created_at, expires_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?, ?)
+    `).run(
+      aptId,
+      code,
+      clientRow.dni,
+      fullName,
+      clientRow.phone,
+      serviceRow.id,
+      serviceRow.name,
+      serviceRow.drink_included ? (selectedDrink || 'Cerveza') : null,
+      serviceRow.price,
+      date,
+      time,
+      now,
+      expiresAt
+    );
+  } catch (err) {
+    if (err.message && (err.message.includes('UNIQUE') || err.message.includes('idx_unique_active_slot'))) {
+      return res.status(409).json({
+        error: 'Ese horario acaba de ser reservado por otro cliente en este mismo instante. Por favor seleccioná otro horario libre.'
+      });
+    }
+    throw err;
+  }
 
   const createdRow = db.prepare('SELECT * FROM appointments WHERE id = ?').get(aptId);
   const davidPhone = formatWhatsAppPhone(config.whatsappPhone);
@@ -656,7 +806,7 @@ app.get('/api/appointments/:idOrCode', (req, res) => {
   });
 });
 
-// Client cancels their own turn
+// Client cancels their own turn (Auditoría Hallazgo 2.3: Restricción de cancelación tardía intempestiva)
 app.post('/api/appointments/:id/client-cancel', (req, res) => {
   const session = getOptionalClient(req);
   if (!session) return res.status(401).json({ error: 'No autorizado' });
@@ -666,6 +816,22 @@ app.post('/api/appointments/:id/client-cancel', (req, res) => {
 
   if (!['pendiente', 'confirmado'].includes(row.status)) {
     return res.status(400).json({ error: 'Este turno ya no puede cancelarse' });
+  }
+
+  const appointmentTime = new Date(`${row.date}T${row.time}:00`).getTime();
+  const now = Date.now();
+  const twoHoursMs = 2 * 60 * 60 * 1000;
+
+  if (appointmentTime < now) {
+    return res.status(400).json({
+      error: 'El horario pautado de este turno ya ha comenzado. Comunicate con David por WhatsApp.'
+    });
+  }
+
+  if (row.status === 'confirmado' && (appointmentTime - now < twoHoursMs)) {
+    return res.status(400).json({
+      error: 'Las cancelaciones de turnos confirmados con menos de 2 horas de antelación deben realizarse comunicándote directamente con David por WhatsApp.'
+    });
   }
 
   db.prepare("UPDATE appointments SET status = 'cancelado' WHERE id = ?").run(row.id);
@@ -814,13 +980,19 @@ app.get('/api/admin/dashboard', requireAdmin, (req, res) => {
   });
 });
 
-// Confirm Pending Appointment
+// Confirm Pending Appointment (Auditoría Hallazgo 1.2: Máquina de estados estricta - solo 'pendiente')
 app.post('/api/admin/appointments/:id/confirm', requireAdmin, (req, res) => {
   const row = db
     .prepare('SELECT * FROM appointments WHERE id = ? OR code = ?')
     .get(req.params.id, req.params.id);
 
   if (!row) return res.status(404).json({ error: 'Turno no encontrado' });
+
+  if (row.status !== 'pendiente') {
+    return res.status(409).json({
+      error: `No se puede confirmar un turno con estado '${row.status}'. Solo se pueden confirmar turnos en estado 'pendiente'.`
+    });
+  }
 
   db.prepare('UPDATE appointments SET status = ?, confirmed_at = ? WHERE id = ?').run(
     'confirmado',
@@ -832,7 +1004,7 @@ app.post('/api/admin/appointments/:id/confirm', requireAdmin, (req, res) => {
   res.json({ success: true, appointment: formatAppointment(updated) });
 });
 
-// Complete & Charge Appointment (+1 Cut & +1 Point automatically)
+// Complete & Charge Appointment (Auditoría Hallazgos 1.1 y 1.2: Validación de saldo de puntos y estado confirmado)
 app.post('/api/admin/appointments/:id/complete', requireAdmin, (req, res) => {
   const { paymentMethod, amountPaid, pointsUsed = 0, notes = '' } = req.body;
   if (!paymentMethod) {
@@ -841,18 +1013,32 @@ app.post('/api/admin/appointments/:id/complete', requireAdmin, (req, res) => {
 
   const row = db.prepare('SELECT * FROM appointments WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Turno no encontrado' });
-  if (row.status === 'finalizado') {
-    return res.status(400).json({ error: 'Este turno ya fue cobrado y finalizado' });
+
+  if (row.status !== 'confirmado') {
+    return res.status(409).json({
+      error: `Solo se pueden cobrar y finalizar turnos en estado 'confirmado' (estado actual: '${row.status}').`
+    });
   }
 
   const now = Date.now();
-  const finalAmount = paymentMethod === 'Canje de Puntos' ? 0 : (amountPaid !== undefined ? Number(amountPaid) : row.price);
   const config = getConfigObject();
   const pointsPerCut = Number(config.pointsForFreeCut) || 10;
   const usedPts = paymentMethod === 'Canje de Puntos' ? (Number(pointsUsed) || pointsPerCut) : 0;
+  const clientRow = db.prepare('SELECT * FROM clients WHERE dni = ?').get(row.dni);
+
+  // Auditoría Hallazgo 1.1: Validación estricta de saldo de puntos antes de autorizar canje
+  if (paymentMethod === 'Canje de Puntos') {
+    const availablePts = clientRow?.points || 0;
+    if (availablePts < usedPts) {
+      return res.status(422).json({
+        error: `Saldo de puntos insuficiente para realizar el canje. El cliente posee ${availablePts} PTS y se requieren ${usedPts} PTS.`
+      });
+    }
+  }
+
+  const finalAmount = paymentMethod === 'Canje de Puntos' ? 0 : (amountPaid !== undefined ? Number(amountPaid) : row.price);
 
   // Update client points and total cuts
-  const clientRow = db.prepare('SELECT * FROM clients WHERE dni = ?').get(row.dni);
   if (clientRow) {
     const newTotalCuts = (clientRow.total_cuts || 0) + 1;
     const currentPts = clientRow.points || 0;
@@ -901,24 +1087,99 @@ app.post('/api/admin/appointments/:id/complete', requireAdmin, (req, res) => {
   });
 });
 
-// Mark No-Show (Cancels without adding points)
+// Mark No-Show (Only allowed from 'confirmado')
 app.post('/api/admin/appointments/:id/no-show', requireAdmin, (req, res) => {
   const row = db.prepare('SELECT * FROM appointments WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Turno no encontrado' });
+
+  if (row.status === 'finalizado') {
+    return res.status(409).json({ error: 'No podés marcar no-show sobre un turno ya cobrado y finalizado' });
+  }
 
   db.prepare("UPDATE appointments SET status = 'no_asistio' WHERE id = ?").run(row.id);
   const updated = db.prepare('SELECT * FROM appointments WHERE id = ?').get(row.id);
   res.json({ success: true, appointment: formatAppointment(updated) });
 });
 
-// Cancel Appointment
+// Cancel Appointment (Auditoría Hallazgo 1.3: Inmutabilidad de turnos finalizados)
 app.post('/api/admin/appointments/:id/cancel', requireAdmin, (req, res) => {
   const row = db.prepare('SELECT * FROM appointments WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Turno no encontrado' });
 
+  if (row.status === 'finalizado') {
+    return res.status(409).json({
+      error: 'Un turno ya finalizado y cobrado no puede cancelarse directamente. Utilizá la opción de anulación y reembolso para revertir puntos y pagos de forma controlada.'
+    });
+  }
+
   db.prepare("UPDATE appointments SET status = 'cancelado' WHERE id = ?").run(row.id);
   const updated = db.prepare('SELECT * FROM appointments WHERE id = ?').get(row.id);
   res.json({ success: true, appointment: formatAppointment(updated) });
+});
+
+// Revert & Refund Completed Appointment (Auditoría Hallazgo 1.3: Reversión atómica de puntos y caja)
+app.post('/api/admin/appointments/:id/refund', requireAdmin, (req, res) => {
+  const { reason = 'Anulación de servicio' } = req.body;
+  const row = db.prepare('SELECT * FROM appointments WHERE id = ?').get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Turno no encontrado' });
+
+  if (row.status !== 'finalizado') {
+    return res.status(409).json({ error: 'Solo se pueden anular y reembolsar turnos en estado finalizado' });
+  }
+
+  const clientRow = db.prepare('SELECT * FROM clients WHERE dni = ?').get(row.dni);
+  const now = Date.now();
+
+  if (clientRow) {
+    let restoredPoints = clientRow.points || 0;
+    // Revert the +1 point earned for the completed cut
+    restoredPoints = Math.max(0, restoredPoints - 1);
+    // If client spent points on a reward, return them
+    if (row.points_used > 0) {
+      restoredPoints += row.points_used;
+    }
+    const newTotalCuts = Math.max(0, (clientRow.total_cuts || 1) - 1);
+
+    db.prepare('UPDATE clients SET points = ?, total_cuts = ? WHERE id = ?').run(
+      restoredPoints,
+      newTotalCuts,
+      clientRow.id
+    );
+  }
+
+  // Record refund in payments ledger
+  if (row.amount_paid && row.amount_paid > 0) {
+    db.prepare(`
+      INSERT INTO payments (id, appointment_id, code, client_dni, client_name, service_name, payment_method, amount, points_used, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      `ref_${now}`,
+      row.id,
+      row.code,
+      row.dni,
+      row.client_name,
+      `${row.service_name} (REEMBOLSO: ${reason})`,
+      row.payment_method || 'Reembolso',
+      -Math.abs(row.amount_paid),
+      0,
+      now
+    );
+  }
+
+  db.prepare(`
+    UPDATE appointments
+    SET status = 'anulado', notes = notes || ?
+    WHERE id = ?
+  `).run(` [ANULADO: ${reason}]`, row.id);
+
+  const updatedApt = db.prepare('SELECT * FROM appointments WHERE id = ?').get(row.id);
+  const updatedClient = clientRow ? db.prepare('SELECT * FROM clients WHERE id = ?').get(clientRow.id) : null;
+
+  res.json({
+    success: true,
+    appointment: formatAppointment(updatedApt),
+    client: updatedClient ? formatClient(updatedClient, true) : null
+  });
 });
 
 // Manual Appointment Creation by David (Walk-in / WhatsApp direct booking)
@@ -981,7 +1242,7 @@ app.post('/api/admin/appointments/manual', requireAdmin, (req, res) => {
   res.status(201).json({ success: true, appointment: formatAppointment(created) });
 });
 
-// Block / Unblock Time Slots or Full Days
+// Block / Unblock Time Slots or Full Days (Auditoría Hallazgo 4.2: Mitigación automática de conflictos)
 app.post('/api/admin/blocked-slots', requireAdmin, (req, res) => {
   const { date, time, reason } = req.body;
   if (!date || !time) return res.status(400).json({ error: 'Falta fecha u horario' });
@@ -995,7 +1256,43 @@ app.post('/api/admin/blocked-slots', requireAdmin, (req, res) => {
     Date.now()
   );
 
-  res.status(201).json({ success: true, id });
+  // Mitigation of conflicts (Hallazgo 4.2): find active appointments on this date/time
+  let affectedQuery = "SELECT * FROM appointments WHERE date = ? AND status IN ('pendiente', 'confirmado')";
+  const params = [date];
+  if (time !== 'ALL') {
+    affectedQuery += " AND time = ?";
+    params.push(time);
+  }
+
+  const affectedApts = db.prepare(affectedQuery).all(...params);
+  const affectedList = [];
+
+  for (const apt of affectedApts) {
+    db.prepare("UPDATE appointments SET status = 'cancelado_por_estudio', notes = notes || ? WHERE id = ?").run(
+      ` [CANCELADO POR ESTUDIO: ${reason || 'Imprevisto'}]`,
+      apt.id
+    );
+
+    const clientPhone = (apt.client_phone || '').replace(/\D/g, '');
+    const cancelMsg = `Hola ${apt.client_name}! Te escribe David de ULTRA BARBER STUDIO. Por un motivo de fuerza mayor (${reason || 'imprevisto'}), tuvimos que cancelar el turno #${apt.code} del ${apt.date} a las ${apt.time} hs. Te pido mil disculpas. Escribime por acá para reprogramar tu atención con prioridad absoluta.`;
+    const whatsappUrl = `https://wa.me/${clientPhone}?text=${encodeURIComponent(cancelMsg)}`;
+
+    affectedList.push({
+      id: apt.id,
+      code: apt.code,
+      clientName: apt.client_name,
+      phone: apt.client_phone,
+      time: apt.time,
+      whatsappUrl
+    });
+  }
+
+  res.status(201).json({
+    success: true,
+    id,
+    affectedCount: affectedList.length,
+    affectedAppointments: affectedList
+  });
 });
 
 app.delete('/api/admin/blocked-slots/:id', requireAdmin, (req, res) => {

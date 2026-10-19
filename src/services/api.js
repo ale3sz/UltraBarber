@@ -810,6 +810,10 @@ export const api = {
   cancelAppointment: (id) => request(`/admin/appointments/${encodeURIComponent(id)}/cancel`, {
     method: 'POST'
   }, 'admin'),
+  refundAppointment: (id, refundData) => request(`/admin/appointments/${encodeURIComponent(id)}/refund`, {
+    method: 'POST',
+    body: JSON.stringify(refundData || {})
+  }, 'admin'),
   createManualAppointment: (payload) => request('/admin/appointments/manual', {
     method: 'POST',
     body: JSON.stringify(payload)

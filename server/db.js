@@ -144,6 +144,17 @@ export function initDatabase() {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_slot
+    ON appointments(date, time)
+    WHERE status IN ('pendiente', 'confirmado');
+
+    CREATE TABLE IF NOT EXISTS login_security (
+      identifier TEXT PRIMARY KEY,
+      failed_attempts INTEGER DEFAULT 0,
+      locked_until INTEGER DEFAULT 0,
+      last_attempt INTEGER NOT NULL
+    );
   `);
 
   // Migrate admins table to support DNI
