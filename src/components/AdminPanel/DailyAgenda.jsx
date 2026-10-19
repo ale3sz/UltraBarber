@@ -9,12 +9,21 @@ import {
   X,
   Check,
   Bell,
-  MessageCircle
+  MessageCircle,
+  Scissors,
+  Beer,
+  Sparkles,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  TrendingUp
 } from 'lucide-react';
-import ReminderModal from './ReminderModal';
+import EditableMessageModal from './EditableMessageModal';
+import { formatLocalDate } from '../../utils/date';
 
 export default function DailyAgenda({
   appointments = [],
+  clients = [],
   services = [],
   blockedSlots = [],
   selectedDate,
@@ -29,7 +38,17 @@ export default function DailyAgenda({
   const [filterStatus, setFilterStatus] = useState('all');
   const [showManualModal, setShowManualModal] = useState(false);
   const [showBlockModal, setShowBlockModal] = useState(false);
-  const [reminderAppointment, setReminderAppointment] = useState(null);
+
+  // Editable Message Modal State
+  const [messageModal, setMessageModal] = useState({
+    isOpen: false,
+    recipientName: '',
+    recipientPhone: '',
+    initialMessage: '',
+    title: '',
+    badge: '',
+    suggestedTemplates: []
+  });
 
   // Manual Turn Form State
   const [mDni, setMDni] = useState('');
@@ -48,13 +67,104 @@ export default function DailyAgenda({
     '14:00', '14:45', '15:30', '16:15', '17:00', '17:45', '18:30', '19:15'
   ];
 
-  const filtered = appointments.filter((apt) => {
-    if (selectedDate && apt.date !== selectedDate) return false;
+  // Quick Date Navigation
+  const handleShiftDate = (days) => {
+    const parts = selectedDate.split('-');
+    const cur = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    cur.setDate(cur.getDate() + days);
+    setSelectedDate(formatLocalDate(cur));
+  };
+
+  const handleSetToday = () => {
+    setSelectedDate(formatLocalDate(new Date()));
+  };
+
+  const handleSetTomorrow = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    setSelectedDate(formatLocalDate(d));
+  };
+
+  // Appointments for the currently selected date
+  const dateAppointments = appointments.filter((apt) => apt.date === selectedDate);
+
+  const filtered = dateAppointments.filter((apt) => {
     if (filterStatus === 'all') return true;
     return apt.status === filterStatus;
   });
 
   const dateBlocks = blockedSlots.filter((b) => b.date === selectedDate);
+
+  // Daily KPI calculations
+  const confirmedCount = dateAppointments.filter((a) => a.status === 'confirmado').length;
+  const finalizedCount = dateAppointments.filter((a) => a.status === 'finalizado').length;
+  const pendingCount = dateAppointments.filter((a) => a.status === 'pendiente').length;
+
+  const projectedRevenue = dateAppointments
+    .filter((a) => a.status !== 'cancelado' && a.status !== 'no_asistio')
+    .reduce((sum, a) => sum + (Number(a.price) || 0), 0);
+
+  const collectedRevenue = dateAppointments
+    .filter((a) => a.status === 'finalizado')
+    .reduce((sum, a) => sum + (Number(a.amountPaid) || 0), 0);
+
+  const occupancyRate = Math.min(100, Math.round((dateAppointments.length / scheduleSlots.length) * 100));
+
+  // Client lookup map for instant style DNA retrieval
+  const clientsMap = React.useMemo(() => {
+    const map = new Map();
+    clients.forEach((c) => {
+      if (c.dni) map.set(String(c.dni).trim(), c);
+    });
+    return map;
+  }, [clients]);
+
+  // Open Message Modal for single appointment reminder
+  const handleOpenReminderModal = (apt) => {
+    const clientName = apt.clientName?.split(' ')[0] || 'amigo';
+    const client = clientsMap.get(String(apt.dni).trim());
+    const hairStyle = client?.hairStyle ? ` (${client.hairStyle})` : '';
+
+    const templates = [
+      {
+        label: 'Hoy (Unas horas antes)',
+        text: `Hola ${clientName}! Te escribo de ULTRA BARBER Studio para recordarte tu turno de hoy a las ${apt.time} hs (${apt.serviceName}${hairStyle}). Te esperamos puntual en el sillón! Avisame cualquier duda.`
+      },
+      {
+        label: 'En 1 Hora (En camino)',
+        text: `Hola ${clientName}! En 1 hora te esperamos en el sillón (${apt.time} hs) para tu sesión de ${apt.serviceName}. Ya tenemos todo listo en el estudio!`
+      },
+      {
+        label: 'Turno de Mañana',
+        text: `Hola ${clientName}! Te recuerdo tu turno para mañana ${apt.date} a las ${apt.time} hs en ULTRA BARBER Studio (${apt.serviceName}). Te esperamos en el sillón!`
+      },
+      {
+        label: 'Confirmación Urgente',
+        text: `Hola ${clientName}! Por favor confirmame si asistís a tu turno de hoy a las ${apt.time} hs en ULTRA BARBER Studio. Respondeme por acá así te guardamos el lugar. Gracias!`
+      }
+    ];
+
+    setMessageModal({
+      isOpen: true,
+      recipientName: apt.clientName || 'Cliente',
+      recipientPhone: apt.clientPhone || client?.phone || '',
+      title: 'Recordatorio de Turno WhatsApp',
+      badge: `TURNO #${apt.code} • ${apt.time} HS`,
+      initialMessage: templates[0].text,
+      suggestedTemplates: templates
+    });
+  };
+
+  // Batch action: Tomorrow's confirmed appointments
+  const tomorrowStr = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return formatLocalDate(d);
+  })();
+
+  const tomorrowConfirmed = appointments.filter(
+    (a) => a.date === tomorrowStr && a.status === 'confirmado'
+  );
 
   const handleManualSubmit = async (e) => {
     e.preventDefault();
@@ -86,81 +196,187 @@ export default function DailyAgenda({
   };
 
   return (
-    <div className="space-y-5">
-      {/* Top Action & Filter Bar */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-barber-chai" />
-            <label htmlFor="agenda-date" className="text-xs font-semibold text-barber-lightText dark:text-barber-darkText">
-              Fecha:
-            </label>
-            <input
-              id="agenda-date"
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder text-barber-lightText dark:text-barber-darkText text-xs font-mono font-bold focus:outline-none focus:border-barber-matcha"
-            />
+    <div className="space-y-4">
+      {/* Executive Daily Bento Header (100% Space Utilization) */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#141416] border border-white/[0.08] shadow-sm space-y-4">
+        {/* Row 1: Date Navigation & Quick Actions */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1 bg-[#101012] border border-white/[0.1] rounded-xl p-1">
+              <button
+                type="button"
+                onClick={() => handleShiftDate(-1)}
+                className="p-1.5 rounded-lg text-[#8A898E] hover:text-[#EDEDED] hover:bg-white/[0.05]"
+                title="Día anterior"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="flex items-center gap-2 px-2">
+                <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="bg-transparent text-[#EDEDED] text-xs font-mono font-bold focus:outline-none cursor-pointer"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleShiftDate(1)}
+                className="p-1.5 rounded-lg text-[#8A898E] hover:text-[#EDEDED] hover:bg-white/[0.05]"
+                title="Día siguiente"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick date jumps */}
+            <div className="flex items-center gap-1 text-xs font-mono">
+              <button
+                type="button"
+                onClick={handleSetToday}
+                className="px-2.5 py-1.5 rounded-xl bg-[#101012] border border-white/[0.08] hover:border-white/[0.2] text-[#8A898E] hover:text-[#EDEDED]"
+              >
+                Hoy
+              </button>
+              <button
+                type="button"
+                onClick={handleSetTomorrow}
+                className="px-2.5 py-1.5 rounded-xl bg-[#101012] border border-white/[0.08] hover:border-white/[0.2] text-[#8A898E] hover:text-[#EDEDED]"
+              >
+                Mañana
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto">
-            {[
-              { id: 'all', label: 'Todos' },
-              { id: 'confirmado', label: 'Confirmados' },
-              { id: 'finalizado', label: 'Cobrados' },
-              { id: 'pendiente', label: 'Pendientes' },
-              { id: 'no_asistio', label: 'No Asistió' }
-            ].map((st) => (
+          {/* Quick Schedule Management Actions */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {tomorrowConfirmed.length > 0 && (
               <button
-                key={st.id}
                 type="button"
-                onClick={() => setFilterStatus(st.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                  filterStatus === st.id
-                    ? 'bg-barber-matcha text-white'
-                    : 'bg-barber-lightBg dark:bg-barber-darkBg text-barber-lightMuted dark:text-barber-darkMuted hover:text-barber-lightText dark:hover:text-barber-darkText'
-                }`}
+                onClick={() => {
+                  const first = tomorrowConfirmed[0];
+                  handleOpenReminderModal(first);
+                }}
+                className="px-3 py-2 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/25 text-xs font-mono font-bold flex items-center gap-1.5 transition-colors"
+                title="Enviar recordatorio por WhatsApp a los confirmados de mañana"
               >
-                {st.label}
+                <Bell className="w-3.5 h-3.5" />
+                <span>Recordar Mañana ({tomorrowConfirmed.length})</span>
               </button>
-            ))}
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowBlockModal(true)}
+              className="px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-xs font-mono text-[#8A898E] hover:text-[#EDEDED] hover:border-white/[0.2] flex items-center gap-1.5 transition-colors"
+            >
+              <Ban className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>Bloquear Horario</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowManualModal(true)}
+              className="px-3.5 py-2 rounded-xl bg-[#D4AF37] hover:bg-[#c29e2f] active:scale-[0.98] text-black text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all"
+            >
+              <Plus className="w-4 h-4 stroke-[2]" />
+              <span>Turno Manual</span>
+            </button>
           </div>
         </div>
 
-        {/* Barber Quick Actions: Manual Turn & Block Schedule */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setShowBlockModal(true)}
-            className="px-3.5 py-2.5 rounded-xl border border-barber-lightBorder dark:border-barber-darkBorder text-xs font-semibold text-barber-lightText dark:text-barber-darkText hover:border-barber-chai flex items-center gap-1.5 transition-colors"
-          >
-            <Ban className="w-3.5 h-3.5 text-barber-chai" />
-            <span>Bloquear Horario</span>
-          </button>
+        {/* Row 2: Daily Executive KPI Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-xs font-mono">
+          <div className="p-2.5 rounded-xl bg-[#101012] border border-white/[0.06]">
+            <span className="text-[10px] text-[#8A898E] block uppercase">Agendados Hoy</span>
+            <strong className="text-base font-bold text-[#EDEDED] block tabular-nums">
+              {dateAppointments.length} turnos
+            </strong>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => setShowManualModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-barber-chai text-barber-lightText text-xs font-display font-bold uppercase tracking-wider flex items-center gap-1.5 hover:brightness-105 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Turno Manual</span>
-          </button>
+          <div className="p-2.5 rounded-xl bg-[#101012] border border-white/[0.06]">
+            <span className="text-[10px] text-[#8A898E] block uppercase">Confirmados</span>
+            <strong className="text-base font-bold text-emerald-400 block tabular-nums">
+              {confirmedCount}
+            </strong>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-[#101012] border border-white/[0.06]">
+            <span className="text-[10px] text-[#8A898E] block uppercase">Cobrados</span>
+            <strong className="text-base font-bold text-[#D4AF37] block tabular-nums">
+              {finalizedCount}
+            </strong>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-[#101012] border border-white/[0.06]">
+            <span className="text-[10px] text-[#8A898E] block uppercase">Caja Hoy</span>
+            <strong className="text-base font-bold text-emerald-400 block tabular-nums">
+              ${collectedRevenue.toLocaleString('es-AR')}
+            </strong>
+            <span className="text-[9px] text-[#8A898E] block tabular-nums">
+              Proy: ${projectedRevenue.toLocaleString('es-AR')}
+            </span>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-[#101012] border border-white/[0.06]">
+            <span className="text-[10px] text-[#8A898E] block uppercase">Ocupación Sillón</span>
+            <div className="flex items-center gap-2 mt-0.5">
+              <strong className="text-base font-bold text-[#EDEDED] tabular-nums">
+                {occupancyRate}%
+              </strong>
+              <div className="w-full bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="bg-[#D4AF37] h-full rounded-full transition-all"
+                  style={{ width: `${occupancyRate}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Row 3: Status Filters */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-1 text-xs">
+          {[
+            { id: 'all', label: 'Todos', count: dateAppointments.length },
+            { id: 'confirmado', label: 'Confirmados', count: confirmedCount },
+            { id: 'finalizado', label: 'Cobrados', count: finalizedCount },
+            { id: 'pendiente', label: 'Pendientes', count: pendingCount },
+            { id: 'no_asistio', label: 'No Asistió', count: dateAppointments.filter(a => a.status === 'no_asistio').length }
+          ].map((st) => (
+            <button
+              key={st.id}
+              type="button"
+              onClick={() => setFilterStatus(st.id)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold whitespace-nowrap transition-all border flex items-center gap-1.5 ${
+                filterStatus === st.id
+                  ? 'bg-white/[0.1] border-[#D4AF37] text-[#EDEDED] font-bold'
+                  : 'bg-[#101012] border-white/[0.06] text-[#8A898E] hover:text-[#EDEDED]'
+              }`}
+            >
+              <span>{st.label}</span>
+              <span className="text-[10px] font-bold tabular-nums text-[#D4AF37]">
+                ({st.count})
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Active Blocked Slots for Selected Date */}
+      {/* Active Blocked Slots */}
       {dateBlocks.length > 0 && (
-        <div className="p-4 rounded-2xl bg-barber-darkSurface border border-barber-darkBorder flex flex-wrap items-center justify-between gap-2 text-xs text-barber-darkText">
-          <span className="font-semibold text-barber-chai">
-            Bloqueos activos en esta fecha:
+        <div className="p-3.5 rounded-2xl bg-[#141416] border border-white/[0.08] flex flex-wrap items-center justify-between gap-2 text-xs">
+          <span className="font-mono text-xs text-[#D4AF37] flex items-center gap-1.5">
+            <Ban className="w-3.5 h-3.5" />
+            <span>Bloqueos activos en esta fecha:</span>
           </span>
           <div className="flex flex-wrap items-center gap-2">
             {dateBlocks.map((b) => (
               <span
                 key={b.id}
-                className="px-3 py-1.5 rounded-xl bg-barber-darkBg border border-barber-darkBorder font-mono flex items-center gap-2"
+                className="px-2.5 py-1 rounded-xl bg-[#101012] border border-white/[0.08] font-mono text-xs text-[#EDEDED] flex items-center gap-2"
               >
                 <span>
                   {b.time === 'ALL' ? 'DÍA COMPLETO CERRADO' : `${b.time} hs`} ({b.reason})
@@ -168,7 +384,7 @@ export default function DailyAgenda({
                 <button
                   type="button"
                   onClick={() => onRemoveBlockedSlot(b.id)}
-                  className="text-red-400 hover:text-red-300"
+                  className="text-rose-400 hover:text-rose-300 p-0.5"
                   title="Desbloquear horario"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -179,14 +395,15 @@ export default function DailyAgenda({
         </div>
       )}
 
-      {/* Appointments List */}
+      {/* Appointments List (High Efficiency Bento Grid) */}
       {filtered.length === 0 ? (
-        <div className="p-8 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder text-center space-y-2">
-          <h3 className="text-base font-display font-bold text-barber-lightText dark:text-barber-darkText">
-            Sin turnos para el filtro seleccionado ({selectedDate})
+        <div className="p-8 rounded-2xl bg-[#141416] border border-white/[0.08] text-center space-y-2">
+          <Clock className="w-6 h-6 text-[#8A898E] mx-auto stroke-[1.5]" />
+          <h3 className="text-sm font-display font-bold text-[#EDEDED]">
+            No hay turnos registrados para esta fecha
           </h3>
-          <p className="text-xs text-barber-lightMuted dark:text-barber-darkMuted">
-            Podés cargar un turno presencial con el botón &ldquo;Turno Manual&rdquo; o cambiar la fecha.
+          <p className="text-xs font-mono text-[#8A898E]">
+            Podés agendar un turno manual o seleccionar otra fecha con el calendario superior.
           </p>
         </div>
       ) : (
@@ -194,78 +411,111 @@ export default function DailyAgenda({
           {filtered.map((apt) => {
             const isConfirmed = apt.status === 'confirmado';
             const isFinalized = apt.status === 'finalizado';
-            const isNoShow = apt.status === 'no_asistio';
             const isPending = apt.status === 'pendiente';
+            const isNoShow = apt.status === 'no_asistio';
+
+            const client = clientsMap.get(String(apt.dni).trim());
 
             return (
               <div
                 key={apt.id}
-                className="p-5 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-4 sm:p-5 rounded-2xl bg-[#141416] border border-white/[0.08] hover:border-white/[0.15] transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-sm"
               >
+                {/* Left: Time badge & Client Identity */}
                 <div className="flex items-start gap-4">
-                  <div className="px-3.5 py-2.5 rounded-2xl bg-barber-darkBg text-center border border-barber-darkBorder shrink-0">
-                    <span className="text-lg font-mono font-extrabold text-barber-chai block tabular-nums">
+                  <div className="px-3.5 py-2 rounded-xl bg-[#101012] text-center border border-white/[0.08] shrink-0">
+                    <span className="text-lg font-mono font-extrabold text-[#D4AF37] block tabular-nums">
                       {apt.time}
                     </span>
-                    <span className="text-[11px] font-mono text-barber-pistache tabular-nums">
+                    <span className="text-[10px] font-mono text-[#8A898E] tabular-nums block">
                       #{apt.code}
                     </span>
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-base font-display font-bold text-barber-lightText dark:text-barber-darkText">
+                      <h3 className="text-base font-display font-bold text-[#EDEDED]">
                         {apt.clientName}
                       </h3>
 
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
                           isConfirmed
-                            ? 'bg-barber-matcha text-white'
+                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                             : isFinalized
-                            ? 'bg-barber-chai text-barber-lightText'
+                            ? 'bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30'
                             : isNoShow
-                            ? 'bg-red-500/20 text-red-500'
-                            : 'bg-barber-darkBg text-barber-pistache border border-barber-darkBorder'
+                            ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                            : 'bg-white/[0.05] text-[#8A898E] border border-white/[0.1]'
                         }`}
                       >
                         {apt.status === 'no_asistio' ? 'No Asistió' : apt.status}
                       </span>
+
+                      {client && (client.totalCuts || 0) >= 5 && (
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30">
+                          SOCIO VIP
+                        </span>
+                      )}
                     </div>
 
-                    <p className="text-xs text-barber-lightMuted dark:text-barber-darkMuted font-mono tabular-nums">
+                    <p className="text-xs text-[#8A898E] font-mono tabular-nums">
                       DNI {apt.dni} • {apt.serviceName}
                       {apt.selectedDrink ? ` (${apt.selectedDrink})` : ''} • ${apt.price?.toLocaleString('es-AR')}
                     </p>
 
+                    {/* ADN de Estilo Pill (Instant Intelligence for David) */}
+                    {client && (client.hairStyle || client.preferredDrink || client.preferredProduct) && (
+                      <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                        {client.hairStyle && (
+                          <span className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] text-[10px] font-mono text-[#EDEDED] flex items-center gap-1">
+                            <Scissors className="w-2.5 h-2.5 text-[#D4AF37]" />
+                            <span>{client.hairStyle}</span>
+                          </span>
+                        )}
+                        {client.preferredDrink && (
+                          <span className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] text-[10px] font-mono text-[#D4AF37] flex items-center gap-1">
+                            <Beer className="w-2.5 h-2.5" />
+                            <span>{client.preferredDrink}</span>
+                          </span>
+                        )}
+                        {client.preferredProduct && (
+                          <span className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] text-[10px] font-mono text-[#8A898E]">
+                            🧴 {client.preferredProduct}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
                     {isFinalized && (
-                      <p className="text-xs font-mono font-semibold text-barber-matcha tabular-nums">
-                        Cobrado: ${apt.amountPaid?.toLocaleString('es-AR')} ({apt.paymentMethod}) • +1 PTO acreditado
+                      <p className="text-xs font-mono font-semibold text-emerald-400 tabular-nums">
+                        ✓ Cobrado: ${apt.amountPaid?.toLocaleString('es-AR')} ({apt.paymentMethod}) • +1 PTO sumado
                       </p>
                     )}
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-2 justify-end flex-wrap">
-                  {/* Recordatorio Prescrito por WhatsApp */}
+                {/* Right: Action Buttons */}
+                <div className="flex items-center gap-2 justify-end flex-wrap shrink-0">
+                  {/* WhatsApp Reminder (100% Editable) */}
                   {(isConfirmed || isPending) && (
                     <button
                       type="button"
-                      onClick={() => setReminderAppointment(apt)}
-                      className="px-3.5 py-2.5 rounded-xl border border-barber-chai/40 bg-barber-chai/10 text-barber-chai hover:bg-barber-chai/20 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                      title="Enviar recordatorio preescrito por WhatsApp"
+                      onClick={() => handleOpenReminderModal(apt)}
+                      className="px-3 py-2 rounded-xl border border-white/[0.1] bg-[#101012] text-[#D4AF37] hover:border-[#D4AF37] text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
+                      title="Enviar recordatorio editable por WhatsApp"
                     >
                       <Bell className="w-3.5 h-3.5" />
-                      <span>Recordar</span>
+                      <span>Recordar (WA)</span>
                     </button>
                   )}
+
                   {isConfirmed && (
                     <>
                       <button
                         type="button"
                         onClick={() => onNoShow(apt.id)}
-                        className="px-3.5 py-2.5 rounded-xl border border-barber-lightBorder dark:border-barber-darkBorder text-xs font-semibold text-barber-lightMuted dark:text-barber-darkMuted hover:text-red-500 flex items-center gap-1.5 transition-colors"
+                        className="px-3 py-2 rounded-xl border border-white/[0.08] text-xs font-mono text-[#8A898E] hover:text-rose-400 hover:border-rose-500/30 flex items-center gap-1.5 transition-colors"
                       >
                         <UserX className="w-3.5 h-3.5" />
                         <span>No Asistió</span>
@@ -274,9 +524,9 @@ export default function DailyAgenda({
                       <button
                         type="button"
                         onClick={() => onOpenPaymentModal(apt)}
-                        className="px-4 py-2.5 rounded-xl bg-barber-matcha text-white text-xs font-display font-bold uppercase tracking-wider flex items-center gap-1.5 hover:brightness-105 transition-all"
+                        className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-black text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
                       >
-                        <DollarSign className="w-4 h-4" />
+                        <DollarSign className="w-4 h-4 stroke-[2]" />
                         <span>Cobrar y Finalizar</span>
                       </button>
                     </>
@@ -286,9 +536,9 @@ export default function DailyAgenda({
                     <button
                       type="button"
                       onClick={() => onConfirm(apt.id)}
-                      className="px-4 py-2.5 rounded-xl bg-barber-matcha text-white text-xs font-display font-bold uppercase tracking-wider flex items-center gap-1.5"
+                      className="px-4 py-2 rounded-xl bg-[#D4AF37] hover:bg-[#c29e2f] active:scale-[0.98] text-black text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
                     >
-                      <Check className="w-4 h-4" />
+                      <Check className="w-4 h-4 stroke-[2]" />
                       <span>Confirmar</span>
                     </button>
                   )}
@@ -301,115 +551,118 @@ export default function DailyAgenda({
 
       {/* Modal: Nuevo Turno Manual */}
       {showManualModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-barber-darkSurface border border-barber-darkBorder p-6 text-barber-darkText club-shadow space-y-5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-display font-bold text-barber-darkText">
-                Agendar Turno Manual ({selectedDate})
-              </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-enter">
+          <div className="w-full max-w-md rounded-2xl bg-[#141416] border border-white/[0.1] p-6 text-[#EDEDED] shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div>
+                <span className="micro-technical block text-[9px] text-[#D4AF37]">
+                  ADMINISTRACIÓN RÁPIDA
+                </span>
+                <h3 className="text-base font-display font-bold text-[#EDEDED]">
+                  Agendar Turno Manual ({selectedDate})
+                </h3>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowManualModal(false)}
-                className="p-2 text-barber-pistache hover:text-barber-darkText"
+                className="p-1.5 rounded-lg text-[#8A898E] hover:text-[#EDEDED]"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleManualSubmit} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1">DNI del cliente *</label>
+                  <label className="block text-[11px] font-semibold text-[#8A898E] mb-1">DNI del Cliente</label>
                   <input
                     type="text"
                     required
                     value={mDni}
                     onChange={(e) => setMDni(e.target.value.replace(/\D/g, ''))}
-                    placeholder="40123456"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText font-mono"
+                    placeholder="Ej: 42123456"
+                    className="w-full px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-[#EDEDED] font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">Celular</label>
-                  <input
-                    type="text"
-                    value={mPhone}
-                    onChange={(e) => setMPhone(e.target.value)}
-                    placeholder="+54 9 11..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold mb-1">Nombre *</label>
+                  <label className="block text-[11px] font-semibold text-[#8A898E] mb-1">Nombre</label>
                   <input
                     type="text"
                     required
                     value={mFirstName}
                     onChange={(e) => setMFirstName(e.target.value)}
-                    placeholder="Facundo"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold mb-1">Apellido</label>
-                  <input
-                    type="text"
-                    value={mLastName}
-                    onChange={(e) => setMLastName(e.target.value)}
-                    placeholder="López"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
+                    placeholder="Ej: Juan"
+                    className="w-full px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-[#EDEDED]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1">Servicio *</label>
+                  <label className="block text-[11px] font-semibold text-[#8A898E] mb-1">Apellido (opcional)</label>
+                  <input
+                    type="text"
+                    value={mLastName}
+                    onChange={(e) => setMLastName(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-[#EDEDED]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-[#8A898E] mb-1">WhatsApp</label>
+                  <input
+                    type="text"
+                    value={mPhone}
+                    onChange={(e) => setMPhone(e.target.value)}
+                    placeholder="Ej: 3415551234"
+                    className="w-full px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-[#EDEDED] font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-[#8A898E] mb-1">Servicio</label>
                   <select
                     value={mServiceId}
                     onChange={(e) => setMServiceId(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
+                    className="w-full px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-[#EDEDED]"
                   >
                     {services.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.name} (${s.price.toLocaleString('es-AR')})
+                        {s.name} (${s.price})
                       </option>
                     ))}
                   </select>
                 </div>
-
                 <div>
-                  <label className="block font-semibold mb-1">Horario *</label>
+                  <label className="block text-[11px] font-semibold text-[#8A898E] mb-1">Horario</label>
                   <select
                     value={mTime}
                     onChange={(e) => setMTime(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-[#EDEDED] font-mono"
                   >
-                    {scheduleSlots.map((t) => (
-                      <option key={t} value={t}>
-                        {t} hs
+                    {scheduleSlots.map((time) => (
+                      <option key={time} value={time}>
+                        {time} hs
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3">
+              <div className="flex justify-end gap-2 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
                   onClick={() => setShowManualModal(false)}
-                  className="px-4 py-2.5 rounded-xl border border-barber-darkBorder text-barber-pistache"
+                  className="px-4 py-2 rounded-xl border border-white/[0.1] text-[#8A898E]"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-barber-matcha text-white font-display font-bold uppercase tracking-wider"
+                  className="px-5 py-2 rounded-xl bg-[#D4AF37] hover:bg-[#c29e2f] text-black font-mono font-bold uppercase tracking-wider"
                 >
-                  Confirmar en Agenda
+                  Confirmar Turno
                 </button>
               </div>
             </form>
@@ -417,64 +670,68 @@ export default function DailyAgenda({
         </div>
       )}
 
-      {/* Modal: Bloquear Horario o Día Completo */}
+      {/* Modal: Bloquear Horario */}
       {showBlockModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-barber-darkSurface border border-barber-darkBorder p-6 text-barber-darkText club-shadow space-y-5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-display font-bold text-barber-darkText">
-                Bloquear Horario ({selectedDate})
-              </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-enter">
+          <div className="w-full max-w-sm rounded-2xl bg-[#141416] border border-white/[0.1] p-6 text-[#EDEDED] shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div>
+                <span className="micro-technical block text-[9px] text-[#D4AF37]">
+                  DISPONIBILIDAD
+                </span>
+                <h3 className="text-base font-display font-bold text-[#EDEDED]">
+                  Bloquear Horario ({selectedDate})
+                </h3>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowBlockModal(false)}
-                className="p-2 text-barber-pistache hover:text-barber-darkText"
+                className="p-1.5 rounded-lg text-[#8A898E] hover:text-[#EDEDED]"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleBlockSubmit} className="space-y-4 text-xs">
+            <form onSubmit={handleBlockSubmit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold mb-1">Horario a bloquear</label>
+                <label className="block text-[11px] font-semibold text-[#8A898E] mb-1">Horario a bloquear</label>
                 <select
                   value={bTime}
                   onChange={(e) => setBTime(e.target.value)}
-                  className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText font-mono"
+                  className="w-full px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-[#EDEDED] font-mono"
                 >
-                  <option value="ALL">CERRAR DÍA COMPLETO (Feriado / Franco)</option>
-                  {scheduleSlots.map((t) => (
-                    <option key={t} value={t}>
-                      Bloquear solo {t} hs
+                  <option value="ALL">DÍA COMPLETO (Cerrado)</option>
+                  {scheduleSlots.map((time) => (
+                    <option key={time} value={time}>
+                      {time} hs
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block font-semibold mb-1">Motivo</label>
+                <label className="block text-[11px] font-semibold text-[#8A898E] mb-1">Motivo</label>
                 <input
                   type="text"
                   value={bReason}
                   onChange={(e) => setBReason(e.target.value)}
-                  placeholder="Almuerzo / Médico / Franco"
-                  className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
+                  className="w-full px-3 py-2 rounded-xl bg-[#101012] border border-white/[0.1] text-[#EDEDED]"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
                   onClick={() => setShowBlockModal(false)}
-                  className="px-4 py-2.5 rounded-xl border border-barber-darkBorder text-barber-pistache"
+                  className="px-4 py-2 rounded-xl border border-white/[0.1] text-[#8A898E]"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-barber-chai text-barber-lightText font-display font-bold uppercase tracking-wider"
+                  className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-mono font-bold uppercase tracking-wider"
                 >
-                  Aplicar Bloqueo
+                  Bloquear
                 </button>
               </div>
             </form>
@@ -482,13 +739,17 @@ export default function DailyAgenda({
         </div>
       )}
 
-      {/* Modal de Recordatorio por WhatsApp */}
-      {reminderAppointment && (
-        <ReminderModal
-          appointment={reminderAppointment}
-          onClose={() => setReminderAppointment(null)}
-        />
-      )}
+      {/* Modal Reutilizable de Mensajes Editables */}
+      <EditableMessageModal
+        isOpen={messageModal.isOpen}
+        onClose={() => setMessageModal((prev) => ({ ...prev, isOpen: false }))}
+        recipientName={messageModal.recipientName}
+        recipientPhone={messageModal.recipientPhone}
+        initialMessage={messageModal.initialMessage}
+        title={messageModal.title}
+        badge={messageModal.badge}
+        suggestedTemplates={messageModal.suggestedTemplates}
+      />
     </div>
   );
 }

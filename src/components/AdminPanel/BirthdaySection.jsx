@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Cake, MessageCircle, Calendar } from 'lucide-react';
+import { Cake, MessageCircle, Calendar, Sparkles, Gift } from 'lucide-react';
+import EditableMessageModal from './EditableMessageModal';
 
 export default function BirthdaySection({
   birthdaysData = { thisWeek: [], thisMonth: [] }
@@ -9,38 +10,74 @@ export default function BirthdaySection({
   const { thisWeek = [], thisMonth = [] } = birthdaysData;
   const currentList = tab === 'week' ? thisWeek : thisMonth;
 
-  const handleSendWhatsAppPromo = (client) => {
-    const cleanPhone = (client.phone || '').replace(/\D/g, '');
-    const message = `Hola ${client.firstName || client.name || 'Socio'}! Feliz cumpleaños de parte de ULTRA BARBER Studio! Te regalamos un beneficio especial en tu próximo corte de autor. ¿Querés agendar tu turno para esta semana?`;
-    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+  // Editable Message Modal State
+  const [messageModal, setMessageModal] = useState({
+    isOpen: false,
+    recipientName: '',
+    recipientPhone: '',
+    initialMessage: '',
+    title: '',
+    badge: '',
+    suggestedTemplates: []
+  });
+
+  const handleOpenBirthdayGreeting = (client) => {
+    const firstName = client.firstName || client.name || 'Socio';
+    const templates = [
+      {
+        label: 'Promo Regalo VIP',
+        text: `Hola ${firstName}! Feliz cumpleaños de parte de todo el equipo de ULTRA BARBER Studio! Queremos regalarte un beneficio especial en tu próximo corte de autor. ¿Querés que te reservemos un lugar en el sillón para esta semana?`
+      },
+      {
+        label: 'Bebida de Cortesía + Corte',
+        text: `Muy feliz cumple ${firstName}! En tu semana de cumpleaños, pasate por ULTRA BARBER que el brindis en el sillón va por nuestra cuenta mientras renovás tu estilo. Avisame y te aseguramos turno!`
+      },
+      {
+        label: 'Saludo Personalizado',
+        text: `Hola ${firstName}! Te mando un gran saludo de cumpleaños desde ULTRA BARBER Studio! Que disfrutes mucho tu día. Cuando quieras renovar corte, acá estamos!`
+      }
+    ];
+
+    setMessageModal({
+      isOpen: true,
+      recipientName: `${client.firstName || client.name || 'Socio'} ${client.lastName || ''}`.trim(),
+      recipientPhone: client.phone || '',
+      title: 'Saludo de Cumpleaños VIP',
+      badge: client.isToday ? '¡CUMPLE HOY!' : 'SALUDO DE CUMPLEAÑOS',
+      initialMessage: templates[0].text,
+      suggestedTemplates: templates
+    });
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-5 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder">
+      {/* Top Header Card */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-2xl bg-[#141416] border border-white/[0.08] shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-barber-chai text-barber-lightText flex items-center justify-center">
-            <Cake className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-xl bg-[#101012] border border-[#D4AF37]/30 text-[#D4AF37] flex items-center justify-center">
+            <Cake className="w-5 h-5 stroke-[1.5]" />
           </div>
           <div>
-            <h2 className="text-lg font-display font-bold text-barber-lightText dark:text-barber-darkText">
-              Cumpleaños de socios
+            <span className="micro-technical block text-[9px] text-[#D4AF37]">
+              PROGRAMA DE FIDELIDAD VIP
+            </span>
+            <h2 className="text-base font-display font-bold text-[#EDEDED]">
+              Cumpleaños de Socios
             </h2>
-            <p className="text-xs text-barber-lightMuted dark:text-barber-darkMuted">
-              Enviá saludo y promo de cumpleaños a su WhatsApp en un toque.
+            <p className="text-xs text-[#8A898E]">
+              Enviá saludos y beneficios especiales con plantillas 100% editables.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-2xl bg-barber-lightBg dark:bg-barber-darkBg border border-barber-lightBorder dark:border-barber-darkBorder">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#101012] border border-white/[0.08]">
           <button
             type="button"
             onClick={() => setTab('week')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
               tab === 'week'
-                ? 'bg-barber-matcha text-white'
-                : 'text-barber-lightMuted dark:text-barber-darkMuted'
+                ? 'bg-white/[0.1] text-[#EDEDED] border border-[#D4AF37] font-bold'
+                : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
             Esta Semana ({thisWeek.length})
@@ -48,10 +85,10 @@ export default function BirthdaySection({
           <button
             type="button"
             onClick={() => setTab('month')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
               tab === 'month'
-                ? 'bg-barber-matcha text-white'
-                : 'text-barber-lightMuted dark:text-barber-darkMuted'
+                ? 'bg-white/[0.1] text-[#EDEDED] border border-white/[0.2] font-bold'
+                : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
             Este Mes ({thisMonth.length})
@@ -59,18 +96,19 @@ export default function BirthdaySection({
         </div>
       </div>
 
+      {/* Birthday Cards Grid */}
       {currentList.length === 0 ? (
-        <div className="p-8 rounded-3xl bg-barber-lightSurface dark:bg-barber-darkSurface border border-barber-lightBorder dark:border-barber-darkBorder text-center space-y-2">
-          <Cake className="w-7 h-7 text-barber-chai mx-auto" />
-          <h3 className="text-base font-display font-bold text-barber-lightText dark:text-barber-darkText">
+        <div className="p-8 rounded-2xl bg-[#141416] border border-white/[0.08] text-center space-y-2">
+          <Cake className="w-7 h-7 text-[#8A898E] mx-auto stroke-[1.5]" />
+          <h3 className="text-sm font-display font-bold text-[#EDEDED]">
             Sin cumpleañeros en este período
           </h3>
-          <p className="text-xs text-barber-lightMuted dark:text-barber-darkMuted">
-            Los socios con cumpleaños cercanos aparecerán automáticamente acá.
+          <p className="text-xs font-mono text-[#8A898E]">
+            Los socios que cumplan años próximamente aparecerán acá automáticamente.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           {currentList.map((client) => {
             const isToday = client.isToday;
             const daysUntil = client.daysUntil;
@@ -78,50 +116,69 @@ export default function BirthdaySection({
             return (
               <div
                 key={client.id || client.dni}
-                className={`p-5 rounded-3xl border bg-barber-lightSurface dark:bg-barber-darkSurface flex items-center justify-between gap-4 ${
+                className={`p-4 sm:p-5 rounded-2xl border bg-[#141416] flex items-center justify-between gap-4 transition-all shadow-sm ${
                   isToday
-                    ? 'border-barber-chai ring-2 ring-barber-chai'
-                    : 'border-barber-lightBorder dark:border-barber-darkBorder'
+                    ? 'border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.15)] ring-1 ring-[#D4AF37]'
+                    : 'border-white/[0.08] hover:border-white/[0.15]'
                 }`}
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-base font-display font-bold text-barber-lightText dark:text-barber-darkText">
+                    <h3 className="text-base font-display font-bold text-[#EDEDED]">
                       {client.firstName || client.name || 'Socio'} {client.lastName || ''}
                     </h3>
 
                     {isToday ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-barber-chai text-barber-lightText">
-                        Cumple Hoy
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase tracking-wider bg-[#D4AF37] text-black flex items-center gap-1">
+                        <Gift className="w-2.5 h-2.5" />
+                        <span>Cumple Hoy</span>
                       </span>
                     ) : daysUntil !== undefined ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-barber-lightBg dark:bg-barber-darkBg text-barber-chai border border-barber-lightBorder dark:border-barber-darkBorder">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-[#101012] text-[#D4AF37] border border-[#D4AF37]/30">
                         {daysUntil === 1 ? 'Mañana' : daysUntil > 0 ? `En ${daysUntil} días` : 'Esta semana'}
                       </span>
                     ) : null}
                   </div>
 
-                  <p className="text-xs font-mono text-barber-lightMuted dark:text-barber-darkMuted flex items-center gap-2 tabular-nums">
-                    <Calendar className="w-3.5 h-3.5 text-barber-chai" />
-                    <span>{client.birthDate}</span>
-                    <span>•</span>
-                    <span>{client.totalCuts || 0} cortes</span>
+                  <p className="text-xs font-mono text-[#8A898E] tabular-nums">
+                    DNI {client.dni} • Fecha: {client.birthDate} • {client.phone || 'Sin WhatsApp'}
+                  </p>
+
+                  <p className="text-xs font-mono text-emerald-400 tabular-nums">
+                    {client.totalCuts || 0} cortes realizados • {client.points || 0} PTS
                   </p>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => handleSendWhatsAppPromo(client)}
-                  className="px-4 py-3 rounded-2xl bg-barber-matcha hover:brightness-110 text-white text-xs font-display font-bold uppercase tracking-wider flex items-center gap-2 shrink-0 transition-all"
+                  onClick={() => handleOpenBirthdayGreeting(client)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm shrink-0 ${
+                    isToday
+                      ? 'bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.98] text-white'
+                      : 'bg-[#101012] border border-white/[0.1] text-[#EDEDED] hover:border-[#D4AF37]'
+                  }`}
+                  title="Enviar saludo editable por WhatsApp"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Enviar Promo</span>
+                  <MessageCircle className="w-3.5 h-3.5 stroke-[2]" />
+                  <span>Saludar</span>
                 </button>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* Modal Reutilizable de Mensajes Editables */}
+      <EditableMessageModal
+        isOpen={messageModal.isOpen}
+        onClose={() => setMessageModal((prev) => ({ ...prev, isOpen: false }))}
+        recipientName={messageModal.recipientName}
+        recipientPhone={messageModal.recipientPhone}
+        initialMessage={messageModal.initialMessage}
+        title={messageModal.title}
+        badge={messageModal.badge}
+        suggestedTemplates={messageModal.suggestedTemplates}
+      />
     </div>
   );
 }

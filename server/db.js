@@ -165,6 +165,13 @@ export function initDatabase() {
     db.exec("UPDATE admins SET dni = '11111111' WHERE dni IS NULL OR dni = '';");
   } catch {}
 
+  // Migrate clients table to support Style Profile (Ficha Técnica VIP)
+  try { db.exec("ALTER TABLE clients ADD COLUMN hair_style TEXT DEFAULT '';"); } catch {}
+  try { db.exec("ALTER TABLE clients ADD COLUMN hair_texture TEXT DEFAULT '';"); } catch {}
+  try { db.exec("ALTER TABLE clients ADD COLUMN preferred_product TEXT DEFAULT '';"); } catch {}
+  try { db.exec("ALTER TABLE clients ADD COLUMN preferred_drink TEXT DEFAULT '';"); } catch {}
+  try { db.exec("ALTER TABLE clients ADD COLUMN last_visit_date TEXT DEFAULT '';"); } catch {}
+
   // Seed default Admin (David)
   const adminCount = db.prepare('SELECT COUNT(*) as count FROM admins').get().count;
   if (adminCount === 0) {

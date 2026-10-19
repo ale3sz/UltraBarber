@@ -37,6 +37,11 @@ function formatClient(row, includeSensitivePin = false) {
     points: row.points || 0,
     totalCuts: row.total_cuts || 0,
     notes: row.notes || '',
+    hairStyle: row.hair_style || '',
+    hairTexture: row.hair_texture || '',
+    preferredProduct: row.preferred_product || '',
+    preferredDrink: row.preferred_drink || '',
+    lastVisitDate: row.last_visit_date || '',
     memberSince: row.member_since,
     hasPin: Boolean(row.pin_hash)
   };
@@ -1046,9 +1051,10 @@ app.post('/api/admin/appointments/:id/complete', requireAdmin, (req, res) => {
       ? Math.max(0, currentPts - usedPts + 1)
       : currentPts + 1;
 
-    db.prepare('UPDATE clients SET total_cuts = ?, points = ? WHERE id = ?').run(
+    db.prepare('UPDATE clients SET total_cuts = ?, points = ?, last_visit_date = ? WHERE id = ?').run(
       newTotalCuts,
       newPoints,
+      row.date || getLocalDateString(),
       clientRow.id
     );
   }
@@ -1300,10 +1306,24 @@ app.delete('/api/admin/blocked-slots/:id', requireAdmin, (req, res) => {
   res.json({ success: true });
 });
 
-// Update Client from Admin (Notes, Points, Reset PIN, Phone, Birthdate)
+// Update Client from Admin (Notes, Points, Reset PIN, Phone, Birthdate, and Style Profile)
 app.put('/api/admin/clients/:dni', requireAdmin, (req, res) => {
   const { dni } = req.params;
-  const { firstName, lastName, phone, birthDate, points, totalCuts, notes, newPin } = req.body;
+  const {
+    firstName,
+    lastName,
+    phone,
+    birthDate,
+    points,
+    totalCuts,
+    notes,
+    newPin,
+    hairStyle,
+    hairTexture,
+    preferredProduct,
+    preferredDrink,
+    lastVisitDate
+  } = req.body;
 
   const row = db.prepare('SELECT * FROM clients WHERE dni = ?').get(dni);
   if (!row) return res.status(404).json({ error: 'Cliente no encontrado' });
@@ -1317,7 +1337,9 @@ app.put('/api/admin/clients/:dni', requireAdmin, (req, res) => {
 
   db.prepare(`
     UPDATE clients
-    SET first_name = ?, last_name = ?, phone = ?, birth_date = ?, points = ?, total_cuts = ?, notes = ?, pin_hash = ?, pin_code = ?
+    SET first_name = ?, last_name = ?, phone = ?, birth_date = ?, points = ?, total_cuts = ?, notes = ?,
+        hair_style = ?, hair_texture = ?, preferred_product = ?, preferred_drink = ?, last_visit_date = ?,
+        pin_hash = ?, pin_code = ?
     WHERE dni = ?
   `).run(
     firstName !== undefined ? firstName.trim() : row.first_name,
@@ -1327,6 +1349,11 @@ app.put('/api/admin/clients/:dni', requireAdmin, (req, res) => {
     points !== undefined ? Number(points) : row.points,
     totalCuts !== undefined ? Number(totalCuts) : row.total_cuts,
     notes !== undefined ? notes : row.notes,
+    hairStyle !== undefined ? hairStyle.trim() : (row.hair_style || ''),
+    hairTexture !== undefined ? hairTexture.trim() : (row.hair_texture || ''),
+    preferredProduct !== undefined ? preferredProduct.trim() : (row.preferred_product || ''),
+    preferredDrink !== undefined ? preferredDrink.trim() : (row.preferred_drink || ''),
+    lastVisitDate !== undefined ? lastVisitDate : (row.last_visit_date || ''),
     updatedPinHash,
     updatedPinCode,
     dni
