@@ -238,11 +238,11 @@ export default function AdminPanel({
     const templates = [
       {
         label: 'Agradecimiento VIP + Trago',
-        text: `Hola ${c.firstName || c.name || 'Socio'}! Queremos agradecerte por ser uno de los socios más fieles de ULTRA BARBER Studio (${c.totalCuts || 0} cortes realizados). En tu próxima visita tenés un beneficio especial de cortesía en el sillón!`
+        text: `Hola ${c.firstName || c.name || 'Socio'}! Quería agradecerte por elegir siempre cortarte conmigo (${c.totalCuts || 0} cortes realizados). En tu próxima visita tenés un beneficio especial de cortesía en el sillón!`
       },
       {
         label: 'Doble Puntaje',
-        text: `Hola ${c.firstName || c.name || 'Socio'}! Por tu fidelidad en ULTRA BARBER Studio, tu próximo turno sumará DOBLE PUNTO en tu Pase de Socio para acelerar tu corte bonificado. ¿Querés agendar para esta semana?`
+        text: `Hola ${c.firstName || c.name || 'Socio'}! Por tu fidelidad, tu próximo turno sumará DOBLE PUNTO en tu Pase de Socio para acelerar tu corte bonificado. ¿Querés agendar para esta semana?`
       }
     ];
 
@@ -265,7 +265,7 @@ export default function AdminPanel({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="micro-technical text-[9px] text-[#D4AF37]">
-              SILLÓN ACTIVO • ULTRA BARBER STUDIO
+              SILLÓN ACTIVO • DAVID BARBER
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-display font-bold text-[#EDEDED]">

@@ -1,12 +1,12 @@
 // Calendar integration utility for ULTRA BARBER Studio
 
 export function createCalendarEventData(appointment, studioConfig = {}) {
-  const service = appointment?.serviceName || 'Corte en ULTRA BARBER Studio';
+  const service = appointment?.serviceName || 'Corte con David';
   const drink = appointment?.selectedDrink ? ` con ${appointment.selectedDrink}` : '';
-  const title = `Turno: ${service}${drink} • ULTRA BARBER`;
-  const location = studioConfig?.address 
-    ? `${studioConfig.address}, Rosario, Santa Fe` 
-    : 'Av. Santa Fe 3240, Rosario, Santa Fe';
+  const title = `Turno: ${service}${drink} • David Barber`;
+  const location = studioConfig?.barbershopName
+    ? `${studioConfig.barbershopName} • ${studioConfig?.address || 'Eva Perón 52'}, ${studioConfig?.city || 'Capitán Bermúdez'}`
+    : `${studioConfig?.address || 'Eva Perón 52'}, ${studioConfig?.city || 'Capitán Bermúdez'}`;
   
   const description = [
     `Turno #${appointment?.code || ''}`,
@@ -15,7 +15,7 @@ export function createCalendarEventData(appointment, studioConfig = {}) {
     `Lugar: ${location}`,
     '',
     'Recordatorio: Tolerancia de espera de 10 minutos.',
-    'Para reprogramar o cancelar, comunicate por WhatsApp con ULTRA BARBER Studio.'
+    'Para reprogramar o cancelar, comunicate por WhatsApp con David.'
   ].join('\n');
 
   const dateStr = appointment?.date; // YYYY-MM-DD

@@ -1280,7 +1280,7 @@ app.post('/api/admin/blocked-slots', requireAdmin, (req, res) => {
     );
 
     const clientPhone = (apt.client_phone || '').replace(/\D/g, '');
-    const cancelMsg = `Hola ${apt.client_name}! Te escribe David de ULTRA BARBER STUDIO. Por un motivo de fuerza mayor (${reason || 'imprevisto'}), tuvimos que cancelar el turno #${apt.code} del ${apt.date} a las ${apt.time} hs. Te pido mil disculpas. Escribime por acá para reprogramar tu atención con prioridad absoluta.`;
+    const cancelMsg = `Hola ${apt.client_name}! Te escribe David. Por un motivo de fuerza mayor (${reason || 'imprevisto'}), tuve que cancelar el turno #${apt.code} del ${apt.date} a las ${apt.time} hs. Te pido mil disculpas. Escribime por acá para reprogramar tu atención con prioridad absoluta.`;
     const whatsappUrl = `https://wa.me/${clientPhone}?text=${encodeURIComponent(cancelMsg)}`;
 
     affectedList.push({

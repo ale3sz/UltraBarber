@@ -233,10 +233,10 @@ export default function MembershipCard({
                 </div>
                 <div>
                   <span className="text-[10px] font-mono tracking-[0.2em] uppercase font-bold text-[#EDEDED] block leading-none">
-                    ULTRA BARBER
+                    DAVID BARBER
                   </span>
                   <span className="text-[8px] font-mono tracking-[0.2em] text-[#8A898E] uppercase block mt-0.5">
-                    PRIVATE CLUB PASS
+                    CLIENT CLUB PASS
                   </span>
                 </div>
               </div>

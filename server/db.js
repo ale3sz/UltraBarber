@@ -183,12 +183,16 @@ export function initDatabase() {
   // Seed default Config
   const defaultConfig = {
     barberName: 'David',
-    businessName: 'ULTRA BARBER STUDIO',
+    businessName: 'DAVID BARBER',
+    barbershopName: 'V.I.P Barberías',
     whatsappPhone: '5493413762115',
     holdDurationMinutes: 15,
     pointsForFreeCut: 10,
-    address: 'Av. Santa Fe 3240 • Studio Privado',
-    instagram: '@davidbarber.studio',
+    address: 'Eva Perón 52',
+    city: 'Capitán Bermúdez',
+    locationNote: 'Sillón de David en V.I.P Barberías',
+    googleMapsUrl: 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z',
+    instagram: '@barber_f4de',
     workHours: {
       start: '09:00',
       end: '20:00',
@@ -202,7 +206,7 @@ export function initDatabase() {
       {
         id: 'ben-corte',
         title: 'Corte de Autor Bonificado',
-        description: 'Acumulando 10 puntos con tus visitas en el estudio',
+        description: 'Acumulando 10 puntos con tus visitas en el sillón',
         badge: '10 PTS',
         active: true
       },
@@ -259,6 +263,15 @@ export function initDatabase() {
 
   // Asegurar que el WhatsApp de David sea el real (5493413762115)
   db.prepare("UPDATE config SET value = ? WHERE key = 'whatsappPhone' AND (value = '\"5491123456789\"' OR value = '\"3413762115\"')").run(JSON.stringify('5493413762115'));
+
+  // Migración: Asegurar que los datos de ubicación indiquen la barbería real y no un local propio
+  try {
+    db.prepare("UPDATE config SET value = ? WHERE key = 'address' AND value LIKE '%Studio Privado%'").run(JSON.stringify('Eva Perón 52'));
+    db.prepare("INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)").run('barbershopName', JSON.stringify('V.I.P Barberías'));
+    db.prepare("INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)").run('city', JSON.stringify('Capitán Bermúdez'));
+    db.prepare("INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)").run('locationNote', JSON.stringify('Sillón de David en V.I.P Barberías'));
+    db.prepare("INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)").run('googleMapsUrl', JSON.stringify('https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'));
+  } catch {}
 
   // Seed Services from precios.txt
   const serviceCount = db.prepare('SELECT COUNT(*) as count FROM services').get().count;

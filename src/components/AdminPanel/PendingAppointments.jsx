@@ -27,7 +27,7 @@ export default function PendingAppointments({
     const templates = [
       {
         label: 'Confirmar y Recibir',
-        text: `Hola ${apt.clientName}! Recibí tu solicitud #${apt.code}. Tu turno para el ${apt.date} a las ${apt.time} hs (${apt.serviceName}) ya quedó confirmado. Te esperamos en el sillón de ULTRA BARBER!`
+        text: `Hola ${apt.clientName}! Recibí tu solicitud #${apt.code}. Tu turno para el ${apt.date} a las ${apt.time} hs (${apt.serviceName}) ya quedó confirmado. Te espero puntual en el sillón!`
       },
       {
         label: 'Aviso de Demora / Ajuste',
@@ -35,7 +35,7 @@ export default function PendingAppointments({
       },
       {
         label: 'Confirmar con Bebida',
-        text: `Hola ${apt.clientName}! Turno #${apt.code} para el ${apt.date} a las ${apt.time} hs confirmado. Ya te dejamos lista tu sesión y la bebida fría para cuando llegues!`
+        text: `Hola ${apt.clientName}! Turno #${apt.code} para el ${apt.date} a las ${apt.time} hs confirmado. Ya te dejo lista tu sesión y la bebida fría para cuando llegues!`
       }
     ];
 

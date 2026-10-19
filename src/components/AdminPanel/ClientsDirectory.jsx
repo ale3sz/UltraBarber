@@ -123,15 +123,15 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
       recipientPhone: c.phone || '',
       title: 'Enviar PIN de Acceso',
       badge: 'CLAVE DE ACCESO WEB',
-      initialMessage: `Hola ${c.firstName || c.name || 'Socio'}! Te paso tu PIN personal de 4 dígitos para ingresar a tu Club Pass en la web de ULTRA BARBER: ${c.pinCode || '1234'} (DNI: ${c.dni}). Guardalo para reservar y ver tus puntos!`,
+      initialMessage: `Hola ${c.firstName || c.name || 'Socio'}! Te paso tu PIN personal de 4 dígitos para ingresar a tu Club Pass en la web de David: ${c.pinCode || '1234'} (DNI: ${c.dni}). Guardalo para reservar y ver tus puntos!`,
       suggestedTemplates: [
         {
           label: 'Envío de PIN Estándar',
-          text: `Hola ${c.firstName || c.name || 'Socio'}! Te paso tu PIN personal de 4 dígitos para ingresar a tu Club Pass en la web de ULTRA BARBER: ${c.pinCode || '1234'} (DNI: ${c.dni}). Guardalo para reservar y ver tus puntos!`
+          text: `Hola ${c.firstName || c.name || 'Socio'}! Te paso tu PIN personal de 4 dígitos para ingresar a tu Club Pass en la web de David: ${c.pinCode || '1234'} (DNI: ${c.dni}). Guardalo para reservar y ver tus puntos!`
         },
         {
           label: 'Bienvenida + PIN',
-          text: `Hola ${c.firstName || c.name || 'Socio'}, un gusto tenerte en ULTRA BARBER! Tu cuenta ya está activa. Tu PIN de ingreso es ${c.pinCode || '1234'} (con tu DNI ${c.dni}). Con cada visita sumás puntos para cortes bonificados!`
+          text: `Hola ${c.firstName || c.name || 'Socio'}, un gusto saludarte! Tu cuenta ya está activa. Tu PIN de ingreso es ${c.pinCode || '1234'} (con tu DNI ${c.dni}). Con cada visita conmigo sumás puntos para cortes bonificados!`
         }
       ]
     });
@@ -157,11 +157,11 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
         },
         {
           label: 'Aprovechar Puntos VIP',
-          text: `Hola ${c.firstName || c.name || 'Socio'}! Te escribo de ULTRA BARBER. Tenés acumulados ${c.points || 0} puntos en tu Club Pass. Avisame y te aseguro un turno para esta semana!`
+          text: `Hola ${c.firstName || c.name || 'Socio'}! Te escribe David. Tenés acumulados ${c.points || 0} puntos en tu Club Pass. Avisame y te aseguro un turno para esta semana!`
         },
         {
           label: 'Fin de Semana / Reserva',
-          text: `Hola ${c.firstName || c.name || 'Socio'}! Se viene el fin de semana y quedan pocos lugares en el estudio. Si querés pasar por el sillón avisame por acá y te anoto!`
+          text: `Hola ${c.firstName || c.name || 'Socio'}! Se viene el fin de semana y quedan pocos lugares en mi sillón. Si querés pasar avisame por acá y te anoto!`
         }
       ]
     });

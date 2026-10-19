@@ -1,7 +1,7 @@
 {
-  "name": "ULTRA BARBER STUDIO",
-  "short_name": "ULTRA BARBER",
-  "description": "Studio Privado de Autor & Club de Socios Exclusivo",
+  "name": "David Barber",
+  "short_name": "David Barber",
+  "description": "Club de Socios & Turnos VIP con David",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

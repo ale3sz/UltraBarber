@@ -26,14 +26,14 @@ export default function Footer({ onOpenAdmin, adminUser }) {
                   <Scissors className="w-4 h-4 -rotate-45" />
                 </div>
                 <span className="font-display font-bold text-base tracking-tight text-[#EDEDED]">
-                  ULTRA BARBER STUDIO
+                  DAVID BARBER
                 </span>
               </div>
               <p className="text-xs leading-relaxed max-w-sm text-[#8A898E]">
-                Studio privado de autor especializado en cortes fade, perfilado de barba a navaja y diseño capilar de alta precisión. Club de socios con beneficios exclusivos por visita.
+                Espacio exclusivo para clientes de David. Agenda digital personalizada y programa de beneficios por visita en el sillón de V.I.P Barberías.
               </p>
               <p className="text-[11px] font-mono text-[#D4AF37]">
-                Rosario, Santa Fe • Atención exclusivamente con turno previo
+                Capitán Bermúdez, Santa Fe • Atención exclusivamente con turno previo
               </p>
 
               <div className="pt-1">
@@ -96,7 +96,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
           {/* Bottom Bar: Copyright */}
           <div className="pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
             <p className="text-center sm:text-left text-[#8A898E]">
-              &copy; {new Date().getFullYear()} ULTRA BARBER Studio. Todos los derechos reservados. Prohibida la reproducción total o parcial sin autorización.
+              &copy; {new Date().getFullYear()} David Barber • Turnos &amp; Fidelización.
             </p>
 
             <span className="text-[10px] opacity-40 font-mono text-[#8A898E]">v2.4</span>
