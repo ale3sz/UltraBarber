@@ -8,10 +8,14 @@ import {
   Camera,
   Maximize2,
   X,
-  Scissors
+  Scissors,
+  Lock,
+  Sparkles
 } from 'lucide-react';
 import { getAssetUrl } from '../../utils/assets';
 import InstagramIcon from '../icons/InstagramIcon';
+import OdometerCounter from '../common/OdometerCounter';
+import SpotlightCard from '../common/SpotlightCard';
 
 const getImageSrc = getAssetUrl;
 
@@ -21,32 +25,43 @@ const STUDIO_GALLERY = [
     src: getAssetUrl('imagenes/corte-freestyle.jpg'),
     title: 'Fade Comprimido & Freestyle',
     subtitle: 'Diseño geométrico a navaja y degradé',
-    tag: 'DISEÑO FREESTYLE'
+    tag: 'DISEÑO FREESTYLE',
+    serviceId: 'corte'
   },
   {
     id: 'look-2',
     src: getAssetUrl('imagenes/IMG_3526.PNG'),
     title: 'Burst Fade · Diseño 23',
     subtitle: 'Degradado curvo y textura superior',
-    tag: 'FADE DE AUTOR'
+    tag: 'FADE DE AUTOR',
+    serviceId: 'corte'
   },
   {
     id: 'look-3',
     src: getAssetUrl('imagenes/corte-premium.png'),
     title: 'Corte Premium · Relax VIP',
     subtitle: 'Gafas de masaje ocular + pistola cervical',
-    tag: 'CORTE PREMIUM'
+    tag: 'CORTE PREMIUM',
+    serviceId: 'experiencia-completa'
   },
   {
     id: 'look-4',
     src: getAssetUrl('imagenes/IMG_0989.JPG.jpeg'),
     title: 'Colorimetría & Sesión VIP',
     subtitle: 'Iluminación, reflejos y terminación técnica',
-    tag: 'COLOR & TÉCNICA'
+    tag: 'COLOR & TÉCNICA',
+    serviceId: 'corte-bebida'
   }
 ];
 
-export default function MembershipCard({ client, studioConfig, onStartBooking, onRequestLogin }) {
+export default function MembershipCard({
+  client,
+  studioConfig,
+  onStartBooking,
+  onRequestLogin,
+  guestMode = 'socio',
+  onSelectService
+}) {
   const [activeTab, setActiveTab] = useState('puntos'); // 'puntos' | 'premios'
   const [showQrModal, setShowQrModal] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -184,7 +199,32 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
 
         {activeTab === 'puntos' ? (
           /* Módulo Inspirado en Tarjeta Física Black Card / Apple Wallet */
-          <div className="black-card p-5 sm:p-6 text-[#EDEDED] space-y-6 animate-enter">
+          <div className="black-card metal-shimmer p-5 sm:p-6 text-[#EDEDED] space-y-6 animate-enter relative">
+            {/* Si es Invitado y eligió "Primera vez", mostrar Pase de Socio Bloqueado con efecto Blur */}
+            {!client && guestMode === 'primera_vez' && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center bg-black/75 backdrop-blur-[6px] animate-enter">
+                <div className="w-11 h-11 rounded-full bg-[#141416] border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] mb-2.5 shadow-xl">
+                  <Lock className="w-4 h-4 stroke-[2]" />
+                </div>
+                <span className="badge-champagne mb-1.5 text-[9px]">PASE DE SOCIO · BLOQUEADO</span>
+                <h4 className="font-display font-bold text-base text-[#EDEDED] leading-snug">
+                  Sumá tu 1º corte en el estudio
+                </h4>
+                <p className="text-[11px] text-[#8A898E] max-w-xs mt-1 leading-relaxed">
+                  Al registrar tu primer turno, tu membresía privada se activará automáticamente para sumar puntos y cortes bonificados.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => onStartBooking && onStartBooking()}
+                  className="mt-3.5 px-4 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono text-[10px] font-bold uppercase tracking-[0.15em] flex items-center gap-1.5 shadow-md active:scale-[0.98] transition-all"
+                >
+                  <Sparkles className="w-3 h-3 text-[#D4AF37]" />
+                  <span>Activar con mi primer turno</span>
+                  <ArrowRight className="w-3 h-3 text-[#0B0B0C]" />
+                </button>
+              </div>
+            )}
+
             {/* Header: Marca y Badge Quirúrgico */}
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
@@ -213,9 +253,10 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
                   BALANCE DISPONIBLE
                 </span>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl sm:text-6xl font-display font-bold tracking-tight text-[#EDEDED] tabular-nums leading-none">
-                    {points}
-                  </span>
+                  <OdometerCounter
+                    value={points}
+                    className="text-5xl sm:text-6xl font-display font-bold tracking-tight text-[#EDEDED] tabular-nums leading-none"
+                  />
                   <span className="text-xs font-mono font-bold tracking-widest text-[#D4AF37]">
                     PTS
                   </span>
@@ -245,7 +286,9 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
               <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.12em] uppercase text-[#8A898E]">
                 <span>
                   {!client
-                    ? 'ACCEDÉ CON DNI + PIN PARA VER TUS PUNTOS'
+                    ? guestMode === 'primera_vez'
+                      ? '1º VISITA = 1º PASO HACIA TU CORTE BONIFICADO'
+                      : 'ACCEDÉ CON DNI + PIN PARA VER TUS PUNTOS'
                     : remainingForFree === 0
                     ? 'CORTE BONIFICADO DISPONIBLE'
                     : `FALTAN ${remainingForFree} PARA CORTE BONIFICADO`}
@@ -260,10 +303,10 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
             <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4">
               <div>
                 <span className="text-xs font-display font-bold tracking-wider text-[#EDEDED] block uppercase">
-                  {client ? `${client.firstName || client.name || 'SOCIO'} ${client.lastName || ''}`.trim() : 'SOCIO INVITADO'}
+                  {client ? `${client.firstName || client.name || 'SOCIO'} ${client.lastName || ''}`.trim() : guestMode === 'primera_vez' ? 'NUEVO SOCIO' : 'SOCIO INVITADO'}
                 </span>
                 <span className="text-[10px] font-mono tracking-widest text-[#8A898E] block mt-0.5 tabular-nums">
-                  {client ? `DNI N° ${client.dni}` : 'IDENTIFICATE PARA VINCULAR'}
+                  {client ? `DNI N° ${client.dni}` : guestMode === 'primera_vez' ? 'MEMBRESÍA POR ACTIVAR' : 'IDENTIFICATE PARA VINCULAR'}
                 </span>
               </div>
 
@@ -436,32 +479,43 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
           </div>
         </div>
 
-        {/* Grilla de 4 Fotos Contenidas y Oscuras */}
+        {/* Grilla de 4 Fotos Contenidas con Parallax y Reveal de Acción */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
           {STUDIO_GALLERY.map((item) => (
-            <button
+            <div
               key={item.id}
-              type="button"
-              onClick={() => setSelectedPhoto(item)}
-              className="group relative aspect-[3/4] rounded-md overflow-hidden border border-white/[0.08] bg-[#141416] text-left focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
+              className="group relative aspect-[3/4] rounded-md overflow-hidden border border-white/[0.08] bg-[#141416] text-left focus-within:ring-1 focus-within:ring-[#D4AF37]"
             >
               <img
                 src={getImageSrc(item.src)}
                 alt={item.title}
-                className="w-full h-full object-cover object-top filter contrast-[1.05] group-hover:scale-105 transition-transform duration-500 ease-out"
+                className="w-full h-full object-cover object-top filter contrast-[1.05] group-hover:scale-[1.04] transition-transform duration-500 ease-out cursor-pointer"
                 loading="lazy"
+                onClick={() => setSelectedPhoto(item)}
               />
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/70 to-transparent pointer-events-none" />
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/40 to-transparent group-hover:from-[#0B0B0C]/90 group-hover:via-[#0B0B0C]/30 transition-colors pointer-events-none"
+              />
 
-              <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-[#0B0B0C]/85 backdrop-blur-md border border-white/[0.1] text-[8px] font-mono text-[#D4AF37] uppercase tracking-wider hidden sm:inline-block">
+              <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-[#0B0B0C]/85 backdrop-blur-md border border-white/[0.1] text-[8px] font-mono text-[#D4AF37] uppercase tracking-wider hidden sm:inline-block pointer-events-none">
                 {item.tag}
               </span>
 
-              <div className="absolute top-2 right-2 w-5 h-5 rounded bg-[#0B0B0C]/80 border border-white/[0.1] flex items-center justify-center text-[#EDEDED] opacity-60 group-hover:opacity-100 transition-opacity">
+              <button
+                type="button"
+                onClick={() => setSelectedPhoto(item)}
+                className="absolute top-2 right-2 w-5 h-5 rounded bg-[#0B0B0C]/80 border border-white/[0.1] flex items-center justify-center text-[#EDEDED] opacity-60 hover:opacity-100 transition-opacity"
+                title="Ampliar foto"
+                aria-label="Ampliar foto"
+              >
                 <Maximize2 className="w-2.5 h-2.5 stroke-[1.5]" />
-              </div>
+              </button>
 
-              <div className="absolute inset-x-0 bottom-0 p-2.5">
+              {/* Título y subtítulo */}
+              <div
+                className="absolute inset-x-0 bottom-0 p-2.5 group-hover:pb-11 transition-all duration-300 pointer-events-none cursor-pointer"
+                onClick={() => setSelectedPhoto(item)}
+              >
                 <p className="font-display font-bold text-xs text-[#EDEDED] leading-tight line-clamp-1">
                   {item.title}
                 </p>
@@ -469,7 +523,25 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
                   {item.subtitle}
                 </p>
               </div>
-            </button>
+
+              {/* Botón de acción emergente al hover: Elegir este estilo */}
+              <div className="absolute inset-x-2 bottom-2 z-10 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onSelectService) {
+                      onSelectService(item.serviceId);
+                    } else if (onStartBooking) {
+                      onStartBooking();
+                    }
+                  }}
+                  className="w-full py-1.5 px-2 rounded bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono font-bold text-[9px] uppercase tracking-wider flex items-center justify-center gap-1 shadow-md active:scale-[0.98] transition-all"
+                >
+                  <span>Elegir estilo</span>
+                  <ArrowRight className="w-2.5 h-2.5 text-[#0B0B0C] stroke-[2]" />
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -516,12 +588,17 @@ export default function MembershipCard({ client, studioConfig, onStartBooking, o
               <button
                 type="button"
                 onClick={() => {
+                  const svcId = selectedPhoto.serviceId;
                   setSelectedPhoto(null);
-                  onStartBooking();
+                  if (onSelectService) {
+                    onSelectService(svcId);
+                  } else if (onStartBooking) {
+                    onStartBooking();
+                  }
                 }}
-                className="px-3.5 py-2 rounded-md bg-[#EDEDED] text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-white"
+                className="px-3.5 py-2 rounded-md bg-[#EDEDED] text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-white active:scale-[0.98] transition-all"
               >
-                <span>Reservar</span>
+                <span>Elegir estilo</span>
                 <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
               </button>
             </div>
