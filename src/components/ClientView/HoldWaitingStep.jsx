@@ -213,20 +213,26 @@ export default function HoldWaitingStep({
         </div>
       </div>
 
-      <div className="rounded-lg p-6 sm:p-7 bg-[#141416] card-hairline text-[#EDEDED] space-y-6 animate-enter">
+      <div className="rounded-lg p-6 sm:p-7 bg-[#141417] card-hairline text-[#EDEDED] space-y-6 animate-enter">
         {/* Top Status & Live Countdown */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
           <div className="flex items-center gap-2.5">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4AF37] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D4AF37]" />
+            <span className="relative flex h-2.5 w-2.5">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                timeLeft < 180000 ? 'bg-amber-400' : 'bg-[#E5C378]'
+              }`} />
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                timeLeft < 180000 ? 'bg-amber-400' : 'bg-[#E5C378]'
+              }`} />
             </span>
-            <span className="micro-technical text-[#D4AF37]">
-              BLOQUEO ACTIVO • 15 MIN
+            <span className={`micro-technical ${timeLeft < 180000 ? 'text-amber-400 font-bold' : 'text-[#E5C378]'}`}>
+              {timeLeft < 180000 ? 'ÚLTIMOS MINUTOS · BLOQUEO ACTIVO' : 'BLOQUEO ACTIVO • 15 MIN'}
             </span>
           </div>
 
-          <div className="px-3 py-1 rounded-md bg-[#0B0B0C] card-hairline flex items-center gap-2 text-[#D4AF37]">
+          <div className={`px-3 py-1 rounded-md bg-[#0D0D0F] card-hairline flex items-center gap-2 ${
+            timeLeft < 180000 ? 'text-amber-400 border-amber-500/30' : 'text-[#E5C378]'
+          }`}>
             <Clock className="w-3.5 h-3.5" />
             <span className="text-xs font-mono font-bold tabular-nums">
               {formatTime(timeLeft)}
@@ -234,35 +240,35 @@ export default function HoldWaitingStep({
           </div>
         </div>
 
-        {/* Big 4-Digit Code Display */}
-        <div className="text-center space-y-2">
-          <span className="micro-technical text-[#8A898E] block">PASO OBLIGATORIO</span>
+        {/* Big 4-Digit Code Display — Laser-Etched Security Keyplate */}
+        <div className="text-center space-y-3">
+          <span className="micro-technical text-[#8A898E] block">LLAVE DE RESERVA PRIVADA</span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED] tracking-tight">
-            Confirmá tu código con <span className="font-editorial italic font-normal text-[#D4AF37]">David</span>
+            Confirmá tu llave con <span className="font-editorial italic font-normal text-[#E5C378]">David</span>
           </h2>
-          <p className="text-xs text-[#8A898E] max-w-md mx-auto">
-            Tocá el botón de abajo para enviar el mensaje prearmado. Cuando David confirme, tu lugar queda asegurado.
+          <p className="text-xs text-[#8A898E] max-w-md mx-auto leading-relaxed">
+            David ya tiene tu sillón preparado. Tocá el botón de abajo para enviar tu llave por WhatsApp y asegurar tu lugar antes de que expire el bloqueo temporal.
           </p>
 
-          <div className="py-3">
-            <div className="inline-block px-7 py-3 rounded-md bg-[#0B0B0C] card-hairline border-white/[0.15]">
-              <span className="text-3xl sm:text-4xl font-mono font-extrabold tracking-[0.2em] text-[#EDEDED] tabular-nums">
+          <div className="py-2">
+            <div className="inline-block px-8 py-3.5 rounded-lg security-keyplate">
+              <span className="text-3xl sm:text-4xl font-mono font-extrabold tracking-[0.25em] text-[#F5E6C8] tabular-nums select-all">
                 #{code}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Primary WhatsApp Handshake Button */}
+        {/* Primary WhatsApp Handshake Button — Tailored Luxury High-Craft */}
         <div className="space-y-2.5">
           <button
             type="button"
             onClick={handleOpenWhatsApp}
-            className="w-full py-3.5 px-6 rounded-md bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.99] text-white font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2.5 transition-all shadow-sm"
+            className="w-full py-4 px-6 rounded-md btn-whatsapp-luxury active:scale-[0.99] text-white font-display font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2.5 transition-all cursor-pointer"
           >
-            <MessageCircle className="w-4 h-4 fill-white/20" />
+            <MessageCircle className="w-4 h-4 fill-white/20 stroke-[2]" />
             <span>Enviar confirmación por WhatsApp</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="w-3.5 h-3.5 stroke-[2]" />
           </button>
 
           <button

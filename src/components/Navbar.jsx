@@ -30,7 +30,7 @@ export default function Navbar({
   return (
     <>
       {/* Top Studio Header */}
-      <header className="sticky top-0 z-40 w-full bg-[#0B0B0C]/90 backdrop-blur-md border-b border-white/[0.08] transition-colors">
+      <header className="sticky top-0 z-40 w-full bg-[#0D0D0F]/90 backdrop-blur-md border-b border-white/[0.08] transition-colors">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           {/* Brand Identity */}
           <button
@@ -41,7 +41,7 @@ export default function Navbar({
             }}
             className="flex items-center gap-3 text-left group focus:outline-none min-w-0"
           >
-            <div className="w-8 h-8 rounded-md bg-[#141416] border border-white/[0.1] flex items-center justify-center text-[#D4AF37] group-hover:border-[#D4AF37]/50 transition-colors shrink-0">
+            <div className="w-8 h-8 rounded-md bg-[#141417] border border-white/[0.1] flex items-center justify-center text-[#E5C378] group-hover:border-[#E5C378]/50 transition-colors shrink-0">
               <Scissors className="w-4 h-4 -rotate-45 stroke-[1.5]" />
             </div>
             <div className="min-w-0">
@@ -56,7 +56,7 @@ export default function Navbar({
 
           {/* Desktop Navigation Tabs */}
           {activeView === 'client' && (
-            <nav className="hidden md:flex items-center gap-1 p-1 rounded-md bg-[#141416] border border-white/[0.08]">
+            <nav className="hidden md:flex items-center gap-1 p-1 rounded-md bg-[#141417] border border-white/[0.08]">
               <button
                 type="button"
                 onClick={() => setClientSubTab('club')}
@@ -66,7 +66,7 @@ export default function Navbar({
                     : 'text-[#8A898E] hover:text-[#EDEDED]'
                 }`}
               >
-                <CreditCard className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#D4AF37]' : ''}`} />
+                <CreditCard className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#E5C378]' : ''}`} />
                 <span>Mi Pase</span>
               </button>
 
@@ -79,7 +79,7 @@ export default function Navbar({
                     : 'text-[#8A898E] hover:text-[#EDEDED]'
                 }`}
               >
-                <CalendarPlus className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'book' ? 'text-[#D4AF37]' : ''}`} />
+                <CalendarPlus className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'book' ? 'text-[#E5C378]' : ''}`} />
                 <span>Reservar</span>
               </button>
 
@@ -92,7 +92,7 @@ export default function Navbar({
                     : 'text-[#8A898E] hover:text-[#EDEDED]'
                 }`}
               >
-                <Clock className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'turns' ? 'text-[#D4AF37]' : ''}`} />
+                <Clock className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'turns' ? 'text-[#E5C378]' : ''}`} />
                 <span>Mis Turnos</span>
               </button>
             </nav>
@@ -102,12 +102,12 @@ export default function Navbar({
           <div className="flex items-center gap-2 shrink-0">
             {/* Active Client Session Pill */}
             {activeView === 'client' && loggedClient && (
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#141416] border border-white/[0.08] shrink-0">
-                <UserCheck className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.5] shrink-0" />
+              <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#141417] border border-white/[0.08] shrink-0">
+                <UserCheck className="w-3.5 h-3.5 text-[#E5C378] stroke-[1.5] shrink-0" />
                 <span className="text-xs font-semibold text-[#EDEDED] hidden sm:inline">
                   {loggedClient.firstName || loggedClient.name}
                 </span>
-                <span className="text-[11px] font-mono text-[#D4AF37] tabular-nums">
+                <span className="text-[11px] font-mono text-[#E5C378] tabular-nums font-bold">
                   {loggedClient.points} PTS
                 </span>
                 <button
@@ -181,20 +181,20 @@ export default function Navbar({
       {activeView === 'client' && (
         <nav
           aria-label="Navegación principal móvil"
-          className="md:hidden fixed bottom-3 inset-x-3 z-40 p-1 rounded-lg bg-[#141416]/95 backdrop-blur-md border border-white/[0.08] shadow-2xl flex items-center justify-around"
+          className="md:hidden fixed bottom-3 inset-x-3 z-40 p-1 rounded-xl bg-[#141417]/95 backdrop-blur-lg border border-white/[0.09] shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center justify-around"
         >
           {/* Tab 1: Mi Pase */}
           <button
             type="button"
             onClick={() => setClientSubTab('club')}
-            className={`flex-1 py-2 rounded-md flex flex-col items-center gap-1 transition-all ${
+            className={`flex-1 py-2 rounded-lg flex flex-col items-center gap-1 transition-all ${
               clientSubTab === 'club'
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
             <CreditCard
-              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#D4AF37]' : ''}`}
+              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#E5C378]' : ''}`}
             />
             <span className="text-[10px] font-mono tracking-[0.12em] uppercase font-semibold">
               Mi Pase
@@ -205,14 +205,14 @@ export default function Navbar({
           <button
             type="button"
             onClick={() => setClientSubTab('book')}
-            className={`flex-1 py-2 rounded-md flex flex-col items-center gap-1 transition-all ${
+            className={`flex-1 py-2 rounded-lg flex flex-col items-center gap-1 transition-all ${
               clientSubTab === 'book'
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
             <CalendarPlus
-              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'book' ? 'text-[#D4AF37]' : ''}`}
+              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'book' ? 'text-[#E5C378]' : ''}`}
             />
             <span className="text-[10px] font-mono tracking-[0.12em] uppercase font-semibold">
               Reservar
@@ -223,14 +223,14 @@ export default function Navbar({
           <button
             type="button"
             onClick={() => setClientSubTab('turns')}
-            className={`flex-1 py-2 rounded-md flex flex-col items-center gap-1 transition-all ${
+            className={`flex-1 py-2 rounded-lg flex flex-col items-center gap-1 transition-all ${
               clientSubTab === 'turns'
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
             <Clock
-              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'turns' ? 'text-[#D4AF37]' : ''}`}
+              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'turns' ? 'text-[#E5C378]' : ''}`}
             />
             <span className="text-[10px] font-mono tracking-[0.12em] uppercase font-semibold">
               Turnos

@@ -9,11 +9,13 @@
   }
 
   body {
-    background-color: #0B0B0C;
+    background-color: #0D0D0F;
+    background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(229, 195, 120, 0.04), transparent 70%);
     color: #EDEDED;
     font-family: 'Work Sans', system-ui, -apple-system, sans-serif;
     text-underline-offset: 4px;
     letter-spacing: -0.01em;
+    min-height: 100vh;
   }
 
   h1, h2, h3, .font-display {
@@ -32,8 +34,8 @@
 }
 
 ::selection {
-  background-color: #D4AF37;
-  color: #0B0B0C;
+  background-color: #E5C378;
+  color: #0D0D0F;
 }
 
 /* Custom themed scrollbars */
@@ -43,35 +45,37 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B0B0C;
+  background: #0D0D0F;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A2A2E;
+  background: #252429;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37;
+  background: #E5C378;
 }
 
 /* Restrained Architectural Elevation (No AI blurry shadows) */
 .club-shadow {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.07);
 }
 
 .card-hairline {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background-color: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background-color: #141417;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 /* Apple Wallet / Black Card Tactile Texture */
 .black-card {
-  background: linear-gradient(155deg, #18181B 0%, #111113 60%, #0D0D0E 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
+  background: linear-gradient(145deg, #18171B 0%, #111013 55%, #0B0B0D 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
 }
 
 .black-card::before {
@@ -81,14 +85,20 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(229, 195, 120, 0.5), transparent);
+}
+
+/* Black Card in Active Reward Celebration State (10+ PTS) */
+.black-card-reward {
+  border: 1px solid rgba(229, 195, 120, 0.45);
+  box-shadow: 0 0 35px -8px rgba(229, 195, 120, 0.22), 0 20px 40px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Technical micro-labels */
 .micro-technical {
   font-family: 'Azeret Mono', monospace;
   font-size: 10px;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #8A898E;
 }
@@ -96,26 +106,46 @@
 .badge-champagne {
   font-family: 'Azeret Mono', monospace;
   font-size: 9px;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #D4AF37;
-  background: rgba(212, 175, 55, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  padding: 2px 8px;
+  color: #E5C378;
+  background: rgba(229, 195, 120, 0.08);
+  border: 1px solid rgba(229, 195, 120, 0.35);
+  padding: 3px 8px;
   border-radius: 4px;
+}
+
+/* High-Craft Tailored WhatsApp Luxury Button */
+.btn-whatsapp-luxury {
+  background: linear-gradient(135deg, #1B6E3D 0%, #13552D 100%);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 0 8px 24px -6px rgba(19, 85, 45, 0.55);
+}
+
+.btn-whatsapp-luxury:hover {
+  background: linear-gradient(135deg, #208249 0%, #166335 100%);
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 10px 28px -6px rgba(19, 85, 45, 0.7);
+}
+
+/* Laser-Etched Security Keyplate (Handshake code box) */
+.security-keyplate {
+  background: linear-gradient(180deg, #101013 0%, #0A0A0C 100%);
+  border: 1px solid rgba(229, 195, 120, 0.3);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px -4px rgba(229, 195, 120, 0.15);
 }
 
 /* Color bindings */
 .bg-barber-darkBg {
-  background-color: #0B0B0C !important;
+  background-color: #0D0D0F !important;
 }
 
 .bg-barber-darkSurface {
-  background-color: #141416 !important;
+  background-color: #141417 !important;
 }
 
 .border-barber-darkBorder {
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
 }
 
 .text-barber-darkText {
@@ -129,11 +159,11 @@
 
 .text-barber-chai,
 .text-barber-gold {
-  color: #D4AF37 !important;
+  color: #E5C378 !important;
 }
 
 .border-barber-chai {
-  border-color: rgba(212, 175, 55, 0.4) !important;
+  border-color: rgba(229, 195, 120, 0.35) !important;
 }
 
 /* Smooth entry animation */

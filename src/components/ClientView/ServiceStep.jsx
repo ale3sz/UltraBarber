@@ -77,10 +77,12 @@ export default function ServiceStep({
       </div>
 
       {/* 2-Column Visual Service Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+      {/* Asymmetric Bento Grid of Services */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {services.map((service, index) => {
           const isSelected = selectedService?.id === service.id;
-          const isLastOdd = index === services.length - 1 && services.length % 2 !== 0;
+          const isSweetSpot = service.id === 'corte-bebida';
+          const isFullHero = service.id === 'experiencia-completa' || (index === services.length - 1 && services.length % 2 !== 0);
           const directConsultService = isDirectConsult(service);
 
           return (
@@ -95,17 +97,26 @@ export default function ServiceStep({
                   handleSelectService(service);
                 }
               }}
-              className={`group rounded-md overflow-hidden text-left transition-all duration-200 cursor-pointer flex flex-col justify-between active:scale-[0.99] animate-enter ${
-                isLastOdd ? 'sm:col-span-2' : ''
+              className={`group rounded-lg overflow-hidden text-left transition-all duration-300 cursor-pointer flex flex-col justify-between active:scale-[0.99] animate-enter relative ${
+                isFullHero ? 'sm:col-span-2' : ''
               } ${
                 isSelected
-                  ? 'bg-[#141416] border border-[#D4AF37] ring-1 ring-[#D4AF37]/50 shadow-lg'
-                  : 'bg-[#141416] border border-white/[0.08] hover:border-white/20'
+                  ? 'bg-[#161619] border border-[#E5C378] ring-1 ring-[#E5C378]/40 shadow-[0_0_25px_-5px_rgba(229,195,120,0.25)]'
+                  : isSweetSpot
+                  ? 'bg-[#141417] border border-[#E5C378]/35 shadow-[0_0_20px_-5px_rgba(229,195,120,0.12)] hover:border-[#E5C378]/60'
+                  : 'bg-[#141417] border border-white/[0.07] hover:border-white/20'
               }`}
             >
+              {/* Sweet spot decoy flag */}
+              {isSweetSpot && !isSelected && (
+                <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded bg-[#E5C378]/90 text-[#0D0D0F] text-[8px] font-mono font-bold uppercase tracking-widest shadow-md">
+                  ★ ELECCIÓN DE LA CASA
+                </div>
+              )}
+
               {/* Service Photo Header */}
               <div>
-                <div className={`relative w-full overflow-hidden bg-[#0B0B0C] ${isLastOdd ? 'h-60 sm:h-72' : 'h-60 sm:h-64'}`}>
+                <div className={`relative w-full overflow-hidden bg-[#0D0D0F] ${isFullHero ? 'h-52 sm:h-64' : 'h-48 sm:h-56'}`}>
                   {service.imageUrl && (
                     <img
                       src={getImageSrc(service.imageUrl)}
@@ -115,11 +126,11 @@ export default function ServiceStep({
                     />
                   )}
                   {/* Subtle fade to card surface */}
-                  <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#141416] to-transparent pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-[#141417] to-transparent pointer-events-none" />
 
                   {/* Top Right Selection Indicator */}
                   {isSelected && (
-                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded bg-[#D4AF37] text-[#0B0B0C] text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                    <div className="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded bg-[#E5C378] text-[#0D0D0F] text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1 shadow-lg z-10">
                       <Check className="w-3 h-3 stroke-[3]" />
                       <span>Elegido</span>
                     </div>
@@ -127,10 +138,10 @@ export default function ServiceStep({
                 </div>
 
                 {/* Body Content */}
-                <div className="p-4 pb-2 space-y-2">
+                <div className="p-4 sm:p-5 pb-2 space-y-3">
                   <div className="flex items-center gap-2 flex-wrap">
                     {directConsultService ? (
-                      <span className="px-2 py-0.5 rounded bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[8px] font-mono font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded bg-[#E5C378]/15 border border-[#E5C378]/30 text-[8px] font-mono font-bold text-[#E5C378] uppercase tracking-wider flex items-center gap-1">
                         <MessageCircle className="w-2.5 h-2.5" />
                         <span>CONSULTA DIRECTA</span>
                       </span>
@@ -159,24 +170,24 @@ export default function ServiceStep({
                     {service.name}
                   </h3>
 
-                  <ul className="mt-2 space-y-1">
+                  {/* Micro-pills horizontal layout for low cognitive load */}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
                     {service.includes.map((item, idx) => (
-                      <li
+                      <span
                         key={idx}
-                        className="text-xs text-[#8A898E] flex items-start gap-1.5"
+                        className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.07] text-[10px] font-mono text-[#C5C4C9] tracking-wide"
                       >
-                        <Check className="w-3 h-3 text-[#D4AF37] shrink-0 mt-0.5 stroke-[2]" />
-                        <span>{item}</span>
-                      </li>
+                        {item}
+                      </span>
                     ))}
-                  </ul>
+                  </div>
 
                   {/* Banner informativo específico para servicios de consulta directa */}
                   {directConsultService && (
-                    <div className="mt-3 p-3 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/25 text-xs text-[#EDEDED] flex items-start gap-2.5">
-                      <MessageCircle className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                    <div className="mt-3 p-3 rounded-lg bg-[#E5C378]/10 border border-[#E5C378]/25 text-xs text-[#EDEDED] flex items-start gap-2.5">
+                      <MessageCircle className="w-4 h-4 text-[#E5C378] shrink-0 mt-0.5" />
                       <div className="space-y-0.5">
-                        <p className="font-semibold text-[#D4AF37] text-xs">
+                        <p className="font-semibold text-[#E5C378] text-xs">
                           Organización personal con David
                         </p>
                         <p className="text-[#8A898E] text-[11px] leading-relaxed">
@@ -189,10 +200,10 @@ export default function ServiceStep({
               </div>
 
               {/* Price & Specs Footer */}
-              <div className="px-4 pb-4 pt-2">
+              <div className="px-4 sm:px-5 pb-4 pt-2">
                 {directConsultService ? (
                   <div className="space-y-0.5">
-                    <span className="text-base sm:text-lg font-display font-bold text-[#D4AF37]">
+                    <span className="text-base sm:text-lg font-display font-bold text-[#E5C378]">
                       A coordinar
                     </span>
                     <p className="text-[10px] font-mono text-[#8A898E]">
@@ -201,20 +212,21 @@ export default function ServiceStep({
                   </div>
                 ) : (
                   <div className="flex items-baseline gap-1">
-                    <span className="text-xs font-mono text-[#D4AF37] font-bold">$</span>
-                    <span className="text-xl font-display font-bold text-[#EDEDED] tabular-nums">
+                    <span className="text-xs font-mono text-[#E5C378] font-bold">$</span>
+                    <span className="text-2xl font-display font-bold text-[#EDEDED] tabular-nums">
                       {service.price.toLocaleString('es-AR')}
                     </span>
+                    <span className="text-[10px] font-mono text-[#8A898E] ml-1 uppercase">ARS</span>
                   </div>
                 )}
 
-                <div className="mt-2 pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-[#8A898E] flex items-center gap-1">
-                    <Clock className="w-3 h-3 stroke-[1.5]" />
+                <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8A898E] flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 stroke-[1.5] text-[#E5C378]" />
                     {directConsultService ? 'Tiempo a coordinar (+2 hs)' : `${service.duration} MIN`}
                   </span>
-                  <span className="font-bold text-[#D4AF37] tracking-wider">
-                    {directConsultService ? 'WHATSAPP DIRECTO' : `+${service.pointsEarned || 1} PTO`}
+                  <span className="font-bold text-[#E5C378] tracking-wider">
+                    {directConsultService ? 'WHATSAPP DIRECTO' : `+${service.pointsEarned || 1} PTO EN TU PASE`}
                   </span>
                 </div>
               </div>

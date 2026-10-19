@@ -193,10 +193,10 @@ export default function ClientView({
                           setSubTab('book');
                           setBookingStep(3);
                         }}
-                        className="px-3.5 py-2 rounded-md bg-[#25D366] hover:bg-[#20ba5a] text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
+                        className="px-3.5 py-2 rounded-md btn-whatsapp-luxury text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all"
                       >
-                        <MessageCircle className="w-3.5 h-3.5 fill-white/20" />
-                        <span>WhatsApp</span>
+                        <MessageCircle className="w-3.5 h-3.5 fill-white/20 stroke-[2]" />
+                        <span>Confirmar WhatsApp</span>
                       </button>
                     )}
 
@@ -213,25 +213,38 @@ export default function ClientView({
             )}
 
             {/* 2. Hero Card de Reserva Directa con MagneticButton */}
-            <div className="relative rounded-lg overflow-hidden border border-white/[0.08] bg-[#141416]">
+            <div className="relative rounded-lg overflow-hidden border border-white/[0.08] bg-[#141417] shadow-xl">
               <img
                 src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
                 alt="David en el estudio"
                 className="absolute inset-0 w-full h-full object-cover object-center opacity-25"
               />
-              <div className="relative z-10 p-6 bg-gradient-to-b from-[#0B0B0C]/80 via-[#0B0B0C]/90 to-[#0B0B0C] space-y-4">
+              <div className="relative z-10 p-6 bg-gradient-to-b from-[#0D0D0F]/80 via-[#0D0D0F]/90 to-[#0D0D0F] space-y-4">
                 <div className="space-y-1.5">
                   <span className="micro-technical block text-[9px] text-[#8A898E]">
                     01 / 03 PASO INICIAL · RESERVA SIN SEÑA
                   </span>
                   <h2 className="text-xl font-display font-bold text-[#EDEDED] leading-snug">
-                    Tu próximo corte te{' '}
-                    <span className="font-editorial italic font-normal text-[#D4AF37]">
-                      espera
-                    </span>
+                    {loggedClient && loggedClient.points >= 10 ? (
+                      <>
+                        Tu corte bonificado está{' '}
+                        <span className="font-editorial italic font-normal text-[#E5C378]">
+                          listo
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        Tu próximo corte te{' '}
+                        <span className="font-editorial italic font-normal text-[#E5C378]">
+                          espera
+                        </span>
+                      </>
+                    )}
                   </h2>
                   <p className="text-xs text-[#8A898E] leading-relaxed">
-                    Experiencia de autor en sillón privado con David. Reserva instantánea sin seña previa.
+                    {loggedClient && loggedClient.points >= 10
+                      ? 'Elegí tu fecha y canjeá tus 10 puntos en el sillón sin costo alguno.'
+                      : 'Experiencia de autor en sillón privado con David. Reserva instantánea sin seña previa.'}
                   </p>
                 </div>
 
@@ -240,10 +253,10 @@ export default function ClientView({
                     setSubTab('book');
                     setBookingStep(1);
                   }}
-                  className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-sm"
+                  className="w-full py-3.5 rounded-md bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_20px_-4px_rgba(229,195,120,0.35)]"
                 >
-                  <span>Sacá tu turno</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#0B0B0C] stroke-[2]" />
+                  <span>{loggedClient && loggedClient.points >= 10 ? 'Canjear corte bonificado' : 'Sacá tu turno'}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#0D0D0F] stroke-[2.5]" />
                 </MagneticButton>
               </div>
             </div>
