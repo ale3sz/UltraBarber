@@ -5,54 +5,13 @@ import {
   ArrowRight,
   Award,
   Gift,
-  Camera,
-  Maximize2,
   X,
   Scissors,
   Lock,
   Sparkles
 } from 'lucide-react';
-import { getAssetUrl } from '../../utils/assets';
-import InstagramIcon from '../icons/InstagramIcon';
 import OdometerCounter from '../common/OdometerCounter';
 import SpotlightCard from '../common/SpotlightCard';
-
-const getImageSrc = getAssetUrl;
-
-const STUDIO_GALLERY = [
-  {
-    id: 'look-1',
-    src: getAssetUrl('imagenes/corte-freestyle.jpg'),
-    title: 'Fade Comprimido & Freestyle',
-    subtitle: 'Diseño geométrico a navaja y degradé',
-    tag: 'DISEÑO FREESTYLE',
-    serviceId: 'corte'
-  },
-  {
-    id: 'look-2',
-    src: getAssetUrl('imagenes/IMG_3526.PNG'),
-    title: 'Burst Fade · Diseño 23',
-    subtitle: 'Degradado curvo y textura superior',
-    tag: 'FADE DE AUTOR',
-    serviceId: 'corte'
-  },
-  {
-    id: 'look-3',
-    src: getAssetUrl('imagenes/corte-premium.png'),
-    title: 'Corte Premium · Relax VIP',
-    subtitle: 'Gafas de masaje ocular + pistola cervical',
-    tag: 'CORTE PREMIUM',
-    serviceId: 'experiencia-completa'
-  },
-  {
-    id: 'look-4',
-    src: getAssetUrl('imagenes/IMG_0989.JPG.jpeg'),
-    title: 'Colorimetría & Sesión VIP',
-    subtitle: 'Iluminación, reflejos y terminación técnica',
-    tag: 'COLOR & TÉCNICA',
-    serviceId: 'corte-bebida'
-  }
-];
 
 export default function MembershipCard({
   client,
@@ -64,7 +23,6 @@ export default function MembershipCard({
 }) {
   const [activeTab, setActiveTab] = useState('puntos'); // 'puntos' | 'premios'
   const [showQrModal, setShowQrModal] = useState(false);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   const points = client?.points || 0;
   const cuts = client?.totalCuts || 0;
@@ -453,158 +411,7 @@ export default function MembershipCard({
         </div>
       </div>
 
-      {/* Lookbook / Trabajos de Autor */}
-      <div className="space-y-3 pt-1">
-        <div className="flex flex-wrap items-center justify-between gap-2 pb-1 border-b border-white/[0.08]">
-          <h2 className="text-base sm:text-lg font-display font-bold text-[#EDEDED] flex items-center gap-2">
-            <Camera className="w-4 h-4 text-[#D4AF37] stroke-[1.5]" />
-            <span>
-              Trabajos de{' '}
-              <span className="font-editorial italic font-normal text-[#D4AF37]">
-                autor
-              </span>
-            </span>
-          </h2>
-          <div className="flex items-center gap-2">
-            <a
-              href="https://www.instagram.com/barber_f4de"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/[0.08] hover:border-[#D4AF37]/50 text-[10px] font-mono text-[#8A898E] hover:text-[#EDEDED] flex items-center gap-1.5 transition-colors"
-              title="Instagram @barber_f4de"
-            >
-              <InstagramIcon className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>@barber_f4de</span>
-            </a>
-          </div>
-        </div>
 
-        {/* Grilla de 4 Fotos Contenidas con Parallax y Reveal de Acción */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-          {STUDIO_GALLERY.map((item) => (
-            <div
-              key={item.id}
-              className="group relative aspect-[3/4] rounded-md overflow-hidden border border-white/[0.08] bg-[#141416] text-left focus-within:ring-1 focus-within:ring-[#D4AF37]"
-            >
-              <img
-                src={getImageSrc(item.src)}
-                alt={item.title}
-                className="w-full h-full object-cover object-top filter contrast-[1.05] group-hover:scale-[1.04] transition-transform duration-500 ease-out cursor-pointer"
-                loading="lazy"
-                onClick={() => setSelectedPhoto(item)}
-              />
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/40 to-transparent group-hover:from-[#0B0B0C]/90 group-hover:via-[#0B0B0C]/30 transition-colors pointer-events-none"
-              />
-
-              <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-[#0B0B0C]/85 backdrop-blur-md border border-white/[0.1] text-[8px] font-mono text-[#D4AF37] uppercase tracking-wider hidden sm:inline-block pointer-events-none">
-                {item.tag}
-              </span>
-
-              <button
-                type="button"
-                onClick={() => setSelectedPhoto(item)}
-                className="absolute top-2 right-2 w-5 h-5 rounded bg-[#0B0B0C]/80 border border-white/[0.1] flex items-center justify-center text-[#EDEDED] opacity-60 hover:opacity-100 transition-opacity"
-                title="Ampliar foto"
-                aria-label="Ampliar foto"
-              >
-                <Maximize2 className="w-2.5 h-2.5 stroke-[1.5]" />
-              </button>
-
-              {/* Título y subtítulo */}
-              <div
-                className="absolute inset-x-0 bottom-0 p-2.5 group-hover:pb-11 transition-all duration-300 pointer-events-none cursor-pointer"
-                onClick={() => setSelectedPhoto(item)}
-              >
-                <p className="font-display font-bold text-xs text-[#EDEDED] leading-tight line-clamp-1">
-                  {item.title}
-                </p>
-                <p className="text-[10px] font-mono text-[#8A898E] line-clamp-1 mt-0.5">
-                  {item.subtitle}
-                </p>
-              </div>
-
-              {/* Botón de acción emergente al hover: Elegir este estilo */}
-              <div className="absolute inset-x-2 bottom-2 z-10 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onSelectService) {
-                      onSelectService(item.serviceId);
-                    } else if (onStartBooking) {
-                      onStartBooking();
-                    }
-                  }}
-                  className="w-full py-1.5 px-2 rounded bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono font-bold text-[9px] uppercase tracking-wider flex items-center justify-center gap-1 shadow-md active:scale-[0.98] transition-all"
-                >
-                  <span>Elegir estilo</span>
-                  <ArrowRight className="w-2.5 h-2.5 text-[#0B0B0C] stroke-[2]" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Modal Lightbox */}
-      {selectedPhoto && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-enter"
-          onClick={() => setSelectedPhoto(null)}
-        >
-          <div
-            className="w-full max-w-sm rounded-lg overflow-hidden bg-[#141416] border border-white/[0.12] text-[#EDEDED]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative aspect-[4/5] w-full bg-[#0B0B0C]">
-              <img
-                src={getImageSrc(selectedPhoto.src)}
-                alt={selectedPhoto.title}
-                className="w-full h-full object-cover object-top"
-              />
-              <button
-                type="button"
-                onClick={() => setSelectedPhoto(null)}
-                className="absolute top-3 right-3 p-1.5 rounded-md bg-[#0B0B0C]/85 border border-white/[0.1] text-[#EDEDED]"
-                aria-label="Cerrar vista previa"
-              >
-                <X className="w-4 h-4 stroke-[1.5]" />
-              </button>
-              <span className="absolute top-3 left-3 px-2 py-0.5 rounded bg-[#0B0B0C]/85 border border-white/[0.1] text-[9px] font-mono text-[#D4AF37] uppercase tracking-wider">
-                {selectedPhoto.tag}
-              </span>
-            </div>
-
-            <div className="p-4 flex items-center justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-display font-bold text-[#EDEDED]">
-                  {selectedPhoto.title}
-                </h3>
-                <p className="text-xs text-[#8A898E] mt-0.5">
-                  {selectedPhoto.subtitle}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const svcId = selectedPhoto.serviceId;
-                  setSelectedPhoto(null);
-                  if (onSelectService) {
-                    onSelectService(svcId);
-                  } else if (onStartBooking) {
-                    onStartBooking();
-                  }
-                }}
-                className="px-3.5 py-2 rounded-md bg-[#EDEDED] text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-white active:scale-[0.98] transition-all"
-              >
-                <span>Elegir estilo</span>
-                <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modal Credencial Digital QR */}
       {showQrModal && client && (
