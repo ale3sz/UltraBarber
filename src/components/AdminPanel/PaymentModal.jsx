@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CreditCard, Gift, Banknote, X, Check, Scissors } from 'lucide-react';
 
 export default function PaymentModal({
@@ -35,9 +36,9 @@ export default function PaymentModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-3xl bg-barber-darkSurface border border-barber-darkBorder p-6 text-barber-darkText club-shadow space-y-5">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter">
+      <div className="w-full max-w-md rounded-2xl sm:rounded-3xl bg-[#141416] border border-white/[0.12] p-6 text-[#EDEDED] shadow-2xl space-y-5">
         <div className="flex items-center justify-between pb-3 border-b border-barber-darkBorder">
           <h3 className="text-xl font-display font-bold text-barber-darkText">
             Cobrar y Finalizar Turno
@@ -196,6 +197,7 @@ export default function PaymentModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

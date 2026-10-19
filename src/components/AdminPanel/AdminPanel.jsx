@@ -258,7 +258,7 @@ export default function AdminPanel({
   };
 
   return (
-    <div className="space-y-5 pb-20 w-full max-w-7xl mx-auto px-3 sm:px-6 animate-enter">
+    <div className="space-y-5 pb-20 w-full max-w-7xl mx-auto px-3 sm:px-6">
       {/* Studio Command Header (Full Space Utilization) */}
       <div className="p-4 sm:p-6 rounded-2xl bg-[#141416] border border-white/[0.08] shadow-md text-[#EDEDED] flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
