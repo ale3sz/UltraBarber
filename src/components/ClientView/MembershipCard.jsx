@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import OdometerCounter from '../common/OdometerCounter';
 import SpotlightCard from '../common/SpotlightCard';
+import { getAssetUrl } from '../../utils/assets';
 
 export default function MembershipCard({
   client,
