@@ -6,7 +6,7 @@ export default function FloatingHelpButton({ studioConfig }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const phone = (studioConfig?.whatsappPhone || '5493413762115').replace(/\D/g, '');
-  const message = encodeURIComponent('¡Hola David! Te escribo desde la web de ULTRA BARBER Studio, tengo una consulta...');
+  const message = encodeURIComponent('¡Hola David! Te escribo desde tu web de turnos, tengo una consulta...');
   const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
 
   return (

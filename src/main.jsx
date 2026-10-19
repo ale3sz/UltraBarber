@@ -36,7 +36,7 @@ class RootErrorBoundary extends React.Component {
           }}
         >
           <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#D4AF37', marginBottom: '8px' }}>
-            ULTRA BARBER STUDIO
+            DAVID BARBER
           </h1>
           <p style={{ fontSize: '14px', color: '#A3A3A3', marginBottom: '16px' }}>
             Ocurrió un problema inesperado al cargar la vista.

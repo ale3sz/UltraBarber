@@ -26,15 +26,15 @@ export default function BirthdaySection({
     const templates = [
       {
         label: 'Promo Regalo VIP',
-        text: `Hola ${firstName}! Feliz cumpleaños de parte de todo el equipo de ULTRA BARBER Studio! Queremos regalarte un beneficio especial en tu próximo corte de autor. ¿Querés que te reservemos un lugar en el sillón para esta semana?`
+        text: `Hola ${firstName}! Muy feliz cumpleaños! Quería regalarte un beneficio especial en tu próximo corte de autor conmigo. ¿Querés que te reserve un lugar en el sillón para esta semana?`
       },
       {
         label: 'Bebida de Cortesía + Corte',
-        text: `Muy feliz cumple ${firstName}! En tu semana de cumpleaños, pasate por ULTRA BARBER que el brindis en el sillón va por nuestra cuenta mientras renovás tu estilo. Avisame y te aseguramos turno!`
+        text: `Muy feliz cumple ${firstName}! En tu semana de cumpleaños, venite que el brindis en el sillón va por mi cuenta mientras renovás tu estilo. Avisame y te aseguro turno!`
       },
       {
         label: 'Saludo Personalizado',
-        text: `Hola ${firstName}! Te mando un gran saludo de cumpleaños desde ULTRA BARBER Studio! Que disfrutes mucho tu día. Cuando quieras renovar corte, acá estamos!`
+        text: `Hola ${firstName}! Te mando un gran saludo de cumpleaños! Que disfrutes mucho tu día. Cuando quieras renovar corte, avisame y te guardo un lugar en el sillón!`
       }
     ];
 

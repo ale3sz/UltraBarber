@@ -49,14 +49,16 @@ export function setAdminToken(token) {
 // ----------------------------------------------------
 const MOCK_CONFIG = {
   barberName: 'David',
-  businessName: 'ULTRA BARBER STUDIO',
+  businessName: 'DAVID BARBER',
+  barbershopName: 'V.I.P Barberías',
   whatsappPhone: '5493413762115',
   holdDurationMinutes: 15,
   pointsForFreeCut: 10,
-  address: 'Eva Perón 52 • Studio Privado',
+  address: 'Eva Perón 52',
   city: 'Capitán Bermúdez',
-  googleMapsUrl: 'https://www.google.com/maps/dir/?api=1&destination=-32.8300541,-60.7128648',
-  instagram: '@davidbarber.studio',
+  locationNote: 'Sillón de David en V.I.P Barberías',
+  googleMapsUrl: 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z',
+  instagram: '@barber_f4de',
   workHours: {
     start: '09:00',
     end: '20:00',

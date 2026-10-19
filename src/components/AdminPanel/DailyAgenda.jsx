@@ -128,19 +128,19 @@ export default function DailyAgenda({
     const templates = [
       {
         label: 'Hoy (Unas horas antes)',
-        text: `Hola ${clientName}! Te escribo de ULTRA BARBER Studio para recordarte tu turno de hoy a las ${apt.time} hs (${apt.serviceName}${hairStyle}). Te esperamos puntual en el sillón! Avisame cualquier duda.`
+        text: `Hola ${clientName}! Te escribe David para recordarte tu turno de hoy a las ${apt.time} hs (${apt.serviceName}${hairStyle}). Te espero puntual en el sillón! Avisame cualquier duda.`
       },
       {
         label: 'En 1 Hora (En camino)',
-        text: `Hola ${clientName}! En 1 hora te esperamos en el sillón (${apt.time} hs) para tu sesión de ${apt.serviceName}. Ya tenemos todo listo en el estudio!`
+        text: `Hola ${clientName}! En 1 hora te espero en el sillón (${apt.time} hs) para tu sesión de ${apt.serviceName}. Ya tengo todo listo!`
       },
       {
         label: 'Turno de Mañana',
-        text: `Hola ${clientName}! Te recuerdo tu turno para mañana ${apt.date} a las ${apt.time} hs en ULTRA BARBER Studio (${apt.serviceName}). Te esperamos en el sillón!`
+        text: `Hola ${clientName}! Te recuerdo tu turno para mañana ${apt.date} a las ${apt.time} hs conmigo (${apt.serviceName}). Te espero puntual en el sillón!`
       },
       {
         label: 'Confirmación Urgente',
-        text: `Hola ${clientName}! Por favor confirmame si asistís a tu turno de hoy a las ${apt.time} hs en ULTRA BARBER Studio. Respondeme por acá así te guardamos el lugar. Gracias!`
+        text: `Hola ${clientName}! Por favor confirmame si asistís a tu turno de hoy a las ${apt.time} hs conmigo. Respondeme por acá así te guardo el lugar. Gracias!`
       }
     ];
 

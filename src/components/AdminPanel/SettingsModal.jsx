@@ -27,7 +27,12 @@ export default function SettingsModal({
   const [activeTab, setActiveTab] = useState('annual'); // 'annual' | 'schedule' | 'club' | 'general' | 'prices' | 'security'
   const [whatsappPhone, setWhatsappPhone] = useState(config.whatsappPhone || '5493413762115');
   const [holdDurationMinutes, setHoldDurationMinutes] = useState(config.holdDurationMinutes || 15);
-  const [address, setAddress] = useState(config.address || 'Eva Perón 52 • Studio Privado');
+  const [barbershopName, setBarbershopName] = useState(config.barbershopName || 'V.I.P Barberías');
+  const [address, setAddress] = useState(config.address || 'Eva Perón 52');
+  const [city, setCity] = useState(config.city || 'Capitán Bermúdez');
+  const [googleMapsUrl, setGoogleMapsUrl] = useState(
+    config.googleMapsUrl || 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'
+  );
 
   // Working days (0: Dom, 1: Lun, 2: Mar, 3: Mié, 4: Jue, 5: Vie, 6: Sáb)
   const [workingDays, setWorkingDays] = useState(config.workingDays || [1, 2, 3, 4, 5, 6]);
@@ -116,10 +121,13 @@ export default function SettingsModal({
       const res = await api.updateConfigByAdmin({
         whatsappPhone: whatsappPhone.trim(),
         holdDurationMinutes: Number(holdDurationMinutes),
-        address: address.trim()
+        barbershopName: barbershopName.trim(),
+        address: address.trim(),
+        city: city.trim(),
+        googleMapsUrl: googleMapsUrl.trim()
       });
       if (onSaved) onSaved(res.config);
-      setFeedbackMsg('Datos de contacto y local actualizados.');
+      setFeedbackMsg('Datos de contacto, barbería y ubicación actualizados.');
     } catch (err) {
       setFeedbackMsg(err.message || 'Error al guardar.');
     } finally {
@@ -209,7 +217,7 @@ export default function SettingsModal({
           <div className="flex items-center gap-2.5">
             <Shield className="w-5 h-5 text-barber-chai" />
             <h3 className="text-lg font-display font-bold text-barber-darkText">
-              Configuración de ULTRA BARBER Studio
+              Configuración &amp; Barbería • Panel de David
             </h3>
           </div>
           <button
@@ -439,13 +447,52 @@ export default function SettingsModal({
               />
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block font-semibold mb-1">Barbería / Local donde atendés</label>
+                <input
+                  type="text"
+                  required
+                  value={barbershopName}
+                  onChange={(e) => setBarbershopName(e.target.value)}
+                  placeholder="Ej: V.I.P Barberías"
+                  className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1">Ciudad</label>
+                <input
+                  type="text"
+                  required
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Ej: Capitán Bermúdez"
+                  className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
+                />
+              </div>
+            </div>
+
             <div>
-              <label className="block font-semibold mb-1">Dirección del estudio</label>
+              <label className="block font-semibold mb-1">Dirección de la Barbería</label>
               <input
                 type="text"
+                required
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                placeholder="Ej: Eva Perón 52"
                 className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-1">Enlace de Google Maps (Botón "Cómo llegar")</label>
+              <input
+                type="url"
+                value={googleMapsUrl}
+                onChange={(e) => setGoogleMapsUrl(e.target.value)}
+                placeholder="https://www.google.com/maps/place/..."
+                className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText font-mono text-[11px]"
               />
             </div>
 

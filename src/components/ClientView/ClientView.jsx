@@ -256,18 +256,23 @@ export default function ClientView({
               }}
             />
 
-            {/* 4. Studio Location & Cómo llegar */}
+            {/* 4. Location & Cómo llegar */}
             <div className="p-5 rounded-lg bg-[#141416] card-hairline space-y-3.5 text-xs">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-md bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#D4AF37] shrink-0">
                   <MapPin className="w-4 h-4" />
                 </div>
                 <div>
-                  <strong className="text-[#EDEDED] block font-display font-bold text-sm tracking-tight">
-                    {studioConfig.businessName || 'ULTRA BARBER STUDIO'}
-                  </strong>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <strong className="text-[#EDEDED] font-display font-bold text-sm tracking-tight">
+                      {studioConfig.barbershopName || 'V.I.P BARBERÍAS'}
+                    </strong>
+                    <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30">
+                      SILLÓN DE DAVID
+                    </span>
+                  </div>
                   <span className="text-[#8A898E] text-xs">
-                    {studioConfig.address || 'Eva Perón 52 • Studio Privado'}, Capitán Bermúdez
+                    {studioConfig.address || 'Eva Perón 52'} • {studioConfig.city || 'Capitán Bermúdez'}
                   </span>
                 </div>
               </div>
@@ -277,7 +282,7 @@ export default function ClientView({
                   LUN A SÁB • 09 A 20 HS
                 </span>
                 <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(studioConfig.address || 'Eva Perón 52, Capitán Bermúdez, Santa Fe')}`}
+                  href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm"

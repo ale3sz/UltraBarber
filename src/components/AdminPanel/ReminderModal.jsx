@@ -29,19 +29,19 @@ export default function ReminderModal({ appointment, onClose }) {
       id: 'hoy',
       title: 'Recordatorio Hoy',
       desc: 'Para enviar unas horas antes',
-      text: `Hola ${clientName}! Te escribo de ULTRA BARBER Studio para recordarte tu turno de hoy a las ${appointment.time} hs (${appointment.serviceName}). Te esperamos en el sillón! Si tenés alguna demora o necesitás avisar algo, respondeme por acá.`
+      text: `Hola ${clientName}! Te escribe David para recordarte tu turno de hoy a las ${appointment.time} hs (${appointment.serviceName}). Te espero en el sillón! Si tenés alguna demora o necesitás avisar algo, respondeme por acá.`
     },
     {
       id: 'proximo',
       title: 'En 1 Hora (En camino)',
       desc: 'Aviso inmediato para que salga',
-      text: `Hola ${clientName}! En 1 hora te esperamos en el sillón (${appointment.time} hs) para tu sesión de ${appointment.serviceName}. Ya tenemos todo listo en el estudio!`
+      text: `Hola ${clientName}! En 1 hora te espero en el sillón (${appointment.time} hs) para tu sesión de ${appointment.serviceName}. Ya tengo todo listo!`
     },
     {
       id: 'manana',
       title: 'Turno de Mañana',
       desc: 'Para enviar la noche anterior',
-      text: `Hola ${clientName}! Te recuerdo tu turno para mañana ${appointment.date} a las ${appointment.time} hs en ULTRA BARBER Studio (${appointment.serviceName}). Te esperamos puntual. Saludos!`
+      text: `Hola ${clientName}! Te recuerdo tu turno para mañana ${appointment.date} a las ${appointment.time} hs conmigo (${appointment.serviceName}). Te espero puntual. Saludos!`
     }
   ];
 

@@ -46,10 +46,10 @@ export default function Navbar({
             </div>
             <div className="min-w-0">
               <span className="font-display font-bold text-sm sm:text-base tracking-tight text-[#EDEDED] block leading-tight truncate">
-                ULTRA BARBER
+                DAVID BARBER
               </span>
               <span className="text-[9px] font-mono tracking-[0.2em] text-[#8A898E] uppercase block truncate">
-                Studio &amp; Club Privado
+                Club &amp; Turnos VIP
               </span>
             </div>
           </button>
