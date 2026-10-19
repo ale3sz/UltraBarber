@@ -101,27 +101,48 @@ export default function PaymentModal({
               <button
                 type="button"
                 onClick={() => setPaymentMethod('Canje de Puntos')}
-                className={`py-3 px-2 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all ${
+                className={`py-3 px-2 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all relative ${
                   paymentMethod === 'Canje de Puntos'
-                    ? 'bg-barber-chai text-barber-lightText border-barber-chai'
+                    ? currentPoints < pointsUsed
+                      ? 'bg-red-500/20 text-red-300 border-red-500/50'
+                      : 'bg-barber-chai text-barber-lightText border-barber-chai'
+                    : currentPoints < pointsUsed
+                    ? 'bg-barber-darkBg border-barber-darkBorder text-barber-pistache/50 hover:border-red-500/40'
                     : 'bg-barber-darkBg border-barber-darkBorder text-barber-darkText hover:border-barber-chai'
                 }`}
               >
                 <Gift className="w-4 h-4" />
                 <span>Canje Puntos</span>
+                {currentPoints < pointsUsed && (
+                  <span className="text-[9px] font-mono font-normal text-red-400">Insuficiente</span>
+                )}
               </button>
             </div>
           </div>
 
           {paymentMethod === 'Canje de Puntos' ? (
-            <div className="p-4 rounded-2xl bg-barber-darkBg border border-barber-chai text-xs space-y-1.5">
+            <div className={`p-4 rounded-2xl border text-xs space-y-1.5 ${
+              currentPoints < pointsUsed
+                ? 'bg-red-500/10 border-red-500/30 text-red-300'
+                : 'bg-barber-darkBg border-barber-chai'
+            }`}>
               <div className="flex items-center justify-between font-bold">
-                <span className="text-barber-darkText">Puntos a descontar:</span>
-                <span className="font-mono text-barber-chai tabular-nums">10 PTS (Bonificado)</span>
+                <span className={currentPoints < pointsUsed ? 'text-red-300' : 'text-barber-darkText'}>
+                  Puntos requeridos:
+                </span>
+                <span className="font-mono tabular-nums">
+                  {pointsUsed} PTS {currentPoints >= pointsUsed ? '(Bonificado)' : `(Saldo: ${currentPoints} PTS)`}
+                </span>
               </div>
-              <p className="text-barber-pistache">
-                Se descuentan 10 puntos y se suma +1 punto por la nueva visita completada.
-              </p>
+              {currentPoints < pointsUsed ? (
+                <p className="text-red-400 font-semibold text-[11px]">
+                  Saldo insuficiente para bonificar el corte. El cliente necesita acumular 10 PTS (saldo actual: {currentPoints} PTS).
+                </p>
+              ) : (
+                <p className="text-barber-pistache">
+                  Se descuentan 10 puntos y se suma +1 punto por la nueva visita completada.
+                </p>
+              )}
             </div>
           ) : (
             <div>
@@ -166,8 +187,8 @@ export default function PaymentModal({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-3 rounded-xl bg-barber-matcha text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:brightness-105"
+              disabled={isSubmitting || (paymentMethod === 'Canje de Puntos' && currentPoints < pointsUsed)}
+              className="px-5 py-3 rounded-xl bg-barber-matcha text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:brightness-105 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Check className="w-4 h-4" />
               <span>Confirmar Cobro</span>
