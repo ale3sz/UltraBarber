@@ -93,26 +93,13 @@ export default function Footer({ onOpenAdmin, adminUser }) {
             </div>
           </div>
 
-          {/* Bottom Bar: Copyright & Discreet Staff Access */}
+          {/* Bottom Bar: Copyright */}
           <div className="pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
             <p className="text-center sm:text-left text-[#8A898E]">
               &copy; {new Date().getFullYear()} ULTRA BARBER Studio. Todos los derechos reservados. Prohibida la reproducción total o parcial sin autorización.
             </p>
 
-            {/* Discreet Staff Access Trigger */}
-            <div className="flex items-center gap-3 shrink-0">
-              <span className="text-[10px] opacity-40 font-mono text-[#8A898E]">v2.4</span>
-              <button
-                type="button"
-                onClick={onOpenAdmin}
-                className="opacity-40 hover:opacity-100 text-[#8A898E] hover:text-[#EDEDED] transition-opacity p-1 rounded flex items-center gap-1 text-[10px] font-mono"
-                title="Acceso administrativo"
-                aria-label="Acceso privado del salón"
-              >
-                <Lock className="w-3 h-3 text-[#D4AF37]" />
-                <span>{adminUser ? 'Panel David' : 'Staff'}</span>
-              </button>
-            </div>
+            <span className="text-[10px] opacity-40 font-mono text-[#8A898E]">v2.4</span>
           </div>
         </div>
       </footer>

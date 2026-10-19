@@ -25,6 +25,7 @@ export default function ClientView({
   loggedClient,
   clientAppointments = [],
   onAuthSuccess,
+  onAdminAuthSuccess,
   onLogoutClient,
   onRefreshClientSession,
   studioConfig = {}
@@ -197,6 +198,7 @@ export default function ClientView({
               <DniStep
                 loggedClient={loggedClient}
                 onAuthSuccess={(client, apts) => onAuthSuccess(client, apts)}
+                onAdminAuthSuccess={onAdminAuthSuccess}
                 onLogoutClient={onLogoutClient}
                 onContinue={() => {
                   setSubTab('book');
@@ -343,6 +345,7 @@ export default function ClientView({
             <DniStep
               loggedClient={loggedClient}
               onAuthSuccess={(client, apts) => onAuthSuccess(client, apts)}
+              onAdminAuthSuccess={onAdminAuthSuccess}
               onLogoutClient={onLogoutClient}
               onContinue={() => {
                 setSubTab('book');
@@ -403,6 +406,7 @@ export default function ClientView({
                   onAuthSuccess(client, apts);
                   setBookingStep(1);
                 }}
+                onAdminAuthSuccess={onAdminAuthSuccess}
                 onLogoutClient={onLogoutClient}
                 onContinue={() => setBookingStep(1)}
               />
@@ -476,6 +480,7 @@ export default function ClientView({
             <DniStep
               loggedClient={loggedClient}
               onAuthSuccess={onAuthSuccess}
+              onAdminAuthSuccess={onAdminAuthSuccess}
               onLogoutClient={onLogoutClient}
             />
           ) : clientAppointments.length === 0 ? (

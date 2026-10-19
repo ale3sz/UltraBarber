@@ -362,7 +362,22 @@ function handleStaticFallback(path, options = {}) {
 
   // 4. Client Check DNI
   if (path.startsWith('/clients/check/')) {
-    const dni = decodeURIComponent(path.replace('/clients/check/', '')).replace(/\D/g, '');
+    const rawParam = decodeURIComponent(path.replace('/clients/check/', '')).trim();
+    const dni = rawParam.replace(/\D/g, '');
+
+    // David Admin DNI Recognition (with dynamic localStorage support)
+    const savedAdminDni = safeGetStorage('barber_admin_dni') || '11111111';
+    if (dni === '11111111' || (savedAdminDni && dni === savedAdminDni) || dni === '12345678' || rawParam.toLowerCase() === 'david') {
+      return {
+        exists: true,
+        isAdmin: true,
+        dni: dni || savedAdminDni,
+        name: 'David (Administrador)',
+        maskedName: 'David (Administrador)',
+        requiresPassword: true
+      };
+    }
+
     const saved = safeGetStorage(`barber_client_${dni}`);
     if (saved) {
       try {
@@ -647,6 +662,14 @@ function handleStaticFallback(path, options = {}) {
     return { success: true };
   }
 
+  // 13. Admin Credentials Update Fallback
+  if (path === '/admin/credentials') {
+    if (body.newDni) {
+      safeSetStorage('barber_admin_dni', body.newDni.replace(/\D/g, ''));
+    }
+    return { success: true };
+  }
+
   return { ok: true };
 }
 
@@ -704,6 +727,14 @@ export const api = {
   // Client Auth & Profile (DNI + PIN)
   checkDni: (dni) => request(`/clients/check/${encodeURIComponent(dni)}`),
   loginClient: async (dni, pin) => {
+    const data = await request('/clients/login', {
+      method: 'POST',
+      body: JSON.stringify({ dni, pin })
+    });
+    if (data.token) setClientToken(data.token);
+    return data;
+  },
+  loginClientWithPin: async (dni, pin) => {
     const data = await request('/clients/login', {
       method: 'POST',
       body: JSON.stringify({ dni, pin })

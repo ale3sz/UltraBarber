@@ -146,12 +146,20 @@ export function initDatabase() {
     );
   `);
 
+  // Migrate admins table to support DNI
+  try {
+    db.exec("ALTER TABLE admins ADD COLUMN dni TEXT DEFAULT '11111111';");
+  } catch {}
+  try {
+    db.exec("UPDATE admins SET dni = '11111111' WHERE dni IS NULL OR dni = '';");
+  } catch {}
+
   // Seed default Admin (David)
   const adminCount = db.prepare('SELECT COUNT(*) as count FROM admins').get().count;
   if (adminCount === 0) {
     db.prepare(
-      'INSERT INTO admins (username, password_hash, display_name, created_at) VALUES (?, ?, ?, ?)'
-    ).run('david', hashSecret('barber2026'), 'David', Date.now());
+      'INSERT INTO admins (username, password_hash, display_name, dni, created_at) VALUES (?, ?, ?, ?, ?)'
+    ).run('david', hashSecret('barber2026'), 'David', '11111111', Date.now());
   }
 
   // Seed default Config

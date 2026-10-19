@@ -54,6 +54,7 @@ export default function SettingsModal({
   const [currentPassword, setCurrentPassword] = useState('');
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [newDni, setNewDni] = useState('');
 
   const [isSaving, setIsSaving] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState('');
@@ -153,12 +154,13 @@ export default function SettingsModal({
     try {
       await api.updateAdminCredentials({
         currentPassword,
-        newUsername,
-        newPassword
+        newUsername: newUsername.trim() || undefined,
+        newPassword: newPassword.trim() || undefined,
+        newDni: newDni.trim() || undefined
       });
       setCurrentPassword('');
       setNewPassword('');
-      setFeedbackMsg('Credenciales de acceso de David actualizadas.');
+      setFeedbackMsg('Credenciales y DNI de acceso de David actualizados.');
     } catch (err) {
       setFeedbackMsg(err.message || 'Contraseña actual incorrecta.');
     } finally {
@@ -540,16 +542,29 @@ export default function SettingsModal({
             </div>
 
             <div>
+              <label className="block font-semibold mb-1">DNI de Administrador (para acceso seguro)</label>
+              <input
+                type="text"
+                value={newDni}
+                onChange={(e) => setNewDni(e.target.value.replace(/\D/g, ''))}
+                placeholder="Predeterminado: 11111111 (ingresá tu DNI real)"
+                className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText font-mono"
+              />
+              <span className="text-[11px] text-[#8A898E] mt-1 block">
+                Cuando ingreses este DNI en la pantalla principal y toques &quot;Validar DNI&quot;, el sistema cambiará a contraseña para acceder al panel.
+              </span>
+            </div>
+
+            <div>
               <label className="block font-semibold mb-1 flex items-center gap-1.5">
                 <KeyRound className="w-3.5 h-3.5 text-barber-chai" />
-                <span>Nueva contraseña</span>
+                <span>Nueva contraseña (opcional)</span>
               </label>
               <input
                 type="password"
-                required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Nueva clave segura"
+                placeholder="Dejar en blanco si no querés cambiarla"
                 className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText font-mono"
               />
             </div>

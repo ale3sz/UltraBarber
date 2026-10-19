@@ -10,7 +10,10 @@ import {
   MessageCircle,
   ShieldCheck,
   RotateCcw,
-  KeyRound
+  KeyRound,
+  Eye,
+  EyeOff,
+  Shield
 } from 'lucide-react';
 import { api } from '../../services/api';
 
@@ -18,11 +21,14 @@ export default function DniStep({
   loggedClient,
   onAuthSuccess,
   onLogoutClient,
-  onContinue
+  onContinue,
+  onAdminAuthSuccess
 }) {
   const [dniInput, setDniInput] = useState('');
-  const [checkResult, setCheckResult] = useState(null); // { exists, dni, hasPin, maskedName, phoneHint }
+  const [checkResult, setCheckResult] = useState(null); // { exists, dni, hasPin, maskedName, phoneHint, isAdmin }
   const [pinInput, setPinInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -92,9 +98,9 @@ export default function DniStep({
   // Step 1: Check DNI
   const handleCheckDni = async (e) => {
     if (e) e.preventDefault();
-    const cleanDni = dniInput.trim().replace(/\D/g, '');
-    if (cleanDni.length < 6) {
-      setErrorMsg('Ingresá un número de DNI válido (mínimo 6 dígitos).');
+    const cleanDni = dniInput.trim().replace(/\D/g, '') || dniInput.trim().toLowerCase();
+    if (cleanDni.length < 4) {
+      setErrorMsg('Ingresá un número de DNI válido.');
       return;
     }
 
@@ -104,6 +110,7 @@ export default function DniStep({
       const res = await api.checkDni(cleanDni);
       setCheckResult(res);
       setPinInput('');
+      setPasswordInput('');
     } catch (err) {
       setErrorMsg(err.message || 'No se pudo verificar el DNI.');
     } finally {
@@ -111,7 +118,31 @@ export default function DniStep({
     }
   };
 
-  // Step 2A: Login with PIN
+  // Step 2A (David Admin): Login with Password
+  const handleLoginAdminPassword = async (e) => {
+    e.preventDefault();
+    if (!passwordInput.trim()) {
+      setErrorMsg('Ingresá tu contraseña de administrador.');
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMsg('');
+    try {
+      const res = await api.loginAdmin(checkResult?.dni || 'david', passwordInput.trim());
+      if (onAdminAuthSuccess) {
+        onAdminAuthSuccess(res.admin);
+      } else if (onAuthSuccess) {
+        onAuthSuccess(res.admin, [], true);
+      }
+    } catch (err) {
+      setErrorMsg(err.message || 'Contraseña de administrador incorrecta.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Step 2B: Regular Client -> Login with PIN
   const handleLoginPin = async (e) => {
     e.preventDefault();
     if (pinInput.trim().length < 4) {
@@ -253,6 +284,17 @@ export default function DniStep({
             >
               Mateo (10 PTS • PIN 1234)
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                setDniInput('11111111');
+                api.checkDni('11111111').then(setCheckResult);
+                setPasswordInput('barber2026');
+              }}
+              className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] hover:border-[#D4AF37]/50 font-mono text-[10px] text-[#D4AF37] hover:text-white transition-colors"
+            >
+              David Admin (DNI 11111111)
+            </button>
           </div>
         )}
       </form>
@@ -263,8 +305,80 @@ export default function DniStep({
         </div>
       )}
 
-      {/* CASE A: Existing Client -> Ask for 4-digit PIN */}
-      {checkResult && checkResult.exists && (
+      {/* CASE A: David (Admin) -> Password Form instead of 4-digit PIN */}
+      {checkResult && checkResult.isAdmin && (
+        <form
+          onSubmit={handleLoginAdminPassword}
+          className="pt-4 border-t border-white/[0.08] space-y-4 animate-enter"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-[#D4AF37] stroke-[1.5]" />
+              <span className="text-xs font-display font-bold text-[#EDEDED]">
+                {checkResult.maskedName || 'David (Administrador)'}
+              </span>
+            </div>
+            <span className="badge-champagne text-[9px]">
+              PANEL DAVID
+            </span>
+          </div>
+
+          <p className="text-xs text-[#8A898E] leading-relaxed">
+            Se detectó tu cuenta de barbero administrador. Por seguridad, ingresá tu contraseña de acceso:
+          </p>
+
+          <div>
+            <label
+              htmlFor="admin-password-input"
+              className="micro-technical block text-[9px] text-[#8A898E] mb-1.5"
+            >
+              CONTRASEÑA DE SEGURIDAD
+            </label>
+            <div className="relative">
+              <input
+                id="admin-password-input"
+                type={showPassword ? 'text' : 'password'}
+                value={passwordInput}
+                onChange={(e) => {
+                  setPasswordInput(e.target.value);
+                  if (errorMsg) setErrorMsg('');
+                }}
+                placeholder="Ingresá tu contraseña de barbero"
+                className="w-full px-4 py-3 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] text-sm font-mono tracking-wider focus:outline-none focus:border-[#D4AF37] transition-colors pr-10"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A898E] hover:text-[#EDEDED] transition-colors p-1"
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4 stroke-[1.5]" />
+                ) : (
+                  <Eye className="w-4 h-4 stroke-[1.5]" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading || !passwordInput.trim()}
+            className="w-full py-3.5 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 disabled:opacity-40 transition-all shadow-sm active:scale-[0.98]"
+          >
+            <span>Ingresar al Panel David</span>
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+          </button>
+
+          <div className="pt-1 text-[10px] font-mono text-[#8A898E]">
+            Clave predeterminada: <strong className="text-[#D4AF37]">barber2026</strong>
+          </div>
+        </form>
+      )}
+
+      {/* CASE B: Existing Client -> Ask for 4-digit PIN */}
+      {checkResult && checkResult.exists && !checkResult.isAdmin && (
         <form
           onSubmit={handleLoginPin}
           className="pt-4 border-t border-white/[0.08] space-y-4 animate-enter"
@@ -329,8 +443,8 @@ export default function DniStep({
         </form>
       )}
 
-      {/* CASE B: New Client -> Register Data */}
-      {checkResult && !checkResult.exists && (
+      {/* CASE C: New Client -> Register Data */}
+      {checkResult && !checkResult.exists && !checkResult.isAdmin && (
         <form
           onSubmit={handleRegister}
           className="pt-4 border-t border-white/[0.08] space-y-4 animate-enter"

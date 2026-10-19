@@ -98,6 +98,10 @@ export default function App() {
               setLoggedClient(client);
               setClientAppointments(apts || []);
             }}
+            onAdminAuthSuccess={(admin) => {
+              setAdminUser(admin);
+              setActiveView('admin');
+            }}
             onLogoutClient={handleLogoutClient}
             onRefreshClientSession={refreshClientSession}
             studioConfig={studioConfig}

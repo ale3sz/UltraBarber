@@ -187,6 +187,24 @@ app.get('/api/services', (req, res) => {
 // Step 1: Check DNI safely (NEVER leaks private data without PIN!)
 app.get('/api/clients/check/:dni', (req, res) => {
   const cleanDni = (req.params.dni || '').trim().replace(/\D/g, '');
+  const rawParam = (req.params.dni || '').trim().toLowerCase();
+
+  // 1. Check if DNI or username belongs to David (Admin)
+  try {
+    const adminRow = db.prepare('SELECT * FROM admins WHERE dni = ? OR LOWER(username) = ?').get(cleanDni || rawParam, rawParam);
+    if (adminRow || cleanDni === '11111111' || rawParam === 'david') {
+      return res.json({
+        exists: true,
+        isAdmin: true,
+        dni: cleanDni || adminRow?.dni || '11111111',
+        maskedName: `${adminRow?.display_name || 'David'} (Administrador)`,
+        requiresPassword: true
+      });
+    }
+  } catch (err) {
+    console.error('Error checking admin DNI:', err);
+  }
+
   if (!cleanDni || cleanDni.length < 6) {
     return res.status(400).json({ error: 'Ingresá un DNI válido (mínimo 6 números)' });
   }
@@ -661,20 +679,22 @@ app.post('/api/appointments/:id/client-cancel', (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).json({ error: 'Ingresá usuario y contraseña' });
+    return res.status(400).json({ error: 'Ingresá usuario o DNI y contraseña' });
   }
 
   const cleanUser = username.trim().toLowerCase();
-  const adminRow = db.prepare('SELECT * FROM admins WHERE LOWER(username) = ?').get(cleanUser);
+  const cleanDni = username.trim().replace(/\D/g, '');
+  const adminRow = db.prepare('SELECT * FROM admins WHERE LOWER(username) = ? OR dni = ?').get(cleanUser, cleanDni);
 
   if (!adminRow || adminRow.password_hash !== hashSecret(password)) {
-    return res.status(401).json({ error: 'Usuario o contraseña de barbero incorrectos' });
+    return res.status(401).json({ error: 'Contraseña de administrador incorrecta' });
   }
 
   const token = signToken({
     role: 'admin',
     adminId: adminRow.id,
     username: adminRow.username,
+    dni: adminRow.dni,
     displayName: adminRow.display_name
   });
 
@@ -684,6 +704,7 @@ app.post('/api/admin/login', (req, res) => {
     admin: {
       id: adminRow.id,
       username: adminRow.username,
+      dni: adminRow.dni,
       displayName: adminRow.display_name
     }
   });
@@ -694,7 +715,7 @@ app.get('/api/admin/me', requireAdmin, (req, res) => {
 });
 
 app.put('/api/admin/credentials', requireAdmin, (req, res) => {
-  const { currentPassword, newUsername, newPassword } = req.body;
+  const { currentPassword, newUsername, newPassword, newDni } = req.body;
   const adminRow = db.prepare('SELECT * FROM admins WHERE id = ?').get(req.admin.adminId);
   if (!adminRow) return res.status(404).json({ error: 'Admin no encontrado' });
 
@@ -704,14 +725,16 @@ app.put('/api/admin/credentials', requireAdmin, (req, res) => {
 
   const updatedUser = newUsername?.trim() ? newUsername.trim().toLowerCase() : adminRow.username;
   const updatedHash = newPassword?.trim() ? hashSecret(newPassword.trim()) : adminRow.password_hash;
+  const updatedDni = newDni?.trim() ? newDni.trim().replace(/\D/g, '') : (adminRow.dni || '11111111');
 
-  db.prepare('UPDATE admins SET username = ?, password_hash = ? WHERE id = ?').run(
+  db.prepare('UPDATE admins SET username = ?, password_hash = ?, dni = ? WHERE id = ?').run(
     updatedUser,
     updatedHash,
+    updatedDni,
     adminRow.id
   );
 
-  res.json({ success: true, username: updatedUser });
+  res.json({ success: true, username: updatedUser, dni: updatedDni });
 });
 
 // Comprehensive Admin Dashboard Snapshot
