@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import InstagramIcon from './icons/InstagramIcon';
 
-export default function Footer({ onOpenAdmin, adminUser, onReplayIntro }) {
+export default function Footer({ onOpenAdmin, adminUser }) {
   const [activeModal, setActiveModal] = useState(null); // 'terms' | 'privacy'
 
   return (
@@ -131,19 +131,7 @@ export default function Footer({ onOpenAdmin, adminUser, onReplayIntro }) {
               &copy; {new Date().getFullYear()} David Barber • Turnos &amp; Fidelización en V.I.P Barberías.
             </p>
 
-            <div className="flex items-center gap-3">
-              {onReplayIntro && (
-                <button
-                  type="button"
-                  onClick={onReplayIntro}
-                  className="hover:text-[#E5C378] transition-colors underline decoration-dotted"
-                  title="Reproducir animación de ingreso"
-                >
-                  Ver intro
-                </button>
-              )}
-              <span>v2.5</span>
-            </div>
+            <span>v2.5</span>
           </div>
         </div>
       </footer>
