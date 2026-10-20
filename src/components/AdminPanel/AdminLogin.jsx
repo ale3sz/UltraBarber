@@ -99,22 +99,12 @@ export default function AdminLogin({ onLoginSuccess }) {
           </button>
         </form>
 
-        {/* Demo Quick Login */}
-        <div className="pt-4 border-t border-barber-darkBorder flex items-center justify-between text-xs text-barber-pistache">
+        {/* Security Footer */}
+        <div className="pt-4 border-t border-barber-darkBorder flex items-center justify-center text-xs text-barber-pistache">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="w-4 h-4 text-barber-matcha" />
-            Sesión protegida con JWT
+            Acceso administrativo protegido
           </span>
-          <button
-            type="button"
-            onClick={() => {
-              setUsername('david');
-              setPassword('barber2026');
-            }}
-            className="font-mono text-barber-chai font-semibold hover:underline"
-          >
-            Cargar clave demo (david / barber2026)
-          </button>
         </div>
       </div>
     </div>
