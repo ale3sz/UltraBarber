@@ -5,9 +5,12 @@ import ClientView from './components/ClientView/ClientView';
 import AdminPanel from './components/AdminPanel/AdminPanel';
 import FloatingHelpButton from './components/FloatingHelpButton';
 import PwaInstallBanner from './components/PwaInstallBanner';
+import IntroScissorsReveal from './components/common/IntroScissorsReveal';
 import { api, getClientToken, getAdminToken } from './services/api';
 
 export default function App() {
+  const [showIntro, setShowIntro] = useState(true);
+  const forceIntro = typeof window !== 'undefined' && window.location.search.includes('intro=1');
   const [activeView, setActiveView] = useState('client'); // 'client' | 'admin'
   const [clientSubTab, setClientSubTab] = useState('club'); // 'club' | 'book' | 'turns'
 
@@ -73,6 +76,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-barber-lightBg dark:bg-barber-darkBg text-barber-lightText dark:text-barber-darkText transition-colors duration-200">
+      {showIntro && (
+        <IntroScissorsReveal
+          forcePlay={forceIntro}
+          onComplete={() => setShowIntro(false)}
+        />
+      )}
       <Navbar
         activeView={activeView}
         setActiveView={setActiveView}
@@ -81,6 +90,7 @@ export default function App() {
         loggedClient={loggedClient}
         onLogoutClient={handleLogoutClient}
         adminUser={adminUser}
+
         onLogoutAdmin={handleLogoutAdmin}
         pendingCount={pendingCount}
       />
@@ -109,6 +119,7 @@ export default function App() {
         ) : (
           <AdminPanel
             adminUser={adminUser}
+
             onAdminLoginSuccess={(admin) => setAdminUser(admin)}
             onAdminLogout={handleLogoutAdmin}
             onPendingCountChange={setPendingCount}
@@ -120,7 +131,9 @@ export default function App() {
 
       <Footer
         onOpenAdmin={() => setActiveView(activeView === 'admin' ? 'client' : 'admin')}
+        onReplayIntro={() => setShowIntro(true)}
         adminUser={adminUser}
+
       />
     </div>
   );
