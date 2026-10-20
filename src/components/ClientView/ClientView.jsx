@@ -126,6 +126,7 @@ export default function ClientView({
               client={loggedClient}
               studioConfig={studioConfig}
               guestMode={guestMode}
+              onRefreshClientSession={onRefreshClientSession}
               onSelectService={(svcId) => {
                 const found = services.find((s) => s.id === svcId);
                 if (found) setSelectedService(found);

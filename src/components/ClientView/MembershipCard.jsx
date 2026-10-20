@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Flame,
   QrCode,
@@ -8,11 +9,17 @@ import {
   X,
   Scissors,
   Lock,
-  Sparkles
+  Sparkles,
+  Clock,
+  MessageCircle,
+  Check,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 import OdometerCounter from '../common/OdometerCounter';
 import SpotlightCard from '../common/SpotlightCard';
 import { getAssetUrl } from '../../utils/assets';
+import { api } from '../../services/api';
 
 export default function MembershipCard({
   client,
@@ -20,10 +27,68 @@ export default function MembershipCard({
   onStartBooking,
   onRequestLogin,
   guestMode = 'socio',
-  onSelectService
+  onSelectService,
+  onRefreshClientSession
 }) {
   const [activeTab, setActiveTab] = useState('puntos'); // 'puntos' | 'premios'
   const [showQrModal, setShowQrModal] = useState(false);
+
+  // Estados de solicitud de canjes
+  const [selectedRedeemItem, setSelectedRedeemItem] = useState(null);
+  const [redeemNotes, setRedeemNotes] = useState('');
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  const [redeemError, setRedeemError] = useState('');
+  const [redeemSuccess, setRedeemSuccess] = useState(null);
+  const [myRedemptions, setMyRedemptions] = useState([]);
+
+  const loadMyRedemptions = async () => {
+    if (!client) return;
+    try {
+      const res = await api.getMyRedemptions();
+      setMyRedemptions(res.redemptions || []);
+    } catch {
+      // Ignorar fallback silencioso
+    }
+  };
+
+  useEffect(() => {
+    if (client) {
+      loadMyRedemptions();
+    }
+  }, [client, activeTab]);
+
+  const pendingRedemptions = myRedemptions.filter((r) => r.status === 'pendiente');
+
+  const handleRequestRedemption = async () => {
+    if (!selectedRedeemItem || !client) return;
+    setIsRedeeming(true);
+    setRedeemError('');
+    try {
+      const res = await api.requestRedemption({
+        itemId: selectedRedeemItem.id,
+        itemName: selectedRedeemItem.name,
+        pointsCost: selectedRedeemItem.pointsCost,
+        notes: redeemNotes
+      });
+      setRedeemSuccess({
+        code: res.code,
+        itemName: selectedRedeemItem.name,
+        pointsCost: selectedRedeemItem.pointsCost,
+        whatsappUrl: res.whatsappUrl
+      });
+      setSelectedRedeemItem(null);
+      setRedeemNotes('');
+      if (res.whatsappUrl) {
+        window.open(res.whatsappUrl, '_blank', 'noopener,noreferrer');
+      }
+      loadMyRedemptions();
+      if (onRefreshClientSession) onRefreshClientSession();
+    } catch (err) {
+      setRedeemError(err.message || 'Error al procesar la solicitud de canje');
+    } finally {
+      setIsRedeeming(false);
+    }
+  };
 
   const points = client?.points || 0;
   const cuts = client?.totalCuts || 0;
@@ -311,10 +376,32 @@ export default function MembershipCard({
                 </span>
               </div>
 
+              {/* Banner de Solicitud de Canje Pendiente (si existe) */}
+              {pendingRedemptions.length > 0 && (
+                <div className="p-3.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-xs text-[#EDEDED] space-y-2 mb-4 animate-enter">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#D4AF37] animate-pulse" />
+                      <span className="font-bold text-[#D4AF37] uppercase tracking-wider text-[11px]">
+                        Solicitud en Espera de Confirmación
+                      </span>
+                    </div>
+                    <span className="font-mono text-[10px] bg-[#D4AF37]/20 text-[#D4AF37] px-2 py-0.5 rounded font-bold">
+                      #{pendingRedemptions[0].code}
+                    </span>
+                  </div>
+                  <p className="text-[#8A898E] text-[11px] leading-relaxed">
+                    Solicitaste el beneficio <strong className="text-[#EDEDED]">{pendingRedemptions[0].itemName}</strong> ({pendingRedemptions[0].pointsCost} PTS).
+                    David la revisará por WhatsApp y cuando la apruebe en su panel se descontarán los puntos de tu pase.
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-3">
                 {redeemables.map((item) => {
                   const canAfford = points >= item.pointsCost;
                   const isOutOfStock = item.hasStockLimit && item.stock <= 0;
+                  const isItemPending = pendingRedemptions.some((r) => r.itemId === item.id);
 
                   return (
                     <div
@@ -346,15 +433,37 @@ export default function MembershipCard({
                           {item.pointsCost} PTS
                         </span>
 
-                        <span className={`px-2.5 py-1 rounded text-[10px] font-mono uppercase tracking-wider ${
-                          isOutOfStock
-                            ? 'bg-white/[0.04] text-[#8A898E]/50'
-                            : canAfford
-                            ? 'bg-[#D4AF37] text-[#0B0B0C] font-bold'
-                            : 'bg-white/[0.04] text-[#8A898E] border border-white/[0.08]'
-                        }`}>
-                          {isOutOfStock ? 'Sin stock' : canAfford ? 'Canjeable' : 'Puntos insuficientes'}
-                        </span>
+                        {isItemPending ? (
+                          <span className="px-2.5 py-1.5 rounded text-[10px] font-mono uppercase tracking-wider bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 flex items-center gap-1 font-bold">
+                            <Clock className="w-3 h-3 text-[#D4AF37] animate-pulse" />
+                            <span>En Espera</span>
+                          </span>
+                        ) : !client ? (
+                          <button
+                            type="button"
+                            onClick={onRequestLogin}
+                            className="px-2.5 py-1.5 rounded text-[10px] font-mono uppercase tracking-wider bg-white/[0.06] hover:bg-white/[0.12] text-[#EDEDED] border border-white/[0.1] transition-all"
+                          >
+                            Identificate
+                          </button>
+                        ) : isOutOfStock ? (
+                          <span className="px-2.5 py-1.5 rounded text-[10px] font-mono uppercase tracking-wider bg-white/[0.04] text-[#8A898E]/50">
+                            Sin stock
+                          </span>
+                        ) : canAfford ? (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRedeemItem(item)}
+                            className="px-3 py-1.5 rounded text-[10px] font-mono uppercase tracking-wider bg-[#D4AF37] hover:bg-[#e0bd48] active:scale-[0.98] text-[#0B0B0C] font-bold flex items-center gap-1.5 transition-all shadow-sm"
+                          >
+                            <Gift className="w-3.5 h-3.5 text-[#0B0B0C]" />
+                            <span>Solicitar Canje</span>
+                          </button>
+                        ) : (
+                          <span className="px-2.5 py-1.5 rounded text-[10px] font-mono uppercase tracking-wider bg-white/[0.04] text-[#8A898E] border border-white/[0.08]">
+                            Faltan {item.pointsCost - points} pts
+                          </span>
+                        )}
                       </div>
                     </div>
                   );
@@ -477,6 +586,179 @@ export default function MembershipCard({
             </button>
           </div>
         </div>
+      )}
+
+      {/* Modal Confirmación de Solicitud de Canje */}
+      {selectedRedeemItem && client && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter">
+          <div className="w-full max-w-md rounded-2xl bg-[#141416] border border-white/[0.12] p-5 sm:p-6 text-[#EDEDED] space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center gap-2">
+                <Gift className="w-4 h-4 text-[#D4AF37]" />
+                <span className="micro-technical text-[10px] text-[#D4AF37]">
+                  SOLICITUD DE CANJE · CLUB PRIVADO
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedRedeemItem(null);
+                  setRedeemError('');
+                }}
+                className="p-1 text-[#8A898E] hover:text-[#EDEDED]"
+              >
+                <X className="w-4 h-4 stroke-[1.5]" />
+              </button>
+            </div>
+
+            {/* Ficha del beneficio */}
+            <div className="p-3.5 rounded-xl bg-[#101012] border border-white/[0.08] space-y-1">
+              <div className="flex items-center justify-between">
+                <h3 className="font-display font-bold text-base text-[#EDEDED]">
+                  {selectedRedeemItem.name}
+                </h3>
+                <span className="font-mono font-bold text-sm text-[#D4AF37] tabular-nums">
+                  {selectedRedeemItem.pointsCost} PTS
+                </span>
+              </div>
+              <p className="text-xs text-[#8A898E]">
+                {selectedRedeemItem.description}
+              </p>
+            </div>
+
+            {/* Desglose de puntos */}
+            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2 text-xs font-mono">
+              <div className="flex items-center justify-between text-[#8A898E]">
+                <span>Tus puntos disponibles:</span>
+                <span className="text-[#EDEDED] font-bold">{points} PTS</span>
+              </div>
+              <div className="flex items-center justify-between text-[#8A898E]">
+                <span>Costo del beneficio:</span>
+                <span className="text-red-400 font-bold">-{selectedRedeemItem.pointsCost} PTS</span>
+              </div>
+              <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
+                <span className="font-bold text-[#EDEDED]">Saldo tras aprobación de David:</span>
+                <span className="font-bold text-[#D4AF37]">{points - selectedRedeemItem.pointsCost} PTS</span>
+              </div>
+            </div>
+
+            {/* Regla de negocio y aviso */}
+            <div className="p-3 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/25 text-[11px] text-[#EDEDED] space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-[#D4AF37]">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>¿Cómo funciona el canje?</span>
+              </div>
+              <p className="text-[#8A898E] leading-relaxed">
+                Al confirmar, se abrirá WhatsApp con el código único de solicitud para David. David revisará la solicitud y la aceptará en su panel, momento en el cual se descontarán los puntos de tu cuenta.
+              </p>
+            </div>
+
+            {/* Mensaje opcional */}
+            <div className="space-y-1.5">
+              <label className="micro-technical block text-[9px] text-[#8A898E]">
+                INDICACIÓN O NOTA PARA DAVID (OPCIONAL)
+              </label>
+              <input
+                type="text"
+                value={redeemNotes}
+                onChange={(e) => setRedeemNotes(e.target.value)}
+                placeholder="Ej: Lo retiro en mi turno del jueves..."
+                className="w-full px-3 py-2 rounded-lg bg-[#101012] border border-white/[0.1] text-xs text-[#EDEDED] placeholder-[#8A898E]/50 focus:outline-none focus:border-[#D4AF37]"
+              />
+            </div>
+
+            {redeemError && (
+              <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{redeemError}</span>
+              </div>
+            )}
+
+            {/* Botones de acción */}
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedRedeemItem(null);
+                  setRedeemError('');
+                }}
+                disabled={isRedeeming}
+                className="w-1/3 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-xs font-mono uppercase tracking-wider text-[#EDEDED] transition-colors"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={handleRequestRedemption}
+                disabled={isRedeeming}
+                className="flex-1 py-2.5 px-3 rounded-xl bg-[#D4AF37] hover:bg-[#c29e2f] active:scale-[0.98] text-[#0B0B0C] font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm disabled:opacity-50"
+              >
+                {isRedeeming ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#0B0B0C]" />
+                    <span>Enviando...</span>
+                  </>
+                ) : (
+                  <>
+                    <MessageCircle className="w-4 h-4 text-[#0B0B0C]" />
+                    <span>Enviar a WhatsApp</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Modal Éxito de Solicitud de Canje */}
+      {redeemSuccess && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter">
+          <div className="w-full max-w-sm rounded-2xl bg-[#141416] border border-white/[0.12] p-5 sm:p-6 text-center text-[#EDEDED] space-y-4 shadow-2xl">
+            <div className="w-12 h-12 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] mx-auto">
+              <Check className="w-6 h-6 stroke-[2.5]" />
+            </div>
+
+            <div className="space-y-1">
+              <span className="micro-technical text-[9px] text-[#D4AF37]">
+                SOLICITUD ENVIADA
+              </span>
+              <h3 className="font-display font-bold text-lg text-[#EDEDED]">
+                ¡Código #{redeemSuccess.code}!
+              </h3>
+              <p className="text-xs text-[#8A898E] leading-relaxed pt-1">
+                Tu solicitud de canje por <strong className="text-[#EDEDED]">{redeemSuccess.itemName}</strong> fue generada. David la revisará en WhatsApp y la confirmará desde su panel.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-[#8A898E]">
+              📌 Los puntos se descontarán únicamente cuando David acepte la solicitud.
+            </div>
+
+            <div className="space-y-2 pt-2">
+              {redeemSuccess.whatsappUrl && (
+                <button
+                  type="button"
+                  onClick={() => window.open(redeemSuccess.whatsappUrl, '_blank', 'noopener,noreferrer')}
+                  className="w-full py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.98] text-black font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm"
+                >
+                  <MessageCircle className="w-4 h-4 text-black" />
+                  <span>Reabrir WhatsApp</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setRedeemSuccess(null)}
+                className="w-full py-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.12] text-[#EDEDED] font-mono text-xs uppercase tracking-wider transition-colors"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

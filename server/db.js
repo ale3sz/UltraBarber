@@ -222,6 +222,22 @@ export function initDatabase() {
       locked_until INTEGER DEFAULT 0,
       last_attempt INTEGER NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS redemptions (
+      id TEXT PRIMARY KEY,
+      code TEXT NOT NULL,
+      client_id TEXT NOT NULL,
+      client_dni TEXT NOT NULL,
+      client_name TEXT NOT NULL,
+      client_phone TEXT,
+      item_id TEXT NOT NULL,
+      item_name TEXT NOT NULL,
+      points_cost INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      notes TEXT DEFAULT ' ',
+      created_at INTEGER NOT NULL,
+      processed_at INTEGER
+    );
   `);
 
   // Migraciones automáticas de esquema

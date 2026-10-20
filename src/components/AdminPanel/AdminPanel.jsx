@@ -43,6 +43,7 @@ export default function AdminPanel({
   const [services, setServices] = useState([]);
   const [blockedSlots, setBlockedSlots] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [redemptions, setRedemptions] = useState([]);
   const [birthdaysData, setBirthdaysData] = useState({ thisWeek: [], thisMonth: [] });
   const [config, setConfig] = useState({});
 
@@ -74,10 +75,13 @@ export default function AdminPanel({
       setServices(data.services || []);
       setBlockedSlots(data.blockedSlots || []);
       setPayments(data.payments || []);
+      setRedemptions(data.redemptions || []);
       setBirthdaysData(data.birthdays || { thisWeek: [], thisMonth: [] });
       setConfig(data.config || {});
 
-      const pendingCount = (data.appointments || []).filter((a) => a.status === 'pendiente').length;
+      const pendingApptsCount = (data.appointments || []).filter((a) => a.status === 'pendiente').length;
+      const pendingRedemptionsCount = (data.redemptions || []).filter((r) => r.status === 'pendiente').length;
+      const pendingCount = pendingApptsCount + pendingRedemptionsCount;
       if (onPendingCountChange) onPendingCountChange(pendingCount);
     } catch (err) {
       if (err.status === 401 && onAdminLogout) {
@@ -99,6 +103,9 @@ export default function AdminPanel({
   }
 
   const pendingAppointments = appointments.filter((a) => a.status === 'pendiente');
+  const pendingRedemptionsList = redemptions.filter((r) => r.status === 'pendiente');
+  const totalPendingHandshake = pendingAppointments.length + pendingRedemptionsList.length;
+
   const todayStr = formatLocalDate(new Date());
   const todayAppointments = appointments.filter((a) => a.date === todayStr);
 
@@ -123,6 +130,30 @@ export default function AdminPanel({
       await loadDashboard();
     } catch (err) {
       alert(err.message);
+    }
+  };
+
+  const handleAcceptRedemption = async (id) => {
+    try {
+      await api.acceptRedemption(id);
+      confetti({
+        particleCount: 60,
+        spread: 70,
+        colors: ['#D4AF37', '#F3E5AB', '#FFFFFF']
+      });
+      await loadDashboard();
+    } catch (err) {
+      alert(err.message || 'Error al aceptar el canje');
+    }
+  };
+
+  const handleRejectRedemption = async (id) => {
+    if (!window.confirm('¿Deseás rechazar esta solicitud de canje? (No se descontarán puntos)')) return;
+    try {
+      await api.rejectRedemption(id);
+      await loadDashboard();
+    } catch (err) {
+      alert(err.message || 'Error al rechazar el canje');
     }
   };
 
@@ -275,7 +306,7 @@ export default function AdminPanel({
             </span>
           </h1>
           <p className="text-xs text-[#8A898E] font-mono tabular-nums">
-            SQLite activo • {pendingAppointments.length} solicitudes WA • {clients.length} socios registrados
+            SQLite activo • {totalPendingHandshake} solicitudes WA • {clients.length} socios registrados
           </p>
         </div>
 
@@ -333,9 +364,9 @@ export default function AdminPanel({
         >
           <Clock className="w-3.5 h-3.5 text-[#D4AF37]" />
           <span>Handshake WA</span>
-          {pendingAppointments.length > 0 && (
+          {totalPendingHandshake > 0 && (
             <span className="px-1.5 py-0.2 rounded-md bg-[#D4AF37] text-black text-[10px] font-bold tabular-nums">
-              {pendingAppointments.length}
+              {totalPendingHandshake}
             </span>
           )}
         </button>
@@ -400,8 +431,12 @@ export default function AdminPanel({
       {activeTab === 'pending' && (
         <PendingAppointments
           pendingList={pendingAppointments}
+          pendingRedemptions={pendingRedemptionsList}
+          clients={clients}
           onConfirm={handleConfirmAppointment}
           onCancel={handleCancelAppointment}
+          onAcceptRedemption={handleAcceptRedemption}
+          onRejectRedemption={handleRejectRedemption}
         />
       )}
 

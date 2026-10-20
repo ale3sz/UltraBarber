@@ -184,6 +184,26 @@ function formatService(row) {
   };
 }
 
+// Helper: Formato de canjes de premios
+function formatRedemption(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    code: row.code,
+    clientId: row.client_id,
+    clientDni: row.client_dni,
+    clientName: row.client_name,
+    clientPhone: row.client_phone || '',
+    itemId: row.item_id,
+    itemName: row.item_name,
+    pointsCost: Number(row.points_cost) || 0,
+    status: row.status,
+    notes: row.notes || '',
+    createdAt: row.created_at,
+    processedAt: row.processed_at
+  };
+}
+
 // Background Worker: Limpieza de turnos con Hold vencido (Apoyado en base de datos)
 export function checkExpiredAppointments() {
   const now = Date.now();
@@ -561,9 +581,15 @@ app.get('/api/clients/me', (req, res) => {
     .all(row.dni)
     .map(formatAppointment);
 
+  const redemptions = db
+    .prepare('SELECT * FROM redemptions WHERE client_dni = ? ORDER BY created_at DESC LIMIT 20')
+    .all(row.dni)
+    .map(formatRedemption);
+
   res.json({
     client: formatClient(row),
-    appointments
+    appointments,
+    redemptions
   });
 });
 
@@ -923,6 +949,115 @@ app.post('/api/appointments/:id/client-cancel', (req, res) => {
 });
 
 // ============================================================================
+// 3B. SOLICITUDES DE CANJE DE PREMIOS (HANDSHAKE WHATSAPP)
+// ============================================================================
+
+// Solicitar canje de premio
+app.post('/api/redemptions/request', generalApiLimiter, (req, res) => {
+  const session = getOptionalClient(req);
+  if (!session) {
+    return res.status(401).json({
+      error: 'Iniciá sesión con tu DNI para solicitar el canje de premios.'
+    });
+  }
+
+  const { itemId, notes } = req.body;
+  if (!itemId) {
+    return res.status(400).json({ error: 'Identificador de premio requerido' });
+  }
+
+  const clientRow = db.prepare('SELECT * FROM clients WHERE dni = ?').get(session.dni);
+  if (!clientRow) {
+    return res.status(404).json({ error: 'Cliente no encontrado' });
+  }
+
+  const config = getConfigObject();
+  const redeemables = config.redeemables || [
+    { id: 'red-corte', name: 'Corte de Autor Completo', pointsCost: 10, stock: 99, hasStockLimit: false },
+    { id: 'red-pomada', name: 'Pomada Matte de Autor (50g)', pointsCost: 6, stock: 8, hasStockLimit: true },
+    { id: 'red-aceite', name: 'Aceite Nutritivo para Barba', pointsCost: 5, stock: 5, hasStockLimit: true }
+  ];
+
+  const item = redeemables.find((r) => r.id === itemId);
+  if (!item) {
+    return res.status(404).json({ error: 'El premio seleccionado no existe en el catálogo' });
+  }
+
+  if (item.hasStockLimit && item.stock <= 0) {
+    return res.status(409).json({ error: 'Este premio se encuentra temporalmente sin stock.' });
+  }
+
+  const pointsCost = Number(item.pointsCost) || 0;
+  if ((clientRow.points || 0) < pointsCost) {
+    return res.status(422).json({
+      error: `Puntos insuficientes. Tenés ${clientRow.points || 0} pts y este premio requiere ${pointsCost} pts.`
+    });
+  }
+
+  // Verificar si ya tiene una solicitud pendiente para el mismo item
+  const existingPending = db.prepare(
+    "SELECT * FROM redemptions WHERE client_dni = ? AND item_id = ? AND status = 'pendiente'"
+  ).get(clientRow.dni, item.id);
+  if (existingPending) {
+    return res.status(409).json({
+      error: 'Ya tenés una solicitud pendiente para este premio. David la revisará a la brevedad.'
+    });
+  }
+
+  const now = Date.now();
+  const code = `CJ-${Math.floor(1000 + Math.random() * 9000)}`;
+  const redemptionId = `red_${now}_${code}`;
+  const fullName = `${clientRow.first_name} ${clientRow.last_name}`.trim();
+
+  db.prepare(`
+    INSERT INTO redemptions (
+      id, code, client_id, client_dni, client_name, client_phone,
+      item_id, item_name, points_cost, status, notes, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?, ?)
+  `).run(
+    redemptionId,
+    code,
+    String(clientRow.id),
+    clientRow.dni,
+    fullName,
+    clientRow.phone || '',
+    item.id,
+    item.name,
+    pointsCost,
+    notes ? String(notes).trim() : '',
+    now
+  );
+
+  const rawMessage = `¡Hola David! Quiero solicitar el canje de mi premio del Club:\n\n🎁 Premio: ${item.name} (${pointsCost} PTS)\n👤 Socio: ${fullName} (DNI ${clientRow.dni})\n🔑 Código: #${code}\n\n¿Me confirmás cuando lo tengas listo? ¡Muchas gracias!`;
+  const davidPhone = formatWhatsAppPhone(config.davidWhatsApp || config.barberPhone || '3413762115');
+  const whatsappUrl = `https://wa.me/${davidPhone}?text=${encodeURIComponent(rawMessage)}`;
+
+  const createdRow = db.prepare('SELECT * FROM redemptions WHERE id = ?').get(redemptionId);
+
+  res.status(201).json({
+    success: true,
+    redemption: formatRedemption(createdRow),
+    code,
+    rawMessage,
+    whatsappUrl
+  });
+});
+
+// Mis canjes solicitados (cliente)
+app.get('/api/redemptions/my', (req, res) => {
+  const session = getOptionalClient(req);
+  if (!session) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+
+  const list = db.prepare(
+    'SELECT * FROM redemptions WHERE client_dni = ? ORDER BY created_at DESC LIMIT 20'
+  ).all(session.dni).map(formatRedemption);
+
+  res.json({ redemptions: list });
+});
+
+// ============================================================================
 // 4. DAVID ADMIN AUTHENTICATION & PROTECTED OPERATIONS
 // ============================================================================
 
@@ -1022,6 +1157,11 @@ app.get('/api/admin/dashboard', requireAdmin, (req, res) => {
     .prepare('SELECT * FROM payments ORDER BY created_at DESC LIMIT 100')
     .all();
 
+  const redemptions = db
+    .prepare('SELECT * FROM redemptions ORDER BY created_at DESC LIMIT 50')
+    .all()
+    .map(formatRedemption);
+
   // Cumpleaños basados en fecha actual argentina
   const todayParts = getArgentinaDateString().split('-');
   const currentMonth = parseInt(todayParts[1], 10);
@@ -1064,6 +1204,7 @@ app.get('/api/admin/dashboard', requireAdmin, (req, res) => {
     services,
     blockedSlots,
     payments,
+    redemptions,
     birthdays: {
       thisWeek,
       thisMonth
@@ -1276,6 +1417,103 @@ app.post('/api/admin/appointments/:id/refund', requireAdmin, (req, res) => {
     appointment: formatAppointment(updatedApt),
     client: updatedClient ? formatClient(updatedClient) : null
   });
+});
+
+// Admin: Aceptar solicitud de canje (Valida saldo, descuenta puntos, actualiza stock)
+app.post('/api/admin/redemptions/:id/accept', requireAdmin, (req, res) => {
+  const redemption = db.prepare('SELECT * FROM redemptions WHERE id = ?').get(req.params.id);
+  if (!redemption) {
+    return res.status(404).json({ error: 'Solicitud de canje no encontrada' });
+  }
+
+  if (redemption.status !== 'pendiente') {
+    return res.status(409).json({
+      error: `La solicitud ya fue procesada previamente (estado actual: ${redemption.status})`
+    });
+  }
+
+  const client = db.prepare('SELECT * FROM clients WHERE dni = ?').get(redemption.client_dni);
+  if (!client) {
+    return res.status(404).json({ error: 'Cliente asociado no encontrado' });
+  }
+
+  const pointsCost = Number(redemption.points_cost) || 0;
+  if ((client.points || 0) < pointsCost) {
+    return res.status(422).json({
+      error: `Saldo insuficiente. El socio tiene ${client.points || 0} pts y el canje requiere ${pointsCost} pts.`
+    });
+  }
+
+  const now = Date.now();
+
+  db.exec('BEGIN IMMEDIATE;');
+  try {
+    // 1. Descontar puntos al socio
+    db.prepare('UPDATE clients SET points = points - ? WHERE dni = ?').run(
+      pointsCost,
+      client.dni
+    );
+
+    // 2. Descontar stock en la configuración si corresponde
+    const config = getConfigObject();
+    if (config.redeemables && Array.isArray(config.redeemables)) {
+      let modified = false;
+      const updatedRedeemables = config.redeemables.map((r) => {
+        if (r.id === redemption.item_id && r.hasStockLimit && r.stock > 0) {
+          modified = true;
+          return { ...r, stock: Math.max(0, r.stock - 1) };
+        }
+        return r;
+      });
+      if (modified) {
+        config.redeemables = updatedRedeemables;
+        updateConfigObject(config);
+      }
+    }
+
+    // 3. Marcar canje como aprobado
+    db.prepare("UPDATE redemptions SET status = 'aprobado', processed_at = ? WHERE id = ?").run(
+      now,
+      redemption.id
+    );
+
+    db.exec('COMMIT;');
+  } catch (err) {
+    try { db.exec('ROLLBACK;'); } catch {}
+    return res.status(500).json({ error: 'Error al procesar el canje: ' + err.message });
+  }
+
+  const updatedRedemption = db.prepare('SELECT * FROM redemptions WHERE id = ?').get(redemption.id);
+  const updatedClient = db.prepare('SELECT * FROM clients WHERE dni = ?').get(client.dni);
+
+  res.json({
+    success: true,
+    redemption: formatRedemption(updatedRedemption),
+    client: formatClient(updatedClient)
+  });
+});
+
+// Admin: Rechazar solicitud de canje (Sin descuento de puntos)
+app.post('/api/admin/redemptions/:id/reject', requireAdmin, (req, res) => {
+  const redemption = db.prepare('SELECT * FROM redemptions WHERE id = ?').get(req.params.id);
+  if (!redemption) {
+    return res.status(404).json({ error: 'Solicitud de canje no encontrada' });
+  }
+
+  if (redemption.status !== 'pendiente') {
+    return res.status(409).json({
+      error: `La solicitud ya fue procesada previamente (estado actual: ${redemption.status})`
+    });
+  }
+
+  const now = Date.now();
+  db.prepare("UPDATE redemptions SET status = 'rechazado', processed_at = ? WHERE id = ?").run(
+    now,
+    redemption.id
+  );
+
+  const updated = db.prepare('SELECT * FROM redemptions WHERE id = ?').get(redemption.id);
+  res.json({ success: true, redemption: formatRedemption(updated) });
 });
 
 app.post('/api/admin/appointments/manual', requireAdmin, (req, res) => {
