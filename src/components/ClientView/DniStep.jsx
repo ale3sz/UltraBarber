@@ -297,7 +297,7 @@ export default function DniStep({
                   setCheckResult(null);
                   if (errorMsg) setErrorMsg('');
                 }}
-                placeholder="Ingresá tu DNI (ej: 40123456)"
+                placeholder="Ingresá tu número de DNI"
                 className="w-full flex-1 min-w-0 px-4 py-3 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] placeholder-[#8A898E]/40 text-sm font-mono tracking-wider tabular-nums focus:outline-none focus:border-[#E5C378] focus:ring-1 focus:ring-[#E5C378]/30 transition-all"
               />
               <button
@@ -309,46 +309,6 @@ export default function DniStep({
                 <span>Validar DNI</span>
               </button>
             </div>
-
-            {/* Demo Quick Fill */}
-            {!checkResult && (
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 text-xs">
-                <span className="micro-technical text-[9px] text-[#8A898E]">Demo rápido:</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDniInput('40123456');
-                    api.checkDni('40123456').then(setCheckResult);
-                    setPinInput('1234');
-                  }}
-                  className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] hover:border-[#D4AF37]/50 font-mono text-[10px] text-[#8A898E] hover:text-[#EDEDED] transition-colors"
-                >
-                  Lucas (40123456 • PIN 1234)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDniInput('38999888');
-                    api.checkDni('38999888').then(setCheckResult);
-                    setPinInput('1234');
-                  }}
-                  className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] hover:border-[#D4AF37]/50 font-mono text-[10px] text-[#8A898E] hover:text-[#EDEDED] transition-colors"
-                >
-                  Mateo (10 PTS • PIN 1234)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDniInput('11111111');
-                    api.checkDni('11111111').then(setCheckResult);
-                    setPasswordInput('barber2026');
-                  }}
-                  className="px-2 py-0.5 rounded bg-[#101012] border border-white/[0.06] hover:border-[#D4AF37]/50 font-mono text-[10px] text-[#D4AF37] hover:text-white transition-colors"
-                >
-                  David Admin (DNI 11111111)
-                </button>
-              </div>
-            )}
           </form>
 
           {/* CASE A: David (Admin) -> Password Form instead of 4-digit PIN */}
@@ -416,10 +376,6 @@ export default function DniStep({
                 <span>Ingresar al Panel David</span>
                 <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
               </button>
-
-              <div className="pt-1 text-[10px] font-mono text-[#8A898E]">
-                Clave predeterminada: <strong className="text-[#D4AF37]">barber2026</strong>
-              </div>
             </form>
           )}
 
@@ -473,10 +429,7 @@ export default function DniStep({
                 <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
               </button>
 
-              <div className="flex items-center justify-between pt-1 text-xs">
-                <span className="text-[10px] font-mono text-[#8A898E]">
-                  PIN demo: <strong className="text-[#D4AF37]">1234</strong>
-                </span>
+              <div className="flex items-center justify-end pt-1 text-xs">
                 <button
                   type="button"
                   onClick={handleForgotPin}
