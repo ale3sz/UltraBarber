@@ -64,8 +64,12 @@ export default function ClientView({
     loadCatalog();
   }, []);
 
-  const handleRequestTurn = async () => {
-    if (!loggedClient) return;
+  const handleRequestTurn = async (clientOverride = null) => {
+    const clientToUse = clientOverride || loggedClient;
+    if (!clientToUse) {
+      setBookingStep(3);
+      return;
+    }
     if (!selectedService || !selectedDate || !selectedTime) {
       setBookingError('Seleccioná un servicio, fecha y horario libre.');
       return;
@@ -81,7 +85,7 @@ export default function ClientView({
         time: selectedTime
       });
       setAppointmentResponse(res);
-      setBookingStep(3);
+      setBookingStep(4);
       if (onRefreshClientSession) onRefreshClientSession();
     } catch (err) {
       setBookingError(err.message || 'No se pudo solicitar el turno.');
@@ -192,7 +196,7 @@ export default function ClientView({
                             whatsappUrl: statusData.whatsappUrl
                           });
                           setSubTab('book');
-                          setBookingStep(3);
+                          setBookingStep(4);
                         }}
                         className="px-3.5 py-2 rounded-md btn-whatsapp-luxury text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all"
                       >
@@ -271,8 +275,7 @@ export default function ClientView({
               onAdminAuthSuccess={onAdminAuthSuccess}
               onLogoutClient={onLogoutClient}
               onContinue={() => {
-                setSubTab('book');
-                setBookingStep(1);
+                // Permanece en el carnet para ver puntos y beneficios
               }}
             />
 
@@ -335,7 +338,7 @@ export default function ClientView({
       </div>
       )}
 
-      {/* SUBTAB 2: RESERVAR TURNO */}
+      {/* SUBTAB 2: RESERVAR TURNO (Flujo Canónico: Valor Primero -> Identificación al Final) */}
       {subTab === 'book' && (
         <div className="max-w-4xl mx-auto space-y-6">
           {bookingError && (
@@ -344,69 +347,102 @@ export default function ClientView({
             </div>
           )}
 
-          {/* Require Client Auth (DNI + PIN) before booking */}
-          {!loggedClient ? (
-            <div className="max-w-md mx-auto">
-              <DniStep
-                loggedClient={loggedClient}
-                guestMode={guestMode}
-                setGuestMode={setGuestMode}
-                onAuthSuccess={(client, apts) => {
-                  onAuthSuccess(client, apts);
-                  setBookingStep(1);
-                }}
-                onAdminAuthSuccess={onAdminAuthSuccess}
-                onLogoutClient={onLogoutClient}
-                onContinue={() => setBookingStep(1)}
+          <div key={bookingStep} className="animate-stepper-morph">
+            {/* Paso 1: Servicios & Bento Grid */}
+            {bookingStep === 1 && (
+              <ServiceStep
+                services={services}
+                drinks={drinks}
+                selectedService={selectedService}
+                setSelectedService={setSelectedService}
+                selectedDrink={selectedDrink}
+                setSelectedDrink={setSelectedDrink}
+                onBack={() => setSubTab('club')}
+                onContinue={() => setBookingStep(2)}
+                whatsappPhone={studioConfig?.whatsappPhone || '5493413762115'}
               />
-            </div>
-          ) : (
-            <div key={bookingStep} className="animate-stepper-morph">
-              {bookingStep === 1 && (
-                <ServiceStep
-                  services={services}
-                  drinks={drinks}
-                  selectedService={selectedService}
-                  setSelectedService={setSelectedService}
-                  selectedDrink={selectedDrink}
-                  setSelectedDrink={setSelectedDrink}
-                  onBack={() => setSubTab('club')}
-                  onContinue={() => setBookingStep(2)}
-                  whatsappPhone={studioConfig?.whatsappPhone || '5493413762115'}
-                />
-              )}
+            )}
 
-              {bookingStep === 2 && (
-                <DateTimeStep
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  selectedTime={selectedTime}
-                  setSelectedTime={setSelectedTime}
-                  selectedDrink={selectedDrink}
-                  onBack={() => setBookingStep(1)}
-                  onRequestTurn={handleRequestTurn}
-                  isSubmitting={isSubmitting}
-                  selectedService={selectedService}
-                  studioConfig={studioConfig}
-                />
-              )}
+            {/* Paso 2: Fecha y Horario */}
+            {bookingStep === 2 && (
+              <DateTimeStep
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                selectedTime={selectedTime}
+                setSelectedTime={setSelectedTime}
+                selectedDrink={selectedDrink}
+                onBack={() => setBookingStep(1)}
+                onRequestTurn={() => {
+                  if (loggedClient) {
+                    handleRequestTurn();
+                  } else {
+                    setBookingStep(3);
+                  }
+                }}
+                isSubmitting={isSubmitting}
+                selectedService={selectedService}
+                studioConfig={studioConfig}
+              />
+            )}
 
-              {bookingStep === 3 && appointmentResponse && (
-                <div className="max-w-xl mx-auto">
-                  <HoldWaitingStep
-                    appointmentData={appointmentResponse}
-                    onResetToNewBooking={() => {
-                      if (onRefreshClientSession) onRefreshClientSession();
-                      setSubTab('turns');
-                    }}
-                    onConfirmed={() => {
-                      if (onRefreshClientSession) onRefreshClientSession();
-                    }}
-                  />
+            {/* Paso 3: Identificación / Check-in sólo para Invitados antes de confirmar */}
+            {bookingStep === 3 && !loggedClient && (
+              <div className="max-w-md mx-auto space-y-4 animate-enter">
+                <div className="text-center pb-2">
+                  <span className="micro-technical text-[#E5C378] block mb-1">
+                    03 / 03 CHECK-IN &amp; IDENTIFICACIÓN
+                  </span>
+                  <h3 className="text-xl font-display font-bold text-[#EDEDED]">
+                    ¿A nombre de quién reservamos el sillón?
+                  </h3>
+                  <p className="text-xs text-[#8A898E] mt-1">
+                    Ingresá tu DNI para confirmar el turno y sumar puntos en tu pase de socio.
+                  </p>
                 </div>
-              )}
-            </div>
-          )}
+
+                <DniStep
+                  loggedClient={loggedClient}
+                  guestMode={guestMode}
+                  setGuestMode={setGuestMode}
+                  onAuthSuccess={async (client, apts) => {
+                    onAuthSuccess(client, apts);
+                    await handleRequestTurn(client);
+                  }}
+                  onAdminAuthSuccess={onAdminAuthSuccess}
+                  onLogoutClient={onLogoutClient}
+                  onContinue={() => {
+                    if (loggedClient) handleRequestTurn();
+                  }}
+                />
+
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setBookingStep(2)}
+                    className="text-xs font-mono text-[#8A898E] hover:text-[#EDEDED] uppercase tracking-wider"
+                  >
+                    ← Cambiar día u horario
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Paso 4 (o Paso 3 si ya estaba logueado): Bloqueo temporal Hold y WhatsApp Handshake */}
+            {(bookingStep === 4 || (bookingStep === 3 && loggedClient)) && appointmentResponse && (
+              <div className="max-w-xl mx-auto">
+                <HoldWaitingStep
+                  appointmentData={appointmentResponse}
+                  onResetToNewBooking={() => {
+                    if (onRefreshClientSession) onRefreshClientSession();
+                    setSubTab('turns');
+                  }}
+                  onConfirmed={() => {
+                    if (onRefreshClientSession) onRefreshClientSession();
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -515,7 +551,7 @@ export default function ClientView({
                               whatsappUrl: statusData.whatsappUrl
                             });
                             setSubTab('book');
-                            setBookingStep(3);
+                            setBookingStep(4);
                           }}
                           className="px-3 py-2 rounded-md bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-display font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
                         >

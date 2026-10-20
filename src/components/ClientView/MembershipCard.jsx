@@ -20,6 +20,7 @@ import OdometerCounter from '../common/OdometerCounter';
 import SpotlightCard from '../common/SpotlightCard';
 import { getAssetUrl } from '../../utils/assets';
 import { api } from '../../services/api';
+import QRCode from 'qrcode';
 
 export default function MembershipCard({
   client,
@@ -32,6 +33,28 @@ export default function MembershipCard({
 }) {
   const [activeTab, setActiveTab] = useState('puntos'); // 'puntos' | 'premios'
   const [showQrModal, setShowQrModal] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState('');
+
+  useEffect(() => {
+    if (client?.dni) {
+      QRCode.toDataURL(String(client.dni), {
+        width: 192,
+        margin: 1,
+        color: { dark: '#0D0D0F', light: '#FFFFFF' }
+      })
+        .then((url) => setQrDataUrl(url))
+        .catch(() => {});
+    }
+  }, [client?.dni]);
+
+  useEffect(() => {
+    if (!showQrModal) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShowQrModal(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showQrModal]);
 
   // Estados de solicitud de canjes
   const [selectedRedeemItem, setSelectedRedeemItem] = useState(null);
@@ -286,7 +309,7 @@ export default function MembershipCard({
                   onClick={() => onStartBooking && onStartBooking()}
                   className="px-3 py-1 rounded bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono text-[9px] font-bold uppercase tracking-wider shrink-0 transition-colors shadow-sm"
                 >
-                  Canjear en mi turno
+                  Reservar con corte bonificado
                 </button>
               </div>
             )}
@@ -337,7 +360,7 @@ export default function MembershipCard({
                     : `FALTAN ${remainingForFree} PARA CORTE BONIFICADO`}
                 </span>
                 <span className="text-[#EDEDED] font-bold tabular-nums">
-                  {!client ? '0 / 10' : `${points % milestone} / 10`}
+                  {!client ? '0 / 10' : points >= milestone ? '10 / 10' : `${points % milestone} / 10`}
                 </span>
               </div>
             </div>
@@ -544,8 +567,16 @@ export default function MembershipCard({
 
       {/* Modal Credencial Digital QR */}
       {showQrModal && client && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter">
-          <div className="w-full max-w-xs rounded-lg bg-[#141416] border border-white/[0.12] p-5 text-center space-y-4 text-[#EDEDED]">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowQrModal(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-enter cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xs rounded-lg bg-[#141416] border border-white/[0.12] p-5 text-center space-y-4 text-[#EDEDED] cursor-default shadow-2xl"
+          >
             <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
               <span className="micro-technical text-[9px]">PASE DIGITAL DE SOCIO</span>
               <button
@@ -559,7 +590,15 @@ export default function MembershipCard({
 
             {/* Crisp SVG QR Code */}
             <div className="w-36 h-36 mx-auto p-3 rounded bg-white flex flex-col items-center justify-center">
-              <QrCode className="w-24 h-24 text-black stroke-[1.5]" />
+              {qrDataUrl ? (
+                <img
+                  src={qrDataUrl}
+                  alt={`Código QR DNI ${client?.dni}`}
+                  className="w-28 h-28 object-contain"
+                />
+              ) : (
+                <QrCode className="w-24 h-24 text-black stroke-[1.5]" />
+              )}
               <span className="mt-1 font-mono text-[10px] font-bold text-black tabular-nums">
                 DNI {client?.dni || ''}
               </span>

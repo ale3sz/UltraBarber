@@ -102,9 +102,9 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
       <div
         className="absolute inset-0 bg-[#0D0D0F] transition-transform will-change-transform"
         style={{
-          clipPath: 'polygon(0 0, 100% 0, 100% 75%, 0 25%)',
+          clipPath: 'polygon(0 0, 100% 0, 100% 25%, 0 75%)',
           transform: isCut
-            ? 'translate3d(-105%, -45%, 0) rotate(-1.5deg)'
+            ? 'translate3d(105%, -45%, 0) rotate(1.5deg)'
             : 'translate3d(0, 0, 0)',
           transitionDuration: isCut ? '750ms' : '0ms',
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
@@ -121,9 +121,9 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
       <div
         className="absolute inset-0 bg-[#0D0D0F] transition-transform will-change-transform"
         style={{
-          clipPath: 'polygon(0 25%, 100% 75%, 100% 100%, 0 100%)',
+          clipPath: 'polygon(0 75%, 100% 25%, 100% 100%, 0 100%)',
           transform: isCut
-            ? 'translate3d(105%, 45%, 0) rotate(1.5deg)'
+            ? 'translate3d(-105%, 45%, 0) rotate(-1.5deg)'
             : 'translate3d(0, 0, 0)',
           transitionDuration: isCut ? '750ms' : '0ms',
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
@@ -143,7 +143,7 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
         preserveAspectRatio="none"
       >
         <defs>
-          <linearGradient id="laserGlow" x1="0%" y1="25%" x2="100%" y2="75%">
+          <linearGradient id="laserGlow" x1="0%" y1="75%" x2="100%" y2="25%">
             <stop offset="0%" stopColor="#C8A858" stopOpacity="0.2" />
             <stop offset="50%" stopColor="#FFF2C6" stopOpacity="1" />
             <stop offset="100%" stopColor="#C8A858" stopOpacity="0.2" />
@@ -158,9 +158,9 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
         </defs>
         <line
           x1="0"
-          y1="250"
+          y1="750"
           x2="1000"
-          y2="750"
+          y2="250"
           stroke="url(#laserGlow)"
           strokeWidth="2.5"
           filter="url(#glow)"

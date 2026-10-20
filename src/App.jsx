@@ -9,7 +9,15 @@ import IntroScissorsReveal from './components/common/IntroScissorsReveal';
 import { api, getClientToken, getAdminToken } from './services/api';
 
 export default function App() {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    if (window.location.search.includes('intro=1')) return true;
+    try {
+      return !sessionStorage.getItem('david_intro_seen');
+    } catch {
+      return true;
+    }
+  });
   const forceIntro = typeof window !== 'undefined' && window.location.search.includes('intro=1');
   const [activeView, setActiveView] = useState('client'); // 'client' | 'admin'
   const [clientSubTab, setClientSubTab] = useState('club'); // 'club' | 'book' | 'turns'

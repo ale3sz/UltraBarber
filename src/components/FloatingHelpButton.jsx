@@ -10,7 +10,7 @@ export default function FloatingHelpButton({ studioConfig }) {
   const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
 
   return (
-    <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2 pointer-events-auto">
+    <div className="fixed bottom-24 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2 pointer-events-auto">
       {isOpen && (
         <div className="p-4 rounded-xl bg-[#141417] card-hairline text-[#EDEDED] shadow-2xl w-72 animate-enter space-y-3.5 border border-white/[0.1]">
           <div className="flex items-center justify-between">
