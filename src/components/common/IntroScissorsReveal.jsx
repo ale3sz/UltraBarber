@@ -30,27 +30,28 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
       }
     }
 
-    // Sequence timeline:
-    // 0ms - 220ms: Curtain steady, branding & shears focus
-    // 220ms - 420ms: Shears perform the snip
-    // 420ms - 720ms: Diagonal incision line expands and panels slide apart
-    // 720ms - 920ms: Final fade out and unmount
+    // Sequence timeline (~2.3s total for rich theatricality):
+    // 0ms - 750ms: Curtain steady, branding & luxury shears focus
+    // 750ms - 1200ms: Shears perform the crisp physical snip
+    // 1200ms - 1650ms: Laser line shoots across the diagonal
+    // 1650ms - 2100ms: Panels slide apart revealing the app
+    // 2100ms - 2400ms: Final fade out and unmount
 
     const t1 = setTimeout(() => {
       if (!isSkippedRef.current) setPhase('snipping');
-    }, 220);
+    }, 750);
 
     const t2 = setTimeout(() => {
       if (!isSkippedRef.current) setPhase('cutting');
-    }, 420);
+    }, 1200);
 
     const t3 = setTimeout(() => {
       if (!isSkippedRef.current) setPhase('opened');
-    }, 720);
+    }, 1900);
 
     const t4 = setTimeout(() => {
       handleFinish();
-    }, 950);
+    }, 2350);
 
     return () => {
       clearTimeout(t1);
@@ -105,7 +106,7 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
           transform: isCut
             ? 'translate3d(-105%, -45%, 0) rotate(-1.5deg)'
             : 'translate3d(0, 0, 0)',
-          transitionDuration: isCut ? '550ms' : '0ms',
+          transitionDuration: isCut ? '750ms' : '0ms',
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
@@ -124,7 +125,7 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
           transform: isCut
             ? 'translate3d(105%, 45%, 0) rotate(1.5deg)'
             : 'translate3d(0, 0, 0)',
-          transitionDuration: isCut ? '550ms' : '0ms',
+          transitionDuration: isCut ? '750ms' : '0ms',
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
@@ -163,6 +164,11 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
           stroke="url(#laserGlow)"
           strokeWidth="2.5"
           filter="url(#glow)"
+          strokeDasharray="1200"
+          style={{
+            strokeDashoffset: isCut ? '0' : '1200',
+            transition: 'stroke-dashoffset 450ms ease-out'
+          }}
         />
       </svg>
 
@@ -171,7 +177,7 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
           ========================================================================= */}
       <div
         className={`absolute inset-0 flex flex-col items-center justify-center transition-all pointer-events-none ${
-          isCut ? 'scale-110 opacity-0 duration-300' : 'scale-100 opacity-100 duration-200'
+          isCut ? 'scale-105 opacity-0 duration-400' : 'scale-100 opacity-100 duration-300'
         }`}
       >
         {/* Metadato Superior */}
@@ -201,7 +207,7 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
               style={{
                 transformOrigin: '55px 55px',
                 transform: isSnipping ? 'rotate(0deg)' : 'rotate(-24deg)',
-                transition: 'transform 180ms cubic-bezier(0.2, 0.9, 0.3, 1.2)'
+                transition: 'transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1.2)'
               }}
             >
               {/* Hoja afilada */}
@@ -232,7 +238,7 @@ export default function IntroScissorsReveal({ onComplete, forcePlay = false }) {
               style={{
                 transformOrigin: '55px 55px',
                 transform: isSnipping ? 'rotate(0deg)' : 'rotate(24deg)',
-                transition: 'transform 180ms cubic-bezier(0.2, 0.9, 0.3, 1.2)'
+                transition: 'transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1.2)'
               }}
             >
               {/* Hoja afilada */}
