@@ -311,39 +311,7 @@ function getMockAppointments() {
       if (Array.isArray(parsed)) return parsed.map(normalizeMockAppointment);
     }
   } catch {}
-  const today = formatLocalDate(new Date());
-  return [
-    normalizeMockAppointment({
-      id: 'demo-1',
-      code: 'BF-8821',
-      dni: '38999888',
-      clientName: 'Mateo Rossi',
-      clientPhone: '3413762115',
-      serviceId: 'corte-bebida',
-      serviceName: 'Corte + Bebida',
-      price: 20000,
-      selectedDrink: 'Cerveza',
-      date: today,
-      time: '15:30',
-      status: 'confirmado',
-      notes: 'Turno confirmado'
-    }),
-    normalizeMockAppointment({
-      id: 'demo-2',
-      code: 'BF-9014',
-      dni: '40123456',
-      clientName: 'Lucas Benítez',
-      clientPhone: '3415558899',
-      serviceId: 'experiencia-completa',
-      serviceName: 'Corte Premium · Experiencia Completa',
-      price: 24000,
-      selectedDrink: 'Gaseosa',
-      date: today,
-      time: '17:00',
-      status: 'pendiente',
-      notes: 'Aguardando confirmación'
-    })
-  ];
+  return [];
 }
 
 function saveMockAppointments(appts) {
@@ -354,13 +322,13 @@ function normalizeMockRedemption(r) {
   return {
     id: r.id || `red-${Date.now()}`,
     code: r.code || `CJ-${Math.floor(1000 + Math.random() * 9000)}`,
-    clientId: r.clientId || r.client_id || 'demo-client',
-    clientDni: r.clientDni || r.client_dni || '38999888',
-    clientName: r.clientName || r.client_name || 'Mateo Rossi',
-    clientPhone: r.clientPhone || r.client_phone || '3413762115',
-    itemId: r.itemId || r.item_id || 'red-pomada',
-    itemName: r.itemName || r.item_name || 'Pomada Matte de Autor (50g)',
-    pointsCost: Number(r.pointsCost || r.points_cost) || 6,
+    clientId: r.clientId || r.client_id || '',
+    clientDni: r.clientDni || r.client_dni || '',
+    clientName: r.clientName || r.client_name || '',
+    clientPhone: r.clientPhone || r.client_phone || '',
+    itemId: r.itemId || r.item_id || '',
+    itemName: r.itemName || r.item_name || '',
+    pointsCost: Number(r.pointsCost || r.points_cost) || 0,
     status: r.status || 'pendiente',
     notes: r.notes || '',
     createdAt: r.createdAt || r.created_at || Date.now(),
@@ -376,25 +344,30 @@ function getMockRedemptions() {
       if (Array.isArray(parsed)) return parsed.map(normalizeMockRedemption);
     } catch {}
   }
-  return [
-    normalizeMockRedemption({
-      id: 'demo-red-1',
-      code: 'CJ-4821',
-      clientDni: '38999888',
-      clientName: 'Mateo Rossi',
-      clientPhone: '3413762115',
-      itemId: 'red-pomada',
-      itemName: 'Pomada Matte de Autor (50g)',
-      pointsCost: 6,
-      status: 'pendiente',
-      notes: 'Solicitado vía web',
-      createdAt: Date.now() - 10 * 60 * 1000
-    })
-  ];
+  return [];
 }
 
 function saveMockRedemptions(list) {
   safeSetStorage('barberfade_mock_redemptions', JSON.stringify(list.map(normalizeMockRedemption)));
+}
+
+function getRegisteredStaticClients() {
+  const clients = [];
+  try {
+    if (typeof localStorage !== 'undefined') {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('barber_client_')) {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const c = JSON.parse(raw);
+            if (c && c.dni) clients.push(formatStaticClient(c));
+          }
+        }
+      }
+    }
+  } catch {}
+  return clients;
 }
 
 function handleStaticFallback(path, options = {}) {
@@ -466,38 +439,12 @@ function handleStaticFallback(path, options = {}) {
         };
       } catch {}
     }
-    if (dni === '40123456') {
-      return {
-        exists: true,
-        dni,
-        hasPin: true,
-        isRegistered: true,
-        name: 'Lucas Benítez',
-        firstName: 'Lucas',
-        lastName: 'Benítez',
-        maskedName: 'Lucas B.',
-        phoneHint: '•••8899'
-      };
-    }
-    if (dni === '38999888' || dni === '42123456') {
-      return {
-        exists: true,
-        dni,
-        hasPin: true,
-        isRegistered: true,
-        name: 'Mateo Rossi',
-        firstName: 'Mateo',
-        lastName: 'Rossi',
-        maskedName: 'Mateo R.',
-        phoneHint: '•••2115'
-      };
-    }
     return { exists: false, dni, hasPin: false, isRegistered: false };
   }
 
   // 5. Client Login
   if (path === '/clients/login') {
-    const dni = String(body.dni || '40123456').replace(/\D/g, '');
+    const dni = String(body.dni || '').replace(/\D/g, '');
     let client = null;
     const saved = safeGetStorage(`barber_client_${dni}`);
     if (saved) {
@@ -506,28 +453,9 @@ function handleStaticFallback(path, options = {}) {
       } catch {}
     }
     if (!client) {
-      if (dni === '40123456') {
-        client = formatStaticClient({
-          dni,
-          firstName: 'Lucas',
-          lastName: 'Benítez',
-          name: 'Lucas Benítez',
-          phone: '3415558899',
-          points: 4,
-          totalCuts: 4
-        });
-      } else {
-        client = formatStaticClient({
-          dni,
-          firstName: dni === '38999888' || dni === '42123456' ? 'Mateo' : 'Socio',
-          lastName: dni === '38999888' || dni === '42123456' ? 'Rossi' : 'VIP',
-          name: dni === '38999888' || dni === '42123456' ? 'Mateo Rossi' : 'Socio ULTRA BARBER',
-          phone: '3413762115',
-          points: 10,
-          totalCuts: 10
-        });
-      }
-      safeSetStorage(`barber_client_${dni}`, JSON.stringify(client));
+      const err = new Error('Cliente no registrado. Por favor completá tu alta.');
+      err.status = 404;
+      throw err;
     }
     const token = `mock-client-token-${dni}`;
     safeSetStorage(CLIENT_TOKEN_KEY, token);
@@ -569,16 +497,7 @@ function handleStaticFallback(path, options = {}) {
       }
     }
     if (!client) {
-      client = formatStaticClient({
-        dni: '38999888',
-        firstName: 'Mateo',
-        lastName: 'Rossi',
-        name: 'Mateo Rossi',
-        phone: '3413762115',
-        points: 10,
-        totalCuts: 10,
-        tier: 'Silver & Gold · Nivel 2'
-      });
+      return { client: null, appointments: [], redemptions: [] };
     }
     const appts = getMockAppointments().filter((a) => a.dni === client.dni);
     const redemptions = getMockRedemptions().filter((r) => r.clientDni === client.dni);
@@ -595,8 +514,8 @@ function handleStaticFallback(path, options = {}) {
       if (saved) currentClient = formatStaticClient(JSON.parse(saved));
     } catch {}
     const clientName = body.clientName || (currentClient ? `${currentClient.firstName} ${currentClient.lastName}`.trim() : 'Cliente');
-    const clientPhone = body.clientPhone || currentClient?.phone || '3413762115';
-    const clientDni = body.clientDni || currentClient?.dni || '38999888';
+    const clientPhone = body.clientPhone || currentClient?.phone || '';
+    const clientDni = body.clientDni || currentClient?.dni || '';
     const selectedDrink = body.selectedDrink || body.chosenDrink || (svc.drinkIncluded ? 'Cerveza' : null);
     const expiresAt = Date.now() + 15 * 60 * 1000;
 
@@ -673,10 +592,10 @@ function handleStaticFallback(path, options = {}) {
       const saved = safeGetStorage('barberfade_current_mock_client');
       if (saved) currentClient = formatStaticClient(JSON.parse(saved));
     } catch {}
-    const clientName = currentClient ? `${currentClient.firstName} ${currentClient.lastName}`.trim() : 'Socio';
-    const clientPhone = currentClient?.phone || '3413762115';
-    const clientDni = currentClient?.dni || '38999888';
-    const clientPoints = currentClient?.points ?? 10;
+    const clientName = currentClient ? `${currentClient.firstName} ${currentClient.lastName}`.trim() : (body.clientName || 'Socio');
+    const clientPhone = currentClient?.phone || body.clientPhone || '';
+    const clientDni = currentClient?.dni || body.clientDni || '';
+    const clientPoints = currentClient?.points ?? 0;
 
     const pointsCost = Number(body.pointsCost) || 6;
     if (clientPoints < pointsCost) {
@@ -722,8 +641,8 @@ function handleStaticFallback(path, options = {}) {
       const saved = safeGetStorage('barberfade_current_mock_client');
       if (saved) currentClient = formatStaticClient(JSON.parse(saved));
     } catch {}
-    const dni = currentClient?.dni || '38999888';
-    const redemptions = getMockRedemptions().filter((r) => r.clientDni === dni);
+    const dni = currentClient?.dni;
+    const redemptions = dni ? getMockRedemptions().filter((r) => r.clientDni === dni) : [];
     return { redemptions };
   }
 
@@ -750,11 +669,7 @@ function handleStaticFallback(path, options = {}) {
   // 11. Admin Dashboard
   if (path === '/admin/dashboard') {
     const appointments = getMockAppointments();
-    const clients = [
-      formatStaticClient({ dni: '38999888', firstName: 'Mateo', lastName: 'Rossi', phone: '3413762115', birthDate: '1995-10-18', points: 10, totalCuts: 10 }),
-      formatStaticClient({ dni: '40123456', firstName: 'Lucas', lastName: 'Benítez', phone: '3415558899', birthDate: '1998-10-22', points: 4, totalCuts: 4 }),
-      formatStaticClient({ dni: '39112233', firstName: 'Joaquín', lastName: 'Alvarez', phone: '3416778899', birthDate: '1993-04-12', points: 12, totalCuts: 14 })
-    ];
+    const clients = getRegisteredStaticClients();
     return {
       appointments,
       clients,
@@ -762,8 +677,8 @@ function handleStaticFallback(path, options = {}) {
       payments: [],
       redemptions: getMockRedemptions(),
       birthdays: {
-        thisWeek: [clients[0]],
-        thisMonth: [clients[0], clients[1]]
+        thisWeek: [],
+        thisMonth: []
       },
       metrics: {
         todayTurns: appointments.length,

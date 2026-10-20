@@ -10,7 +10,8 @@ import {
   LogOut,
   CreditCard,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  ArrowLeft
 } from 'lucide-react';
 import InstagramIcon from './icons/InstagramIcon';
 
@@ -122,30 +123,15 @@ export default function Navbar({
               </div>
             )}
 
-            {/* Admin Switch Button */}
-            {(adminUser || activeView === 'admin') && (
+            {/* Botón de retorno a la web (Solo visible dentro del panel administrativo de David) */}
+            {activeView === 'admin' && (
               <button
                 type="button"
-                onClick={() => setActiveView(activeView === 'admin' ? 'client' : 'admin')}
-                className={`relative px-3 py-1.5 rounded-md text-[11px] font-mono uppercase tracking-[0.12em] flex items-center gap-1.5 border transition-all ${
-                  activeView === 'admin'
-                    ? 'bg-white text-[#0B0B0C] border-white font-bold'
-                    : 'bg-[#141416] border-white/[0.08] text-[#8A898E] hover:text-[#EDEDED] hover:border-white/20'
-                }`}
+                onClick={() => setActiveView('client')}
+                className="relative px-3 py-1.5 rounded-md text-[11px] font-mono uppercase tracking-[0.12em] flex items-center gap-1.5 border transition-all bg-white text-[#0B0B0C] border-white font-bold hover:bg-[#EDEDED]"
               >
-                {adminUser ? (
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.5]" />
-                ) : (
-                  <Lock className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.5]" />
-                )}
-                <span className="hidden sm:inline">
-                  {activeView === 'admin' ? 'Salir Panel' : 'Panel David'}
-                </span>
-                {adminUser && pendingCount > 0 && (
-                  <span className="px-1 text-[9px] font-mono font-bold rounded bg-[#D4AF37] text-[#0B0B0C] tabular-nums">
-                    {pendingCount}
-                  </span>
-                )}
+                <ArrowLeft className="w-3.5 h-3.5 stroke-[2]" />
+                <span className="hidden sm:inline">Volver a la Web</span>
               </button>
             )}
 
