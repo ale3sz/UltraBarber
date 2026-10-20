@@ -10,13 +10,13 @@ export default function FloatingHelpButton({ studioConfig }) {
   const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
 
   return (
-    <div className="fixed bottom-24 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2 pointer-events-auto">
+    <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2 pointer-events-auto">
       {isOpen && (
-        <div className="p-4 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] shadow-2xl w-72 animate-enter space-y-3">
+        <div className="p-4 rounded-xl bg-[#141417] card-hairline text-[#EDEDED] shadow-2xl w-72 animate-enter space-y-3.5 border border-white/[0.1]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
-              <span className="micro-technical text-[#D4AF37]">
+              <span className="w-2 h-2 rounded-full bg-[#E5C378] animate-pulse" />
+              <span className="micro-technical text-[#E5C378]">
                 CONSERJERÍA PRIVADA
               </span>
             </div>
@@ -31,7 +31,7 @@ export default function FloatingHelpButton({ studioConfig }) {
           </div>
 
           <div>
-            <h4 className="text-sm font-display font-bold text-[#EDEDED]">
+            <h4 className="text-sm font-display font-semibold text-[#EDEDED] tracking-wide">
               ¿Tenés alguna consulta?
             </h4>
             <p className="text-xs text-[#8A898E] mt-1 leading-relaxed">
@@ -44,9 +44,9 @@ export default function FloatingHelpButton({ studioConfig }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setIsOpen(false)}
-            className="w-full py-2.5 px-4 rounded-md bg-[#25D366] hover:bg-[#20ba59] text-white font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
+            className="w-full py-2.5 px-4 rounded-lg btn-whatsapp-luxury text-white font-display font-bold text-[11px] uppercase tracking-[0.16em] flex items-center justify-center gap-2 transition-all active:scale-98 shadow-md"
           >
-            <MessageCircle className="w-4 h-4 fill-white" />
+            <MessageCircle className="w-4 h-4 fill-white shrink-0" />
             <span>Chatear con David</span>
           </a>
         </div>
@@ -54,15 +54,15 @@ export default function FloatingHelpButton({ studioConfig }) {
 
       <MagneticButton
         onClick={() => setIsOpen(!isOpen)}
-        className="group px-3.5 py-2.5 rounded-md bg-[#141416]/95 hover:bg-[#1a1a1d] text-[#EDEDED] card-hairline shadow-lg flex items-center gap-2 backdrop-blur-md"
+        className="group px-3.5 py-2.5 rounded-lg bg-[#141417]/95 hover:bg-[#1a1a1f] text-[#EDEDED] card-hairline shadow-xl flex items-center gap-2.5 backdrop-blur-md border border-white/[0.08]"
         title="Consultas y dudas por WhatsApp"
         aria-label="Botón de dudas por WhatsApp"
       >
-        <div className="w-6 h-6 rounded-sm bg-[#0B0B0C] border border-white/[0.12] flex items-center justify-center text-[#D4AF37] shrink-0">
+        <div className="w-6 h-6 rounded-md bg-[#0D0D0F] border border-white/[0.1] flex items-center justify-center text-[#E5C378] shrink-0">
           <MessageCircle className="w-3.5 h-3.5" />
         </div>
         <div className="text-left hidden sm:block pr-1">
-          <span className="block text-[11px] font-bold text-[#EDEDED] leading-tight font-display">
+          <span className="block text-[11px] font-bold text-[#EDEDED] leading-tight font-display tracking-wide">
             ¿Dudas?
           </span>
           <span className="block text-[10px] text-[#8A898E] leading-tight font-mono">

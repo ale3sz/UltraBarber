@@ -350,6 +350,53 @@ function saveMockAppointments(appts) {
   safeSetStorage('barberfade_mock_appts', JSON.stringify(appts.map(normalizeMockAppointment)));
 }
 
+function normalizeMockRedemption(r) {
+  return {
+    id: r.id || `red-${Date.now()}`,
+    code: r.code || `CJ-${Math.floor(1000 + Math.random() * 9000)}`,
+    clientId: r.clientId || r.client_id || 'demo-client',
+    clientDni: r.clientDni || r.client_dni || '38999888',
+    clientName: r.clientName || r.client_name || 'Mateo Rossi',
+    clientPhone: r.clientPhone || r.client_phone || '3413762115',
+    itemId: r.itemId || r.item_id || 'red-pomada',
+    itemName: r.itemName || r.item_name || 'Pomada Matte de Autor (50g)',
+    pointsCost: Number(r.pointsCost || r.points_cost) || 6,
+    status: r.status || 'pendiente',
+    notes: r.notes || '',
+    createdAt: r.createdAt || r.created_at || Date.now(),
+    processedAt: r.processedAt || r.processed_at || null
+  };
+}
+
+function getMockRedemptions() {
+  const saved = safeGetStorage('barberfade_mock_redemptions');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed.map(normalizeMockRedemption);
+    } catch {}
+  }
+  return [
+    normalizeMockRedemption({
+      id: 'demo-red-1',
+      code: 'CJ-4821',
+      clientDni: '38999888',
+      clientName: 'Mateo Rossi',
+      clientPhone: '3413762115',
+      itemId: 'red-pomada',
+      itemName: 'Pomada Matte de Autor (50g)',
+      pointsCost: 6,
+      status: 'pendiente',
+      notes: 'Solicitado vía web',
+      createdAt: Date.now() - 10 * 60 * 1000
+    })
+  ];
+}
+
+function saveMockRedemptions(list) {
+  safeSetStorage('barberfade_mock_redemptions', JSON.stringify(list.map(normalizeMockRedemption)));
+}
+
 function handleStaticFallback(path, options = {}) {
   let body = {};
   try {
@@ -534,7 +581,8 @@ function handleStaticFallback(path, options = {}) {
       });
     }
     const appts = getMockAppointments().filter((a) => a.dni === client.dni);
-    return { client, appointments: appts };
+    const redemptions = getMockRedemptions().filter((r) => r.clientDni === client.dni);
+    return { client, appointments: appts, redemptions };
   }
 
   // 8. Request Appointment
@@ -618,6 +666,67 @@ function handleStaticFallback(path, options = {}) {
     };
   }
 
+  // 8E. Request Redemption
+  if (path === '/redemptions/request') {
+    let currentClient = null;
+    try {
+      const saved = safeGetStorage('barberfade_current_mock_client');
+      if (saved) currentClient = formatStaticClient(JSON.parse(saved));
+    } catch {}
+    const clientName = currentClient ? `${currentClient.firstName} ${currentClient.lastName}`.trim() : 'Socio';
+    const clientPhone = currentClient?.phone || '3413762115';
+    const clientDni = currentClient?.dni || '38999888';
+    const clientPoints = currentClient?.points ?? 10;
+
+    const pointsCost = Number(body.pointsCost) || 6;
+    if (clientPoints < pointsCost) {
+      const err = new Error(`Puntos insuficientes. Tenés ${clientPoints} pts y este premio requiere ${pointsCost} pts.`);
+      err.status = 422;
+      throw err;
+    }
+
+    const code = `CJ-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newRedemption = normalizeMockRedemption({
+      id: `mock-red-${Date.now()}`,
+      code,
+      clientDni,
+      clientName,
+      clientPhone,
+      itemId: body.itemId,
+      itemName: body.itemName || 'Premio de Autor',
+      pointsCost,
+      status: 'pendiente',
+      notes: body.notes || 'Solicitud vía web',
+      createdAt: Date.now()
+    });
+
+    const list = [newRedemption, ...getMockRedemptions()];
+    saveMockRedemptions(list);
+
+    const rawMessage = `¡Hola David! Quiero solicitar el canje de mi premio del Club:\n\n🎁 Premio: ${newRedemption.itemName} (${pointsCost} PTS)\n👤 Socio: ${clientName} (DNI ${clientDni})\n🔑 Código: #${code}\n\n¿Me confirmás cuando lo tengas listo? ¡Muchas gracias!`;
+    const whatsappUrl = `https://wa.me/5493413762115?text=${encodeURIComponent(rawMessage)}`;
+
+    return {
+      success: true,
+      redemption: newRedemption,
+      code,
+      rawMessage,
+      whatsappUrl
+    };
+  }
+
+  // 8F. Client My Redemptions
+  if (path === '/redemptions/my') {
+    let currentClient = null;
+    try {
+      const saved = safeGetStorage('barberfade_current_mock_client');
+      if (saved) currentClient = formatStaticClient(JSON.parse(saved));
+    } catch {}
+    const dni = currentClient?.dni || '38999888';
+    const redemptions = getMockRedemptions().filter((r) => r.clientDni === dni);
+    return { redemptions };
+  }
+
   // 9. Admin Login
   if (path === '/admin/login') {
     if (body.password === '1234' || body.password === 'barber2026' || body.username === 'david') {
@@ -651,6 +760,7 @@ function handleStaticFallback(path, options = {}) {
       clients,
       blockedSlots: [],
       payments: [],
+      redemptions: getMockRedemptions(),
       birthdays: {
         thisWeek: [clients[0]],
         thisMonth: [clients[0], clients[1]]
@@ -683,6 +793,46 @@ function handleStaticFallback(path, options = {}) {
     const id = decodeURIComponent(path.split('/')[3]);
     const appts = getMockAppointments().map((a) => (a.id === id ? { ...a, status: 'cancelado' } : a));
     saveMockAppointments(appts);
+    return { success: true };
+  }
+
+  // 12B. Admin redemption actions
+  if (path.includes('/admin/redemptions/') && path.endsWith('/accept')) {
+    const id = decodeURIComponent(path.split('/')[3]);
+    let targetRedemption = null;
+    const redemptions = getMockRedemptions().map((r) => {
+      if (r.id === id) {
+        targetRedemption = { ...r, status: 'aprobado', processedAt: Date.now() };
+        return targetRedemption;
+      }
+      return r;
+    });
+    saveMockRedemptions(redemptions);
+
+    if (targetRedemption) {
+      let currentClient = null;
+      try {
+        const saved = safeGetStorage('barberfade_current_mock_client');
+        if (saved) {
+          currentClient = formatStaticClient(JSON.parse(saved));
+          if (currentClient.dni === targetRedemption.clientDni) {
+            currentClient.points = Math.max(0, (currentClient.points || 0) - targetRedemption.pointsCost);
+            safeSetStorage('barberfade_current_mock_client', JSON.stringify(currentClient));
+            safeSetStorage(`barber_client_${currentClient.dni}`, JSON.stringify(currentClient));
+          }
+        }
+      } catch {}
+    }
+
+    return { success: true, redemption: targetRedemption };
+  }
+
+  if (path.includes('/admin/redemptions/') && path.endsWith('/reject')) {
+    const id = decodeURIComponent(path.split('/')[3]);
+    const redemptions = getMockRedemptions().map((r) =>
+      r.id === id ? { ...r, status: 'rechazado', processedAt: Date.now() } : r
+    );
+    saveMockRedemptions(redemptions);
     return { success: true };
   }
 
@@ -803,6 +953,13 @@ export const api = {
     method: 'POST'
   }, 'client'),
 
+  // Client Redemptions Handshake
+  requestRedemption: (payload) => request('/redemptions/request', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }, 'client'),
+  getMyRedemptions: () => request('/redemptions/my', {}, 'client'),
+
   // David Admin Auth & Protected Endpoints
   loginAdmin: async (username, password) => {
     const data = await request('/admin/login', {
@@ -835,6 +992,12 @@ export const api = {
   refundAppointment: (id, refundData) => request(`/admin/appointments/${encodeURIComponent(id)}/refund`, {
     method: 'POST',
     body: JSON.stringify(refundData || {})
+  }, 'admin'),
+  acceptRedemption: (id) => request(`/admin/redemptions/${encodeURIComponent(id)}/accept`, {
+    method: 'POST'
+  }, 'admin'),
+  rejectRedemption: (id) => request(`/admin/redemptions/${encodeURIComponent(id)}/reject`, {
+    method: 'POST'
   }, 'admin'),
   createManualAppointment: (payload) => request('/admin/appointments/manual', {
     method: 'POST',

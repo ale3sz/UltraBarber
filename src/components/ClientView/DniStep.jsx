@@ -222,16 +222,16 @@ export default function DniStep({
     <SpotlightCard className="p-5 sm:p-6 text-[#EDEDED] space-y-5 animate-enter">
       <div>
         <span className="micro-technical block text-[9px] text-[#8A898E]">
-          01 / 02 AUTENTICACIÓN · PRIVADA
+          01 / 02 ATELIER PRIVADO · CHECK-IN
         </span>
         <h2 className="text-lg sm:text-xl font-display font-bold text-[#EDEDED] mt-0.5">
-          Identificación de{' '}
-          <span className="font-editorial italic font-normal text-[#D4AF37]">
+          Acceso de{' '}
+          <span className="font-editorial italic font-normal text-[#E5C378]">
             socio
           </span>
         </h2>
-        <p className="text-xs text-[#8A898E] mt-1">
-          Tu cuenta está protegida con tu DNI y un PIN de 4 dígitos para resguardar tus visitas y puntos.
+        <p className="text-xs text-[#8A898E] mt-1 leading-relaxed">
+          Identificate para consultar tus visitas, fórmulas de corte y cortes bonificados sin cargo.
         </p>
       </div>
 
@@ -245,11 +245,11 @@ export default function DniStep({
           }}
           className={`py-2 px-3 rounded text-center transition-all flex items-center justify-center gap-1.5 ${
             guestMode === 'socio'
-              ? 'bg-[#EDEDED] text-[#0B0B0C] font-bold shadow-sm'
+              ? 'bg-[#E5C378] text-[#0D0D0F] font-bold shadow-md'
               : 'text-[#8A898E] hover:text-[#EDEDED]'
           }`}
         >
-          <UserCheck className="w-3.5 h-3.5 stroke-[1.5]" />
+          <UserCheck className="w-3.5 h-3.5 stroke-[2]" />
           <span>Ya soy socio</span>
         </button>
         <button
@@ -260,11 +260,11 @@ export default function DniStep({
           }}
           className={`py-2 px-3 rounded text-center transition-all flex items-center justify-center gap-1.5 ${
             guestMode === 'primera_vez'
-              ? 'bg-[#EDEDED] text-[#0B0B0C] font-bold shadow-sm'
+              ? 'bg-[#E5C378] text-[#0D0D0F] font-bold shadow-md'
               : 'text-[#8A898E] hover:text-[#EDEDED]'
           }`}
         >
-          <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] stroke-[1.5]" />
+          <Sparkles className="w-3.5 h-3.5 text-[#0D0D0F] stroke-[2]" />
           <span>Primera vez</span>
         </button>
       </div>
@@ -298,14 +298,14 @@ export default function DniStep({
                   if (errorMsg) setErrorMsg('');
                 }}
                 placeholder="Ingresá tu DNI (ej: 40123456)"
-                className="w-full flex-1 min-w-0 px-3.5 py-3 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] placeholder-[#8A898E]/40 text-sm font-mono tracking-wider tabular-nums focus:outline-none focus:border-[#D4AF37] transition-colors"
+                className="w-full flex-1 min-w-0 px-4 py-3 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] placeholder-[#8A898E]/40 text-sm font-mono tracking-wider tabular-nums focus:outline-none focus:border-[#E5C378] focus:ring-1 focus:ring-[#E5C378]/30 transition-all"
               />
               <button
                 type="submit"
                 disabled={isLoading || dniInput.length < 4}
-                className="w-full sm:w-auto px-5 py-3 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 disabled:opacity-40 transition-all shrink-0 active:scale-[0.98]"
+                className="w-full sm:w-auto px-5 py-3 rounded-md bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono text-xs font-bold uppercase tracking-[0.16em] flex items-center justify-center gap-2 disabled:opacity-40 transition-all shrink-0 active:scale-[0.98] shadow-sm"
               >
-                <Search className="w-3.5 h-3.5 text-[#0B0B0C] stroke-[2]" />
+                <Search className="w-3.5 h-3.5 text-[#0D0D0F] stroke-[2]" />
                 <span>Validar DNI</span>
               </button>
             </div>

@@ -126,15 +126,15 @@ export default function DateTimeStep({
         onClick={() => setSelectedTime(time)}
         className={`py-2.5 px-2 rounded-md text-xs font-mono tabular-nums border transition-all active:scale-[0.98] flex flex-col items-center justify-center ${
           isSelected
-            ? 'bg-[#D4AF37] text-[#0B0B0C] font-bold border-[#D4AF37] shadow-sm'
+            ? 'bg-[#E5C378] text-[#0D0D0F] font-bold border-[#E5C378] shadow-[0_0_16px_rgba(229,195,120,0.35)]'
             : isBusy
-            ? 'bg-[#0B0B0C] border-white/[0.04] text-[#8A898E]/40 cursor-not-allowed line-through'
-            : 'bg-[#101012] border-white/[0.08] text-[#EDEDED] hover:border-white/20'
+            ? 'bg-[#0D0D0F] border-white/[0.03] text-[#8A898E]/30 cursor-not-allowed line-through'
+            : 'bg-[#141417] border-white/[0.07] text-[#EDEDED] hover:border-[#E5C378]/50 hover:bg-[#18181C]'
         }`}
       >
         <span>{time}</span>
         {isBusy && (
-          <span className="text-[9px] font-sans text-[#8A898E]/50">
+          <span className="text-[9px] font-sans text-[#8A898E]/40">
             Ocupado
           </span>
         )}
@@ -143,12 +143,12 @@ export default function DateTimeStep({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-1">
       {/* Step Progress Bar (02 / 03) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-mono">
           <div>
-            <span className="text-[#D4AF37] font-bold">02</span>
+            <span className="text-[#E5C378] font-bold">02</span>
             <span className="text-[#8A898E]"> / 03 SEGUNDO PASO</span>
           </div>
           <span className="micro-technical text-[9px] text-[#8A898E]">
@@ -156,8 +156,8 @@ export default function DateTimeStep({
           </span>
         </div>
         <div className="grid grid-cols-3 gap-1.5 h-[2px]">
-          <div className="bg-[#D4AF37]" />
-          <div className="bg-[#D4AF37]" />
+          <div className="bg-[#E5C378]" />
+          <div className="bg-[#E5C378]" />
           <div className="bg-white/[0.08]" />
         </div>
       </div>
@@ -166,7 +166,7 @@ export default function DateTimeStep({
       <div>
         <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED] leading-tight">
           ¿Cuándo te{' '}
-          <span className="font-editorial italic font-normal text-[#D4AF37]">
+          <span className="font-editorial italic font-normal text-[#E5C378]">
             esperamos
           </span>{' '}
           en el sillón?
@@ -176,11 +176,16 @@ export default function DateTimeStep({
         </p>
       </div>
 
-      {/* Day Selector Grid */}
-      <div className="space-y-2">
-        <span className="micro-technical block text-[9px] text-[#8A898E]">
-          ELEGÍ EL DÍA
-        </span>
+      {/* Day Selector Grid with Scarcity */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="micro-technical block text-[9px] text-[#8A898E]">
+            ELEGÍ EL DÍA
+          </span>
+          <span className="text-[10px] font-mono text-[#E5C378] bg-[#E5C378]/10 border border-[#E5C378]/25 px-2 py-0.5 rounded flex items-center gap-1">
+            <span>⚡ Cupos limitados · Sillón individual</span>
+          </span>
+        </div>
 
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {availableDays.map((d) => {
@@ -195,12 +200,12 @@ export default function DateTimeStep({
                 }}
                 className={`p-2.5 rounded-md border text-center transition-all active:scale-[0.98] ${
                   isSelected
-                    ? 'bg-[#D4AF37] text-[#0B0B0C] border-[#D4AF37] font-bold shadow-sm'
-                    : 'bg-[#101012] border-white/[0.08] text-[#EDEDED] hover:border-white/20'
+                    ? 'bg-[#E5C378] text-[#0D0D0F] border-[#E5C378] font-bold shadow-md'
+                    : 'bg-[#141417] border-white/[0.07] text-[#EDEDED] hover:border-white/20'
                 }`}
               >
                 <span className={`text-[10px] font-mono uppercase block ${
-                  isSelected ? 'text-[#0B0B0C]' : 'text-[#8A898E]'
+                  isSelected ? 'text-[#0D0D0F]' : 'text-[#8A898E]'
                 }`}>
                   {d.dayName}
                 </span>
@@ -208,7 +213,7 @@ export default function DateTimeStep({
                   {d.dayNumber}
                 </span>
                 <span className={`text-[9px] font-mono uppercase block ${
-                  isSelected ? 'text-[#0B0B0C]' : 'text-[#8A898E]'
+                  isSelected ? 'text-[#0D0D0F]' : 'text-[#8A898E]'
                 }`}>
                   {d.monthName}
                 </span>
@@ -273,7 +278,7 @@ export default function DateTimeStep({
             </span>
           </div>
           <div>
-            <span className="text-lg font-display font-bold text-[#D4AF37] tabular-nums">
+            <span className="text-xl font-display font-bold text-[#E5C378] tabular-nums">
               ${selectedService.price.toLocaleString('es-AR')}
             </span>
           </div>
@@ -295,9 +300,9 @@ export default function DateTimeStep({
           type="button"
           disabled={!selectedDate || !selectedTime || isSubmitting || isDayClosed}
           onClick={onRequestTurn}
-          className="px-6 py-3 rounded-md bg-[#EDEDED] hover:bg-white active:scale-[0.98] text-[#0B0B0C] font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center gap-2 disabled:opacity-40 transition-all shadow-sm"
+          className="px-7 py-3.5 rounded-md bg-[#E5C378] hover:bg-[#F3E5AB] active:scale-[0.98] text-[#0D0D0F] font-mono text-xs font-bold uppercase tracking-[0.16em] flex items-center gap-2 disabled:opacity-40 transition-all shadow-[0_0_20px_-4px_rgba(229,195,120,0.4)]"
         >
-          <span>{isSubmitting ? 'Bloqueando...' : 'Solicitar Turno'}</span>
+          <span>{isSubmitting ? 'Bloqueando tu sillón...' : 'Solicitar Turno'}</span>
           <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
         </button>
       </div>

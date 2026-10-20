@@ -1,0 +1,25 @@
+from playwright.sync_api import sync_playwright
+
+p = sync_playwright().start()
+b = p.chromium.launch(executable_path=r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe', headless=True)
+ctx = b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True)
+page = ctx.new_page()
+page.goto('http://localhost:7200', wait_until='networkidle')
+page.locator('button').filter(has_text='Mateo').first.click()
+page.wait_for_timeout(300)
+page.locator('button').filter(has_text='Entrar').first.click()
+page.wait_for_timeout(700)
+page.evaluate('window.scrollTo(0, 0)')
+page.locator('button').filter(has_text='Beneficios').first.click()
+page.wait_for_timeout(500)
+page.screenshot(path=r'audit_screenshots\mobile_04_socio_beneficios_canjes.png', full_page=True)
+page.locator('button').filter(has_text='Pase de Socio').first.click()
+page.wait_for_timeout(300)
+qr_btn = page.locator('button[aria-label*="QR"]').first
+if qr_btn.is_visible():
+    qr_btn.click()
+    page.wait_for_timeout(400)
+    page.screenshot(path=r'audit_screenshots\mobile_05_modal_qr_socio.png', full_page=False)
+b.close()
+p.stop()
+print('[OK] Mobile 04 and 05 captured!')

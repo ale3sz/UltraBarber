@@ -6,16 +6,25 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"node server/index.js\" \"vite\"",
+    "start": "node server/index.js",
     "server": "node server/index.js",
     "client": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "pm2:start": "pm2 start ecosystem.config.cjs --env production",
+    "pm2:stop": "pm2 stop ecosystem.config.cjs",
+    "pm2:restart": "pm2 restart ecosystem.config.cjs",
+    "pm2:logs": "pm2 logs barberfade-api",
     "screenshots": "node scripts/capture-screens.mjs"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "canvas-confetti": "^1.9.4",
     "cors": "^2.8.5",
+    "dotenv": "^18.0.8",
     "express": "^4.21.2",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
     "lucide-react": "^1.16.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
