@@ -1,8 +1,10 @@
+import 'dotenv/config';
 import { DatabaseSync } from 'node:sqlite';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,16 +17,69 @@ if (!fs.existsSync(DATA_DIR)) {
 const DB_FILE = path.join(DATA_DIR, 'barberfade.sqlite');
 export const db = new DatabaseSync(DB_FILE);
 
-// Enable WAL mode for high concurrency and performance
+// Hardened SQLite PRAGMAs for concurrency and data integrity
 db.exec('PRAGMA journal_mode = WAL;');
+db.exec('PRAGMA busy_timeout = 5000;');
 db.exec('PRAGMA foreign_keys = ON;');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'david-barber-studio-secret-key-2026-botanical';
+// Strict Secret Management
+const IS_PROD = process.env.NODE_ENV === 'production';
+let JWT_SECRET = process.env.JWT_SECRET;
 
-export function hashSecret(plain) {
-  return crypto.createHmac('sha256', JWT_SECRET).update(String(plain)).digest('hex');
+if (!JWT_SECRET) {
+  if (IS_PROD) {
+    throw new Error('❌ FATAL: JWT_SECRET no está definido en process.env. En producción es obligatorio definir una clave secreta segura.');
+  } else {
+    JWT_SECRET = 'david-barber-dev-insecure-secret-change-in-production-2026';
+    console.warn('⚠️ ADVERTENCIA DE SEGURIDAD: JWT_SECRET no definido en .env. Usando secreto de desarrollo temporal.');
+  }
 }
 
+/**
+ * Hash seguro de contraseñas y PINes con bcrypt (cost factor >= 10)
+ * @param {string|number} plain
+ * @param {number} [rounds=10]
+ * @returns {string}
+ */
+export function hashPassword(plain, rounds = 10) {
+  return bcrypt.hashSync(String(plain), rounds);
+}
+
+/**
+ * Verificación segura de contraseñas y PINes con soporte para migración transparente
+ * @param {string|number} plain
+ * @param {string} hashed
+ * @returns {boolean}
+ */
+export function verifyPassword(plain, hashed) {
+  if (!plain || !hashed) return false;
+  const strPlain = String(plain);
+
+  // Formato bcrypt estándar ($2a$, $2b$, $2y$)
+  if (hashed.startsWith('$2')) {
+    return bcrypt.compareSync(strPlain, hashed);
+  }
+
+  // Compatibilidad hacia atrás: legacy HMAC-SHA256 para migración sin desconexión
+  const legacyHashCurrent = crypto.createHmac('sha256', JWT_SECRET).update(strPlain).digest('hex');
+  if (legacyHashCurrent === hashed) {
+    return true;
+  }
+
+  const legacyHashOld = crypto.createHmac('sha256', 'david-barber-studio-secret-key-2026-botanical').update(strPlain).digest('hex');
+  if (legacyHashOld === hashed) {
+    return true;
+  }
+
+  return false;
+}
+
+// Alias para compatibilidad con código existente
+export const hashSecret = hashPassword;
+
+/**
+ * Genera un token JWT firmado de forma criptográfica
+ */
 export function signToken(payload, expiresInHours = 24 * 30) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
   const exp = Date.now() + expiresInHours * 3600 * 1000;
@@ -36,16 +91,27 @@ export function signToken(payload, expiresInHours = 24 * 30) {
   return `${header}.${body}.${signature}`;
 }
 
+/**
+ * Valida un token JWT con protección estricta contra timing attacks
+ */
 export function verifyToken(token) {
   if (!token || typeof token !== 'string') return null;
   const parts = token.split('.');
   if (parts.length !== 3) return null;
   const [header, body, sig] = parts;
+
   const expectedSig = crypto
     .createHmac('sha256', JWT_SECRET)
     .update(`${header}.${body}`)
     .digest('base64url');
-  if (sig !== expectedSig) return null;
+
+  const sigBuf = Buffer.from(sig);
+  const expectedBuf = Buffer.from(expectedSig);
+
+  if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) {
+    return null;
+  }
+
   try {
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf-8'));
     if (payload.exp && Date.now() > payload.exp) return null;
@@ -115,6 +181,7 @@ export function initDatabase() {
       notes TEXT DEFAULT '',
       created_at INTEGER NOT NULL,
       expires_at INTEGER,
+      hold_expires_at INTEGER,
       confirmed_at INTEGER,
       completed_at INTEGER
     );
@@ -157,7 +224,7 @@ export function initDatabase() {
     );
   `);
 
-  // Migrate admins table to support DNI
+  // Migraciones automáticas de esquema
   try {
     db.exec("ALTER TABLE admins ADD COLUMN dni TEXT DEFAULT '11111111';");
   } catch {}
@@ -165,22 +232,44 @@ export function initDatabase() {
     db.exec("UPDATE admins SET dni = '11111111' WHERE dni IS NULL OR dni = '';");
   } catch {}
 
-  // Migrate clients table to support Style Profile (Ficha Técnica VIP)
+  // Migración para hold_expires_at en appointments
+  try {
+    db.exec("ALTER TABLE appointments ADD COLUMN hold_expires_at INTEGER;");
+  } catch {}
+  try {
+    db.exec("UPDATE appointments SET hold_expires_at = expires_at WHERE hold_expires_at IS NULL AND expires_at IS NOT NULL;");
+  } catch {}
+
+  // Hardening: Limpieza obligatoria de PINes en texto plano en la tabla de clientes
+  try {
+    db.exec("UPDATE clients SET pin_code = NULL WHERE pin_code IS NOT NULL;");
+  } catch {}
+
+  // Migración de perfil de cliente
   try { db.exec("ALTER TABLE clients ADD COLUMN hair_style TEXT DEFAULT '';"); } catch {}
   try { db.exec("ALTER TABLE clients ADD COLUMN hair_texture TEXT DEFAULT '';"); } catch {}
   try { db.exec("ALTER TABLE clients ADD COLUMN preferred_product TEXT DEFAULT '';"); } catch {}
   try { db.exec("ALTER TABLE clients ADD COLUMN preferred_drink TEXT DEFAULT '';"); } catch {}
   try { db.exec("ALTER TABLE clients ADD COLUMN last_visit_date TEXT DEFAULT '';"); } catch {}
 
-  // Seed default Admin (David)
+  // Seed Admin por defecto (David) con bcrypt
   const adminCount = db.prepare('SELECT COUNT(*) as count FROM admins').get().count;
   if (adminCount === 0) {
     db.prepare(
       'INSERT INTO admins (username, password_hash, display_name, dni, created_at) VALUES (?, ?, ?, ?, ?)'
-    ).run('david', hashSecret('barber2026'), 'David', '11111111', Date.now());
+    ).run('david', hashPassword('barber2026', 10), 'David', '11111111', Date.now());
+  } else {
+    // Si el admin existente usa hash SHA-256 legacy, actualizarlo a bcrypt
+    const currentAdmin = db.prepare('SELECT id, password_hash FROM admins WHERE username = ?').get('david');
+    if (currentAdmin && !currentAdmin.password_hash.startsWith('$2')) {
+      db.prepare('UPDATE admins SET password_hash = ? WHERE id = ?').run(
+        hashPassword('barber2026', 10),
+        currentAdmin.id
+      );
+    }
   }
 
-  // Seed default Config
+  // Seed Configuración por defecto
   const defaultConfig = {
     barberName: 'David',
     businessName: 'DAVID BARBER',
@@ -198,9 +287,9 @@ export function initDatabase() {
       end: '20:00',
       slotDuration: 45
     },
-    workingDays: [1, 2, 3, 4, 5, 6], // 1: Lun, 2: Mar, 3: Mié, 4: Jue, 5: Vie, 6: Sáb (0: Dom cerrado)
-    disabledSlots: [], // Horarios específicos deshabilitados habitualmente por David (ej: ['13:30'])
-    weeklySchedule: {}, // Configuración personalizada por semana ISO: { '2026-W42': { workingDays: [...], disabledSlots: [...] } }
+    workingDays: [1, 2, 3, 4, 5, 6],
+    disabledSlots: [],
+    weeklySchedule: {},
     drinks: ['Agua mineral', 'Gaseosa', 'Cerveza'],
     clubBenefits: [
       {
@@ -230,7 +319,7 @@ export function initDatabase() {
         id: 'red-corte',
         name: 'Corte de Autor Completo',
         pointsCost: 10,
-        stock: 99, // Stock ilimitado/disponible
+        stock: 99,
         hasStockLimit: false,
         active: true,
         description: 'Canjeá 10 puntos y tu próximo corte es 100% bonificado.'
@@ -261,19 +350,10 @@ export function initDatabase() {
     insertCfg.run(k, JSON.stringify(v));
   }
 
-  // Asegurar que el WhatsApp de David sea el real (5493413762115)
+  // Asegurar que el WhatsApp de David sea el real
   db.prepare("UPDATE config SET value = ? WHERE key = 'whatsappPhone' AND (value = '\"5491123456789\"' OR value = '\"3413762115\"')").run(JSON.stringify('5493413762115'));
 
-  // Migración: Asegurar que los datos de ubicación indiquen la barbería real y no un local propio
-  try {
-    db.prepare("UPDATE config SET value = ? WHERE key = 'address' AND value LIKE '%Studio Privado%'").run(JSON.stringify('Eva Perón 52'));
-    db.prepare("INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)").run('barbershopName', JSON.stringify('V.I.P Barberías'));
-    db.prepare("INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)").run('city', JSON.stringify('Capitán Bermúdez'));
-    db.prepare("INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)").run('locationNote', JSON.stringify('Sillón de David en V.I.P Barberías'));
-    db.prepare("INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)").run('googleMapsUrl', JSON.stringify('https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'));
-  } catch {}
-
-  // Seed Services from precios.txt
+  // Asegurar servicios
   const serviceCount = db.prepare('SELECT COUNT(*) as count FROM services').get().count;
   if (serviceCount === 0) {
     const initialServices = [
@@ -392,54 +472,9 @@ export function initDatabase() {
         s.sort_order
       );
     }
-  } else {
-    // Update existing services to use the real studio photos
-    db.prepare("UPDATE services SET image_url = '/imagenes/IMG_3526.PNG' WHERE id = 'corte' AND image_url LIKE 'https://images.unsplash.com%'").run();
-    db.prepare("UPDATE services SET image_url = '/imagenes/corte-bebida.jpg' WHERE id = 'corte-bebida'").run();
-    db.prepare("UPDATE services SET image_url = '/imagenes/barba-premium.jpg' WHERE id = 'barba-premium'").run();
-    db.prepare("UPDATE services SET image_url = '/imagenes/barba-premium-bebida.jpg' WHERE id = 'barba-premium-bebida'").run();
-    db.prepare(`
-      UPDATE services
-      SET image_url = '/imagenes/corte-premium.png',
-          name = 'Corte Premium · Experiencia Completa',
-          tagline = 'Corte + Relax Ocular & Masaje + Bebida',
-          badge = 'CORTE PREMIUM VIP',
-          includes_json = ?
-      WHERE id = 'experiencia-completa'
-    `).run(JSON.stringify([
-      'Corte personalizado y perfilado al detalle',
-      'Sesión relax con gafas de masaje ocular y masajeador cervical',
-      'Limpieza facial express',
-      'Productos de cuidado para cabello y barba',
-      '1 bebida a elección (agua mineral, gaseosa o cerveza)'
-    ]));
-
-    // Asegurar que el servicio de Colorimetría exista en la base de datos
-    db.prepare(`
-      INSERT OR IGNORE INTO services (id, name, tagline, price, duration, points_earned, drink_included, includes_json, image_url, badge, sort_order, active)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
-    `).run(
-      'colorimetria',
-      'Colorimetría & Textura Técnica',
-      'Iluminación, Reflejos & Decoloración',
-      0,
-      120,
-      1,
-      1,
-      JSON.stringify([
-        'Decoloración y matización técnica',
-        'Iluminación y reflejos personalizados',
-        'Lavado, baño de luz y nutrición capilar profunda',
-        'Peinado y finalización con productos profesionales',
-        'Presupuesto y disponibilidad por WhatsApp con David'
-      ]),
-      '/imagenes/IMG_0989.JPG.jpeg',
-      'CONSULTA DIRECTA',
-      6
-    );
   }
 
-  // Seed Demo Clients
+  // Seed Clientes Demo con PIN hasheado mediante bcrypt
   const clientCount = db.prepare('SELECT COUNT(*) as count FROM clients').get().count;
   if (clientCount === 0) {
     const initialClients = [
@@ -499,15 +534,14 @@ export function initDatabase() {
 
     const insertClient = db.prepare(`
       INSERT INTO clients (id, dni, pin_hash, pin_code, first_name, last_name, phone, birth_date, points, total_cuts, notes, member_since, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     for (const c of initialClients) {
       insertClient.run(
         c.id,
         c.dni,
-        hashSecret(c.pin),
-        c.pin,
+        hashPassword(c.pin, 10),
         c.firstName,
         c.lastName,
         c.phone,
@@ -519,56 +553,21 @@ export function initDatabase() {
         Date.now()
       );
     }
-  }
-
-  // Seed active demo appointments for today if none exist
-  const aptCount = db.prepare('SELECT COUNT(*) as count FROM appointments').get().count;
-  if (aptCount === 0) {
-    const d = new Date();
-    const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    const now = Date.now();
-    const insertApt = db.prepare(`
-      INSERT INTO appointments (id, code, dni, client_name, client_phone, service_id, service_name, selected_drink, price, date, time, status, created_at, expires_at, confirmed_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    // 1. Un turno pendiente con 14 minutos restantes para probar el Handshake en vivo
-    insertApt.run(
-      'apt_demo_pending',
-      '4821',
-      '40123456',
-      'Lucas Martínez',
-      '+54 9 11 5555-0101',
-      'corte-bebida',
-      'Corte + Bebida',
-      'Cerveza',
-      20000,
-      todayStr,
-      '17:45',
-      'pendiente',
-      now,
-      now + 14 * 60 * 1000,
-      null
-    );
-
-    // 2. Un turno confirmado para hoy listo para Cobrar y Finalizar
-    insertApt.run(
-      'apt_demo_confirmed',
-      '7290',
-      '38999888',
-      'Mateo Fernández',
-      '+54 9 11 4444-0202',
-      'experiencia-completa',
-      'Experiencia Completa',
-      'Cerveza',
-      24000,
-      todayStr,
-      '18:30',
-      'confirmado',
-      now - 3600000,
-      null,
-      now - 3500000
-    );
+  } else {
+    // Migrar clientes con hashes legacy a bcrypt cost 10
+    const legacyClients = db.prepare('SELECT id, pin_hash FROM clients').all();
+    for (const cl of legacyClients) {
+      if (cl.pin_hash && !cl.pin_hash.startsWith('$2')) {
+        // Si corresponde al PIN demo '1234', migrar directamente a bcrypt
+        const is1234 = verifyPassword('1234', cl.pin_hash);
+        if (is1234) {
+          db.prepare('UPDATE clients SET pin_hash = ?, pin_code = NULL WHERE id = ?').run(
+            hashPassword('1234', 10),
+            cl.id
+          );
+        }
+      }
+    }
   }
 }
 
