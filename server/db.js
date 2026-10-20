@@ -490,98 +490,16 @@ export function initDatabase() {
     }
   }
 
-  // Seed Clientes Demo con PIN hasheado mediante bcrypt
-  const clientCount = db.prepare('SELECT COUNT(*) as count FROM clients').get().count;
-  if (clientCount === 0) {
-    const initialClients = [
-      {
-        id: 'c1',
-        dni: '40123456',
-        pin: '1234',
-        firstName: 'Lucas',
-        lastName: 'Martínez',
-        phone: '+54 9 11 5555-0101',
-        birthDate: '1997-10-20',
-        points: 8,
-        totalCuts: 8,
-        memberSince: '2025-03-15',
-        notes: 'Mid fade con 0.5, textura polvo mate arriba'
-      },
-      {
-        id: 'c2',
-        dni: '38999888',
-        pin: '1234',
-        firstName: 'Mateo',
-        lastName: 'Fernández',
-        phone: '+54 9 11 4444-0202',
-        birthDate: '1995-10-17',
-        points: 10,
-        totalCuts: 14,
-        memberSince: '2024-11-01',
-        notes: 'Low taper fade + perfilado de barba con navaja. Tiene canje disponible.'
-      },
-      {
-        id: 'c3',
-        dni: '42111222',
-        pin: '1234',
-        firstName: 'Joaquín',
-        lastName: 'González',
-        phone: '+54 9 11 3333-0303',
-        birthDate: '2001-10-22',
-        points: 5,
-        totalCuts: 5,
-        memberSince: '2025-06-10',
-        notes: 'French crop + línea en ceja derecha'
-      },
-      {
-        id: 'c4',
-        dni: '35444555',
-        pin: '1234',
-        firstName: 'Esteban',
-        lastName: 'Ríos',
-        phone: '+54 9 11 2222-0404',
-        birthDate: '1993-11-05',
-        points: 3,
-        totalCuts: 3,
-        memberSince: '2025-08-01',
-        notes: 'Corte clásico a tijera y barba rebajada a 3mm'
-      }
-    ];
-
-    const insertClient = db.prepare(`
-      INSERT INTO clients (id, dni, pin_hash, pin_code, first_name, last_name, phone, birth_date, points, total_cuts, notes, member_since, created_at)
-      VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    for (const c of initialClients) {
-      insertClient.run(
-        c.id,
-        c.dni,
-        hashPassword(c.pin, 10),
-        c.firstName,
-        c.lastName,
-        c.phone,
-        c.birthDate,
-        c.points,
-        c.totalCuts,
-        c.notes,
-        c.memberSince,
-        Date.now()
-      );
-    }
-  } else {
-    // Migrar clientes con hashes legacy a bcrypt cost 10
-    const legacyClients = db.prepare('SELECT id, pin_hash FROM clients').all();
-    for (const cl of legacyClients) {
-      if (cl.pin_hash && !cl.pin_hash.startsWith('$2')) {
-        // Si corresponde al PIN demo '1234', migrar directamente a bcrypt
-        const is1234 = verifyPassword('1234', cl.pin_hash);
-        if (is1234) {
-          db.prepare('UPDATE clients SET pin_hash = ?, pin_code = NULL WHERE id = ?').run(
-            hashPassword('1234', 10),
-            cl.id
-          );
-        }
+  // Inicialización de clientes (Puesta a punto lista para producción - sin cuentas falsas)
+  const legacyClients = db.prepare('SELECT id, pin_hash FROM clients').all();
+  for (const cl of legacyClients) {
+    if (cl.pin_hash && !cl.pin_hash.startsWith('$2')) {
+      const is1234 = verifyPassword('1234', cl.pin_hash);
+      if (is1234) {
+        db.prepare('UPDATE clients SET pin_hash = ?, pin_code = NULL WHERE id = ?').run(
+          hashPassword('1234', 10),
+          cl.id
+        );
       }
     }
   }
