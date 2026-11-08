@@ -529,42 +529,6 @@ export default function MembershipCard({
         )}
       </div>
 
-      {/* Hero Booking Action Banner con Integración Fluida (Mobile only; on desktop it is placed in the right sidebar) */}
-      <div className="lg:hidden relative rounded-lg overflow-hidden border border-white/[0.08] bg-[#141416]">
-        <img
-          src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
-          alt="David en el estudio"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-25"
-        />
-        <div className="relative z-10 p-5 sm:p-6 bg-gradient-to-r from-[#0B0B0C] via-[#0B0B0C]/90 to-transparent flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1 max-w-sm">
-            <span className="micro-technical block text-[9px] text-[#8A898E]">
-              01 / 03 PASO INICIAL · RESERVA SIN SEÑA
-            </span>
-            <h2 className="text-lg sm:text-xl font-display font-bold text-[#EDEDED] leading-snug">
-              Tu próximo corte te{' '}
-              <span className="font-editorial italic font-normal text-[#D4AF37]">
-                espera
-              </span>
-            </h2>
-            <p className="text-xs text-[#8A898E]">
-              Confirmación directa por WhatsApp con David.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={onStartBooking}
-            className="px-5 py-3 rounded-md bg-[#EDEDED] hover:bg-white active:scale-[0.98] text-[#0B0B0C] font-mono font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-2 transition-all shadow-sm shrink-0"
-          >
-            <span>Sacá tu turno</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#0B0B0C] stroke-[2]" />
-          </button>
-        </div>
-      </div>
-
-
-
       {/* Modal Credencial Digital QR */}
       {showQrModal && client && (
         <div

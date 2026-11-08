@@ -144,22 +144,15 @@ export default function DateTimeStep({
 
   return (
     <div className="space-y-6 pt-1">
-      {/* Step Progress Bar (02 / 03) */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs font-mono">
-          <div>
-            <span className="text-[#E5C378] font-bold">02</span>
-            <span className="text-[#8A898E]"> / 03 SEGUNDO PASO</span>
-          </div>
-          <span className="micro-technical text-[9px] text-[#8A898E]">
-            AGENDA DE AUTOR
-          </span>
+      {/* Minimal Step Indicator */}
+      <div className="flex items-center justify-between text-xs font-mono pb-2 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#E5C378]" />
+          <span className="text-[#E5C378] font-bold">Paso 2 de 3</span>
         </div>
-        <div className="grid grid-cols-3 gap-1.5 h-[2px]">
-          <div className="bg-[#E5C378]" />
-          <div className="bg-[#E5C378]" />
-          <div className="bg-white/[0.08]" />
-        </div>
+        <span className="text-[#8A898E] text-[11px] uppercase tracking-wider">
+          Fecha y horario
+        </span>
       </div>
 
       {/* Main Editorial Title */}

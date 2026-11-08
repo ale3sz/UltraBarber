@@ -18,7 +18,11 @@ import {
   Wine,
   ArrowRight,
   MapPin,
-  Navigation
+  Navigation,
+  Scissors,
+  Sparkles,
+  Award,
+  UserCheck
 } from 'lucide-react';
 
 export default function ClientView({
@@ -32,7 +36,8 @@ export default function ClientView({
   onRefreshClientSession,
   studioConfig = {}
 }) {
-  const [bookingStep, setBookingStep] = useState(1); // 1: Service, 2: DateTime, 3: HoldWaiting
+  const [bookingStep, setBookingStep] = useState(1);
+  const [showSocioLogin, setShowSocioLogin] = useState(false); // 1: Service, 2: DateTime, 3: HoldWaiting
   const [guestMode, setGuestMode] = useState('socio'); // 'socio' | 'primera_vez'
   const [services, setServices] = useState([]);
   const [drinks, setDrinks] = useState([]);
@@ -120,222 +125,325 @@ export default function ClientView({
 
   return (
     <div className="max-w-6xl w-full mx-auto pb-28 md:pb-16 space-y-8">
-      {/* SUBTAB 1: MI PASE & CLUB (BENTO GRID & PORTFOLIO DE AUTOR) */}
+            {/* SUBTAB 1: MI PASE & CLUB (BENTO GRID & PORTFOLIO DE AUTOR) */}
       {subTab === 'club' && (
         <div className="space-y-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Main Column: Pase de Socio Black Card & Galería Lookbook de Autor */}
-          <div className="lg:col-span-7 space-y-6">
-            <MembershipCard
-              client={loggedClient}
-              studioConfig={studioConfig}
-              guestMode={guestMode}
-              onRefreshClientSession={onRefreshClientSession}
-              onSelectService={(svcId) => {
-                const found = services.find((s) => s.id === svcId);
-                if (found) setSelectedService(found);
-                setSubTab('book');
-                if (svcId === 'colorimetria' || found?.directConsult) {
-                  setBookingStep(1);
-                } else {
-                  setBookingStep(2);
-                }
-              }}
-              onStartBooking={() => {
-                setSubTab('book');
-                setBookingStep(1);
-              }}
-              onRequestLogin={() => {
-                const el = document.getElementById('dni-input');
-                if (el) el.focus();
-              }}
-            />
-          </div>
-
-          {/* Right Column / Sticky Sidebar: Turno Activo, Hero CTA con MagneticButton, Identificación y Ubicación */}
-          <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-            {/* 1. Turno Activo Card (si existe) */}
-            {loggedClient && activeTurns.length > 0 && (
-              <div className="p-5 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="micro-technical text-[#D4AF37] block mb-0.5">TURNO EN CURSO</span>
-                    <h2 className="text-base font-display font-bold text-[#EDEDED]">
-                      Próxima visita al <span className="font-editorial italic font-normal text-[#D4AF37]">estudio</span>
-                    </h2>
+          {!loggedClient ? (
+            /* VISTA DE INVITADO: Pura estética editorial "Quiet Luxury", limpia, sin tarjetas vacías de 0 PTS */
+            <div className="space-y-10">
+              {/* Hero Principal con Fotografía de David y Acciones Claras */}
+              <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#141417] shadow-2xl">
+                <img
+                  src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
+                  alt="David en el estudio"
+                  className="absolute inset-0 w-full h-full object-cover object-center opacity-30"
+                />
+                <div className="relative z-10 p-6 sm:p-10 md:p-12 bg-gradient-to-t from-[#0D0D0F] via-[#0D0D0F]/85 to-[#0D0D0F]/60 flex flex-col justify-end min-h-[300px] sm:min-h-[360px] space-y-6">
+                  <div className="space-y-2 max-w-xl">
+                    <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#E5C378]">
+                      Sillón Privado · Capitán Bermúdez
+                    </span>
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-[#EDEDED] leading-tight">
+                      Cortes de autor con{' '}
+                      <span className="font-editorial italic font-normal text-[#E5C378]">
+                        David
+                      </span>
+                    </h1>
+                    <p className="text-xs sm:text-sm text-[#A0A0A5] leading-relaxed max-w-lg">
+                      Atención personalizada y exclusiva. Reserva instantánea en tres simples pasos sin seña previa.
+                    </p>
                   </div>
-                  <span className="badge-champagne font-mono font-bold uppercase tracking-wider text-[11px] tabular-nums">
-                    #{activeTurns[0].code} • {activeTurns[0].status}
-                  </span>
-                </div>
 
-                <div className="flex flex-col gap-3 text-xs text-[#8A898E]">
-                  <div>
-                    <strong className="text-sm text-[#EDEDED] block font-display">
-                      {activeTurns[0].serviceName}
-                      {activeTurns[0].selectedDrink ? ` • ${activeTurns[0].selectedDrink}` : ''}
-                    </strong>
-                    <span className="font-mono tabular-nums text-xs text-[#8A898E]">
-                      {activeTurns[0].date} • {activeTurns[0].time} hs
+                  {/* Feature Badges / Quiet luxury pills */}
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[11px] font-mono text-[#8A898E]">
+                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                      <Scissors className="w-3 h-3 text-[#E5C378]" />
+                      1 a 1 en sillón privado
+                    </span>
+                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                      <Sparkles className="w-3 h-3 text-[#E5C378]" />
+                      Sin seña previa
+                    </span>
+                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                      <Award className="w-3 h-3 text-[#E5C378]" />
+                      Club de beneficios
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/[0.06]">
-                    <AddToCalendarButton appointment={activeTurns[0]} studioConfig={studioConfig} />
-
-                    {activeTurns[0].status === 'pendiente' && (
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const statusData = await api.getAppointmentStatus(activeTurns[0].id);
-                          setAppointmentResponse({
-                            appointment: statusData,
-                            code: statusData.code,
-                            expiresAt: statusData.expiresAt,
-                            rawMessage: statusData.rawMessage,
-                            whatsappUrl: statusData.whatsappUrl
-                          });
-                          setSubTab('book');
-                          setBookingStep(4);
-                        }}
-                        className="px-3.5 py-2 rounded-md btn-whatsapp-luxury text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5 fill-white/20 stroke-[2]" />
-                        <span>Confirmar WhatsApp</span>
-                      </button>
-                    )}
+                  {/* Botones de Acción */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                    <MagneticButton
+                      onClick={() => {
+                        setSubTab('book');
+                        setBookingStep(1);
+                      }}
+                      className="py-3.5 px-8 rounded-lg bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_25px_-5px_rgba(229,195,120,0.4)] transition-all"
+                    >
+                      <span>Sacá tu turno</span>
+                      <ArrowRight className="w-4 h-4 text-[#0D0D0F] stroke-[2.5]" />
+                    </MagneticButton>
 
                     <button
                       type="button"
-                      onClick={() => handleCancelTurn(activeTurns[0].id)}
-                      className="px-3 py-2 rounded-md border border-white/[0.08] hover:border-red-500/40 text-[#8A898E] hover:text-red-400 text-xs font-mono transition-colors"
+                      onClick={() => setShowSocioLogin(!showSocioLogin)}
+                      className="py-3.5 px-5 rounded-lg border border-white/[0.12] hover:border-[#E5C378]/50 bg-white/[0.03] hover:bg-white/[0.06] text-[#EDEDED] font-mono text-xs uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-all"
                     >
-                      Cancelar
+                      <UserCheck className="w-3.5 h-3.5 text-[#E5C378]" />
+                      <span>{showSocioLogin ? 'Cerrar acceso' : '¿Ya sos socio? Ingresá'}</span>
                     </button>
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* 2. Hero Card de Reserva Directa con MagneticButton */}
-            <div className="relative rounded-lg overflow-hidden border border-white/[0.08] bg-[#141417] shadow-xl">
-              <img
-                src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
-                alt="David en el estudio"
-                className="absolute inset-0 w-full h-full object-cover object-center opacity-25"
-              />
-              <div className="relative z-10 p-6 bg-gradient-to-b from-[#0D0D0F]/80 via-[#0D0D0F]/90 to-[#0D0D0F] space-y-4">
-                <div className="space-y-1.5">
-                  <span className="micro-technical block text-[9px] text-[#8A898E]">
-                    01 / 03 PASO INICIAL · RESERVA SIN SEÑA
-                  </span>
-                  <h2 className="text-xl font-display font-bold text-[#EDEDED] leading-snug">
-                    {loggedClient && loggedClient.points >= 10 ? (
-                      <>
-                        Tu corte bonificado está{' '}
-                        <span className="font-editorial italic font-normal text-[#E5C378]">
-                          listo
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        Tu próximo corte te{' '}
-                        <span className="font-editorial italic font-normal text-[#E5C378]">
-                          espera
-                        </span>
-                      </>
-                    )}
-                  </h2>
-                  <p className="text-xs text-[#8A898E] leading-relaxed">
-                    {loggedClient && loggedClient.points >= 10
-                      ? 'Elegí tu fecha y canjeá tus 10 puntos en el sillón sin costo alguno.'
-                      : 'Experiencia de autor en sillón privado con David. Reserva instantánea sin seña previa.'}
-                  </p>
+              {/* Acceso para Socios (Desplegable limpio al hacer click) */}
+              {showSocioLogin && (
+                <div className="max-w-md mx-auto p-6 rounded-xl bg-[#141416] border border-[#E5C378]/30 shadow-2xl animate-enter">
+                  <DniStep
+                    loggedClient={loggedClient}
+                    guestMode={guestMode}
+                    setGuestMode={setGuestMode}
+                    onAuthSuccess={(client, apts) => {
+                      onAuthSuccess(client, apts);
+                      setShowSocioLogin(false);
+                    }}
+                    onAdminAuthSuccess={onAdminAuthSuccess}
+                    onLogoutClient={onLogoutClient}
+                    onContinue={() => setShowSocioLogin(false)}
+                  />
                 </div>
+              )}
 
-                <MagneticButton
-                  onClick={() => {
-                    setSubTab('book');
+              {/* Galería / Lookbook de Cortes */}
+              <AuthorPortfolio
+                onSelectService={(svcId) => {
+                  const found = services.find((s) => s.id === svcId);
+                  if (found) setSelectedService(found);
+                  setSubTab('book');
+                  if (svcId === 'colorimetria' || found?.directConsult) {
                     setBookingStep(1);
-                  }}
-                  className="w-full py-3.5 rounded-md bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_20px_-4px_rgba(229,195,120,0.35)]"
-                >
-                  <span>{loggedClient && loggedClient.points >= 10 ? 'Canjear corte bonificado' : 'Sacá tu turno'}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#0D0D0F] stroke-[2.5]" />
-                </MagneticButton>
-              </div>
-            </div>
+                  } else {
+                    setBookingStep(2);
+                  }
+                }}
+                onStartBooking={() => {
+                  setSubTab('book');
+                  setBookingStep(1);
+                }}
+              />
 
-            {/* 3. DniStep (Identificación / Cuenta de Socio con toggle Ya soy socio / Primera vez) */}
-            <DniStep
-              loggedClient={loggedClient}
-              guestMode={guestMode}
-              setGuestMode={setGuestMode}
-              onAuthSuccess={(client, apts) => onAuthSuccess(client, apts)}
-              onAdminAuthSuccess={onAdminAuthSuccess}
-              onLogoutClient={onLogoutClient}
-              onContinue={() => {
-                // Permanece en el carnet para ver puntos y beneficios
-              }}
-            />
-
-            {/* 4. Location & Cómo llegar */}
-            <div className="p-5 rounded-lg bg-[#141416] card-hairline space-y-3.5 text-xs">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-md bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#D4AF37] shrink-0">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <strong className="text-[#EDEDED] font-display font-bold text-sm tracking-tight">
-                      {studioConfig.barbershopName || 'V.I.P BARBERÍAS'}
-                    </strong>
-                    <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30">
-                      SILLÓN DE DAVID
-                    </span>
+              {/* Ubicación & Cómo llegar */}
+              <div className="p-6 rounded-xl bg-[#141416] card-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-lg bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#E5C378] shrink-0">
+                    <MapPin className="w-5 h-5" />
                   </div>
-                  <span className="text-[#8A898E] text-xs">
-                    {studioConfig.address || 'Eva Perón 52'} • {studioConfig.city || 'Capitán Bermúdez'}
-                  </span>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <strong className="text-[#EDEDED] font-display font-bold text-sm tracking-tight">
+                        {studioConfig.barbershopName || 'V.I.P BARBERÍAS'}
+                      </strong>
+                      <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider bg-[#E5C378]/15 text-[#E5C378] border border-[#E5C378]/30">
+                        SILLÓN DE DAVID
+                      </span>
+                    </div>
+                    <p className="text-[#8A898E] text-xs mt-0.5">
+                      {studioConfig.address || 'Eva Perón 52'} • {studioConfig.city || 'Capitán Bermúdez'} • Lun a Sáb de 09 a 20 hs
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between">
-                <span className="micro-technical text-[#D4AF37]">
-                  LUN A SÁB • 09 A 20 HS
-                </span>
                 <a
                   href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-[#EDEDED] font-mono font-bold text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 border border-white/[0.1] transition-all"
                 >
-                  <Navigation className="w-3.5 h-3.5 text-[#0B0B0C]" />
+                  <Navigation className="w-3.5 h-3.5 text-[#E5C378]" />
                   <span>Cómo llegar</span>
                 </a>
               </div>
             </div>
-          </div>
-        </div>
+          ) : (
+            /* VISTA DE SOCIO LOGUEADO */
+            <div className="space-y-12">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Main Column: Pase de Socio Black Card */}
+                <div className="lg:col-span-7 space-y-6">
+                  <MembershipCard
+                    client={loggedClient}
+                    studioConfig={studioConfig}
+                    guestMode={guestMode}
+                    onRefreshClientSession={onRefreshClientSession}
+                    onSelectService={(svcId) => {
+                      const found = services.find((s) => s.id === svcId);
+                      if (found) setSelectedService(found);
+                      setSubTab('book');
+                      if (svcId === 'colorimetria' || found?.directConsult) {
+                        setBookingStep(1);
+                      } else {
+                        setBookingStep(2);
+                      }
+                    }}
+                    onStartBooking={() => {
+                      setSubTab('book');
+                      setBookingStep(1);
+                    }}
+                    onRequestLogin={() => {
+                      const el = document.getElementById('dni-input');
+                      if (el) el.focus();
+                    }}
+                  />
+                </div>
 
-        {/* Galería / Lookbook de Autor de Ancho Completo */}
-        <AuthorPortfolio
-          onSelectService={(svcId) => {
-            const found = services.find((s) => s.id === svcId);
-            if (found) setSelectedService(found);
-            setSubTab('book');
-            if (svcId === 'colorimetria' || found?.directConsult) {
-              setBookingStep(1);
-            } else {
-              setBookingStep(2);
-            }
-          }}
-          onStartBooking={() => {
-            setSubTab('book');
-            setBookingStep(1);
-          }}
-        />
-      </div>
+                {/* Right Column: Turno Activo & Quick Booking CTA */}
+                <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+                  {/* Turno Activo Card */}
+                  {activeTurns.length > 0 && (
+                    <div className="p-5 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] font-mono text-[#E5C378] tracking-wider uppercase block mb-0.5">Turno en curso</span>
+                          <h2 className="text-base font-display font-bold text-[#EDEDED]">
+                            Próxima visita al <span className="font-editorial italic font-normal text-[#E5C378]">estudio</span>
+                          </h2>
+                        </div>
+                        <span className="badge-champagne font-mono font-bold uppercase tracking-wider text-[11px] tabular-nums">
+                          #{activeTurns[0].code} • {activeTurns[0].status}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col gap-3 text-xs text-[#8A898E]">
+                        <div>
+                          <strong className="text-sm text-[#EDEDED] block font-display">
+                            {activeTurns[0].serviceName}
+                            {activeTurns[0].selectedDrink ? ` • ${activeTurns[0].selectedDrink}` : ''}
+                          </strong>
+                          <span className="font-mono tabular-nums text-xs text-[#8A898E]">
+                            {activeTurns[0].date} • {activeTurns[0].time} hs
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/[0.06]">
+                          <AddToCalendarButton appointment={activeTurns[0]} studioConfig={studioConfig} />
+
+                          {activeTurns[0].status === 'pendiente' && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const statusData = await api.getAppointmentStatus(activeTurns[0].id);
+                                setAppointmentResponse({
+                                  appointment: statusData,
+                                  code: statusData.code,
+                                  expiresAt: statusData.expiresAt,
+                                  rawMessage: statusData.rawMessage,
+                                  whatsappUrl: statusData.whatsappUrl
+                                });
+                                setSubTab('book');
+                                setBookingStep(4);
+                              }}
+                              className="px-3.5 py-2 rounded-md btn-whatsapp-luxury text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5 fill-white/20 stroke-[2]" />
+                              <span>Confirmar WhatsApp</span>
+                            </button>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => handleCancelTurn(activeTurns[0].id)}
+                            className="px-3 py-2 rounded-md border border-white/[0.08] hover:border-red-500/40 text-[#8A898E] hover:text-red-400 text-xs font-mono transition-colors"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quick Booking CTA */}
+                  <div className="p-6 rounded-lg bg-[#141416] card-hairline space-y-4">
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-display font-bold text-[#EDEDED]">
+                        {loggedClient.points >= 10 ? '¡Tenés un corte bonificado listo!' : '¿Querés agendar tu próximo corte?'}
+                      </h3>
+                      <p className="text-xs text-[#8A898E]">
+                        {loggedClient.points >= 10
+                          ? 'Canjeá tus 10 puntos acumulados directamente en tu próxima visita.'
+                          : 'Elegí fecha y horario disponible en segundos.'}
+                      </p>
+                    </div>
+
+                    <MagneticButton
+                      onClick={() => {
+                        setSubTab('book');
+                        setBookingStep(1);
+                      }}
+                      className="w-full py-3.5 rounded-md bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_20px_-4px_rgba(229,195,120,0.35)]"
+                    >
+                      <span>{loggedClient.points >= 10 ? 'Canjear corte bonificado' : 'Sacá tu turno'}</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#0D0D0F] stroke-[2.5]" />
+                    </MagneticButton>
+                  </div>
+
+                  {/* Location card */}
+                  <div className="p-5 rounded-lg bg-[#141416] card-hairline space-y-3.5 text-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-md bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#E5C378] shrink-0">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <strong className="text-[#EDEDED] font-display font-bold text-sm tracking-tight">
+                            {studioConfig.barbershopName || 'V.I.P BARBERÍAS'}
+                          </strong>
+                          <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider bg-[#E5C378]/15 text-[#E5C378] border border-[#E5C378]/30">
+                            SILLÓN DE DAVID
+                          </span>
+                        </div>
+                        <span className="text-[#8A898E] text-xs">
+                          {studioConfig.address || 'Eva Perón 52'} • {studioConfig.city || 'Capitán Bermúdez'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-[#8A898E]">
+                        LUN A SÁB • 09 A 20 HS
+                      </span>
+                      <a
+                        href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm"
+                      >
+                        <Navigation className="w-3.5 h-3.5 text-[#0B0B0C]" />
+                        <span>Cómo llegar</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Lookbook de Autor de Ancho Completo */}
+              <AuthorPortfolio
+                onSelectService={(svcId) => {
+                  const found = services.find((s) => s.id === svcId);
+                  if (found) setSelectedService(found);
+                  setSubTab('book');
+                  if (svcId === 'colorimetria' || found?.directConsult) {
+                    setBookingStep(1);
+                  } else {
+                    setBookingStep(2);
+                  }
+                }}
+                onStartBooking={() => {
+                  setSubTab('book');
+                  setBookingStep(1);
+                }}
+              />
+            </div>
+          )}
+        </div>
       )}
 
       {/* SUBTAB 2: RESERVAR TURNO (Flujo Canónico: Valor Primero -> Identificación al Final) */}
@@ -390,7 +498,7 @@ export default function ClientView({
               <div className="max-w-md mx-auto space-y-4 animate-enter">
                 <div className="text-center pb-2">
                   <span className="micro-technical text-[#E5C378] block mb-1">
-                    03 / 03 CHECK-IN &amp; IDENTIFICACIÓN
+                    Paso 3 de 3 · Identificación
                   </span>
                   <h3 className="text-xl font-display font-bold text-[#EDEDED]">
                     ¿A nombre de quién reservamos el sillón?

@@ -221,9 +221,7 @@ export default function DniStep({
   return (
     <SpotlightCard className="p-5 sm:p-6 text-[#EDEDED] space-y-5 animate-enter">
       <div>
-        <span className="micro-technical block text-[9px] text-[#8A898E]">
-          01 / 02 ATELIER PRIVADO · CHECK-IN
-        </span>
+
         <h2 className="text-lg sm:text-xl font-display font-bold text-[#EDEDED] mt-0.5">
           Acceso de{' '}
           <span className="font-editorial italic font-normal text-[#E5C378]">

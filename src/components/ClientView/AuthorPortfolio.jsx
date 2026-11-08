@@ -121,7 +121,7 @@ export default function AuthorPortfolio({ onSelectService, onStartBooking }) {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
             <span className="micro-technical text-[#D4AF37]">
-              LOOKBOOK &amp; PORTFOLIO EXCLUSIVO DE DAVID
+              Galería &amp; Lookbook de David
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED] flex items-center gap-2.5">

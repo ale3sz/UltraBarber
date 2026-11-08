@@ -11,7 +11,8 @@ import {
   CreditCard,
   Clock,
   ShieldCheck,
-  ArrowLeft
+  ArrowLeft,
+  MessageCircle
 } from 'lucide-react';
 import InstagramIcon from './icons/InstagramIcon';
 
@@ -68,7 +69,7 @@ export default function Navbar({
                 }`}
               >
                 <CreditCard className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#E5C378]' : ''}`} />
-                <span>Mi Pase</span>
+                <span>{loggedClient ? 'Mi Pase' : 'Inicio'}</span>
               </button>
 
               <button
@@ -148,6 +149,18 @@ export default function Navbar({
               </button>
             )}
 
+            {/* WhatsApp Direct Link */}
+            <a
+              href="https://wa.me/5493413762115?text=Hola%20David!%20Te%20escribo%20desde%20tu%20web%20de%20turnos..."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-md border border-white/[0.08] text-[#8A898E] hover:text-[#25D366] hover:border-[#25D366]/40 transition-all flex items-center justify-center group"
+              title="WhatsApp de David"
+              aria-label="Escribir por WhatsApp a David"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-[#8A898E] group-hover:text-[#25D366] transition-colors" />
+            </a>
+
             {/* Instagram Profile Link */}
             <a
               href="https://www.instagram.com/barber_f4de"
@@ -183,7 +196,7 @@ export default function Navbar({
               className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#E5C378]' : ''}`}
             />
             <span className="text-[10px] font-mono tracking-[0.12em] uppercase font-semibold">
-              Mi Pase
+              {loggedClient ? 'Mi Pase' : 'Inicio'}
             </span>
           </button>
 

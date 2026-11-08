@@ -194,23 +194,15 @@ export default function HoldWaitingStep({
   // CASE 3: PENDING WHATSAPP HANDSHAKE (15-MINUTE LOCK)
   return (
     <div className="space-y-5">
-      {/* Step Progress Bar (03 / 03) */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs font-mono">
-          <div>
-            <span className="text-[#D4AF37] font-bold">03</span>
-            <span className="text-[#8A898E]"> / 03</span>
-            <span className="micro-technical text-[#8A898E] ml-2">CONFIRMACIÓN</span>
-          </div>
-          <span className="font-editorial italic text-xs text-[#8A898E]">
-            Validación WhatsApp
-          </span>
+      {/* Minimal Step Indicator */}
+      <div className="flex items-center justify-between text-xs font-mono pb-2 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#E5C378]" />
+          <span className="text-[#E5C378] font-bold">Paso 3 de 3</span>
         </div>
-        <div className="grid grid-cols-3 gap-1.5 h-[2px]">
-          <div className="bg-[#EDEDED] rounded-none" />
-          <div className="bg-[#EDEDED] rounded-none" />
-          <div className="bg-[#D4AF37] rounded-none" />
-        </div>
+        <span className="text-[#8A898E] text-[11px] uppercase tracking-wider">
+          Confirmación por WhatsApp
+        </span>
       </div>
 
       <div className="rounded-lg p-6 sm:p-7 bg-[#141417] card-hairline text-[#EDEDED] space-y-6 animate-enter">
