@@ -378,6 +378,61 @@ function handleStaticFallback(path, options = {}) {
     body = {};
   }
 
+
+  // Portfolio Fallback
+  if (path === '/portfolio') {
+    return { success: true, items: getMockPortfolio() };
+  }
+
+  if (path === '/admin/portfolio' && (options.method === 'POST' || !options.method)) {
+    const items = [...getMockPortfolio()];
+    const newItem = {
+      id: `look-${Date.now()}`,
+      title: body.title || 'Nuevo Corte',
+      subtitle: body.subtitle || '',
+      category: body.category || 'fades',
+      tag: (body.tag || 'FADE DE AUTOR').toUpperCase(),
+      image_url: body.image_data || body.image_url || getAssetUrl('imagenes/IMG_3526.PNG'),
+      src: body.image_data || body.image_url || getAssetUrl('imagenes/IMG_3526.PNG'),
+      service_id: body.service_id || null,
+      serviceId: body.service_id || null,
+      featured: !!body.featured,
+      sort_order: Number(body.sort_order) || 0
+    };
+    items.unshift(newItem);
+    saveMockPortfolio(items);
+    return { success: true, item: newItem };
+  }
+
+  if (path.startsWith('/admin/portfolio/') && options.method === 'PUT') {
+    const id = decodeURIComponent(path.replace('/admin/portfolio/', ''));
+    let items = [...getMockPortfolio()];
+    let updatedItem = null;
+    items = items.map((item) => {
+      if (item.id === id) {
+        updatedItem = {
+          ...item,
+          ...body,
+          src: body.image_data || body.image_url || item.src || item.image_url,
+          image_url: body.image_data || body.image_url || item.image_url || item.src,
+          service_id: body.service_id !== undefined ? body.service_id : item.service_id,
+          serviceId: body.service_id !== undefined ? body.service_id : item.service_id
+        };
+        return updatedItem;
+      }
+      return item;
+    });
+    saveMockPortfolio(items);
+    return { success: true, item: updatedItem };
+  }
+
+  if (path.startsWith('/admin/portfolio/') && options.method === 'DELETE') {
+    const id = decodeURIComponent(path.replace('/admin/portfolio/', ''));
+    let items = getMockPortfolio().filter((item) => item.id !== id);
+    saveMockPortfolio(items);
+    return { success: true, deletedId: id };
+  }
+
   // 1. Bootstrap
   if (path === '/public/bootstrap') {
     return { config: MOCK_CONFIG };
@@ -936,5 +991,17 @@ export const api = {
   updateConfigByAdmin: (payload) => request('/admin/config', {
     method: 'PUT',
     body: JSON.stringify(payload)
-  }, 'admin')
+  }, 'admin'),
+  getPortfolio: () => request('/portfolio'),
+  createPortfolioItem: (payload) => request('/admin/portfolio', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }, 'admin'),
+  updatePortfolioItem: (id, payload) => request(`/admin/portfolio/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }, 'admin'),
+  deletePortfolioItem: (id) => request(`/admin/portfolio/${encodeURIComponent(id)}`, {
+    method: 'DELETE'
+  }, 'admin'),
 };

@@ -7,10 +7,12 @@ import ClientsDirectory from './ClientsDirectory';
 import PaymentModal from './PaymentModal';
 import SettingsModal from './SettingsModal';
 import EditableMessageModal from './EditableMessageModal';
+import AdminPortfolioManager from './AdminPortfolioManager';
 import { api } from '../../services/api';
 import { formatLocalDate } from '../../utils/date';
 import confetti from 'canvas-confetti';
 import {
+  Camera,
   Clock,
   Calendar,
   Cake,
@@ -389,6 +391,18 @@ export default function AdminPanel({
 
         <button
           type="button"
+          onClick={() => setActiveTab('portfolio')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all whitespace-nowrap ${
+            activeTab === 'portfolio'
+              ? 'bg-white/[0.1] border border-[#D4AF37] text-[#EDEDED] font-bold shadow-sm'
+              : 'text-[#8A898E] hover:text-[#EDEDED]'
+          }`}
+        >
+          <Camera className="w-3.5 h-3.5 text-[#D4AF37]" />
+          <span>Portfolio de Cortes</span>
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab('clients')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all whitespace-nowrap ${
             activeTab === 'clients'
@@ -739,6 +753,11 @@ export default function AdminPanel({
             )}
           </div>
         </div>
+      )}
+
+      {/* Tab 6: Portfolio Manager */}
+      {activeTab === 'portfolio' && (
+        <AdminPortfolioManager services={services} />
       )}
 
       {/* Tab 5: Birthday Section */}

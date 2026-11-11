@@ -1,3 +1,4 @@
+import fs from 'fs';
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -13,7 +14,11 @@ import {
   signToken,
   verifyToken,
   getConfigObject,
-  updateConfigObject
+  updateConfigObject,
+  getPortfolioItems,
+  insertPortfolioItem,
+  updatePortfolioItem,
+  deletePortfolioItem
 } from './db.js';
 import {
   getArgentinaDateString,
@@ -57,7 +62,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '15mb' }));
 app.use('/imagenes', express.static(path.join(__dirname, '..', 'imagenes')));
 
 // 3. Prevención de caché en respuestas dinámicas de la API (Blindaje PWA / Service Worker)
@@ -1712,6 +1717,110 @@ app.put('/api/admin/config', requireAdmin, (req, res) => {
 });
 
 // ============================================================================
+// ----------------------------------------------------------------------------
+// PORTFOLIO DE AUTOR (PÚBLICO Y ADMIN)
+// ----------------------------------------------------------------------------
+app.get('/api/portfolio', (req, res) => {
+  try {
+    const items = getPortfolioItems();
+    res.json({ success: true, items });
+  } catch (err) {
+    console.error('ERROR EN /api/portfolio:', err);
+    res.status(500).json({ error: err.message || 'Error al obtener portfolio' });
+  }
+});
+
+app.post('/api/admin/portfolio', requireAdmin, (req, res) => {
+  try {
+    const { title, subtitle, category, tag, image_data, image_url, service_id, featured, sort_order } = req.body;
+    if (!title) {
+      return res.status(400).json({ error: 'El título del corte es obligatorio' });
+    }
+
+    const id = `look-${Date.now()}`;
+    let finalImageUrl = image_url || '';
+
+    // Guardado de imagen física si viene como Base64 desde el dispositivo
+    if (image_data && image_data.startsWith('data:image/')) {
+      try {
+        const portfolioDir = path.join(__dirname, '..', 'imagenes', 'portfolio');
+        if (!fs.existsSync(portfolioDir)) {
+          fs.mkdirSync(portfolioDir, { recursive: true });
+        }
+
+        const matches = image_data.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+        if (matches) {
+          let ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+          if (ext === 'svg+xml') ext = 'svg';
+          const buffer = Buffer.from(matches[2], 'base64');
+          const fileName = `${id}.${ext}`;
+          const filePath = path.join(portfolioDir, fileName);
+          fs.writeFileSync(filePath, buffer);
+          finalImageUrl = `imagenes/portfolio/${fileName}`;
+        }
+      } catch (err) {
+        console.error('Error saving uploaded portfolio image:', err);
+        finalImageUrl = image_data.length < 300000 ? image_data : 'imagenes/IMG_3526.PNG';
+      }
+    }
+
+    if (!finalImageUrl) {
+      finalImageUrl = 'imagenes/IMG_3526.PNG';
+    }
+
+    const item = insertPortfolioItem({
+      id,
+      title: title.trim(),
+      subtitle: (subtitle || '').trim(),
+      category: category || 'fades',
+      tag: (tag || 'FADE DE AUTOR').toUpperCase(),
+      image_url: finalImageUrl,
+      service_id: service_id || null,
+      featured: !!featured,
+      sort_order: Number(sort_order) || 0
+    });
+
+    res.status(201).json({ success: true, item });
+  } catch (err) {
+    console.error('Error in POST /api/admin/portfolio:', err);
+    res.status(500).json({ error: 'No se pudo guardar el corte en el portfolio' });
+  }
+});
+
+app.put('/api/admin/portfolio/:id', requireAdmin, (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = updatePortfolioItem(id, req.body);
+    if (!updated) {
+      return res.status(404).json({ error: 'Corte no encontrado' });
+    }
+    res.json({ success: true, item: updated });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al actualizar corte' });
+  }
+});
+
+app.delete('/api/admin/portfolio/:id', requireAdmin, (req, res) => {
+  try {
+    const { id } = req.params;
+    deletePortfolioItem(id);
+    try {
+      const portfolioDir = path.join(__dirname, '..', 'imagenes', 'portfolio');
+      if (fs.existsSync(portfolioDir)) {
+        const files = fs.readdirSync(portfolioDir);
+        for (const f of files) {
+          if (f.startsWith(id + '.')) {
+            fs.unlinkSync(path.join(portfolioDir, f));
+          }
+        }
+      }
+    } catch {}
+    res.json({ success: true, deletedId: id });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al eliminar corte' });
+  }
+});
+
 // 5. MANEJO GLOBAL DE ERRORES Y RUTAS NO ENCONTRADAS
 // ============================================================================
 

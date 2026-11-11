@@ -9,7 +9,7 @@ import { api, getClientToken, getAdminToken } from './services/api';
 
 export default function App() {
   const [activeView, setActiveView] = useState('client'); // 'client' | 'admin'
-  const [clientSubTab, setClientSubTab] = useState('club'); // 'club' | 'book' | 'turns'
+  const [clientSubTab, setClientSubTab] = useState('home'); // 'club' | 'book' | 'turns'
 
   const [loggedClient, setLoggedClient] = useState(null);
   const [clientAppointments, setClientAppointments] = useState([]);

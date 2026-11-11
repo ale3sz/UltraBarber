@@ -10,6 +10,7 @@ import {
   LogOut,
   CreditCard,
   Clock,
+  Camera,
   ShieldCheck,
   ArrowLeft,
   MessageCircle
@@ -39,7 +40,7 @@ export default function Navbar({
             type="button"
             onClick={() => {
               setActiveView('client');
-              setClientSubTab('club');
+              setClientSubTab('home');
             }}
             className="flex items-center gap-3 text-left group focus:outline-none min-w-0"
           >
@@ -177,61 +178,97 @@ export default function Navbar({
       </header>
 
       {/* Mobile Sober Bottom Dock (Strictly 3 tabs, stroke 1.5px, contained radius) */}
-      {activeView === 'client' && (
+            {activeView === 'client' && (
         <nav
           aria-label="Navegación principal móvil"
-          className="md:hidden fixed bottom-3 inset-x-3 z-40 p-1 rounded-xl bg-[#141417]/95 backdrop-blur-lg border border-white/[0.09] shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center justify-around"
+          className="md:hidden fixed bottom-3 inset-x-2 z-40 p-1 rounded-xl bg-[#141417]/95 backdrop-blur-lg border border-white/[0.09] shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center justify-between"
         >
-          {/* Tab 1: Mi Pase */}
+          {/* Tab 1: Inicio */}
+          <button
+            type="button"
+            onClick={() => setClientSubTab('home')}
+            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
+              clientSubTab === 'home' || !clientSubTab
+                ? 'bg-white/[0.08] text-[#EDEDED]'
+                : 'text-[#8A898E] hover:text-[#EDEDED]'
+            }`}
+          >
+            <Scissors
+              className={`w-3.5 h-3.5 stroke-[1.5] ${(clientSubTab === 'home' || !clientSubTab) ? 'text-[#E5C378]' : ''}`}
+            />
+            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-semibold">
+              Inicio
+            </span>
+          </button>
+
+          {/* Tab 2: Galería */}
+          <button
+            type="button"
+            onClick={() => setClientSubTab('portfolio')}
+            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
+              clientSubTab === 'portfolio'
+                ? 'bg-white/[0.08] text-[#EDEDED]'
+                : 'text-[#8A898E] hover:text-[#EDEDED]'
+            }`}
+          >
+            <Camera
+              className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'portfolio' ? 'text-[#E5C378]' : ''}`}
+            />
+            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-semibold">
+              Galería
+            </span>
+          </button>
+
+          {/* Tab 3: Reservar */}
+          <button
+            type="button"
+            onClick={() => setClientSubTab('book')}
+            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
+              clientSubTab === 'book'
+                ? 'bg-[#E5C378] text-[#0D0D0F]'
+                : 'text-[#8A898E] hover:text-[#EDEDED]'
+            }`}
+          >
+            <CalendarPlus
+              className={`w-3.5 h-3.5 stroke-[2] ${clientSubTab === 'book' ? 'text-[#0D0D0F]' : 'text-[#E5C378]'}`}
+            />
+            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-bold">
+              Reservar
+            </span>
+          </button>
+
+          {/* Tab 4: Mi Pase */}
           <button
             type="button"
             onClick={() => setClientSubTab('club')}
-            className={`flex-1 py-2 rounded-lg flex flex-col items-center gap-1 transition-all ${
+            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
               clientSubTab === 'club'
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
             <CreditCard
-              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#E5C378]' : ''}`}
+              className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#E5C378]' : ''}`}
             />
-            <span className="text-[10px] font-mono tracking-[0.12em] uppercase font-semibold">
-              {loggedClient ? 'Mi Pase' : 'Inicio'}
+            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-semibold">
+              Mi Pase
             </span>
           </button>
 
-          {/* Tab 2: Reservar */}
-          <button
-            type="button"
-            onClick={() => setClientSubTab('book')}
-            className={`flex-1 py-2 rounded-lg flex flex-col items-center gap-1 transition-all ${
-              clientSubTab === 'book'
-                ? 'bg-white/[0.08] text-[#EDEDED]'
-                : 'text-[#8A898E] hover:text-[#EDEDED]'
-            }`}
-          >
-            <CalendarPlus
-              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'book' ? 'text-[#E5C378]' : ''}`}
-            />
-            <span className="text-[10px] font-mono tracking-[0.12em] uppercase font-semibold">
-              Reservar
-            </span>
-          </button>
-
-          {/* Tab 3: Mis Turnos */}
+          {/* Tab 5: Turnos */}
           <button
             type="button"
             onClick={() => setClientSubTab('turns')}
-            className={`flex-1 py-2 rounded-lg flex flex-col items-center gap-1 transition-all ${
+            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
               clientSubTab === 'turns'
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
             }`}
           >
             <Clock
-              className={`w-4 h-4 stroke-[1.5] ${clientSubTab === 'turns' ? 'text-[#E5C378]' : ''}`}
+              className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'turns' ? 'text-[#E5C378]' : ''}`}
             />
-            <span className="text-[10px] font-mono tracking-[0.12em] uppercase font-semibold">
+            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-semibold">
               Turnos
             </span>
           </button>

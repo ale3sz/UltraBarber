@@ -223,6 +223,19 @@ export function initDatabase() {
       last_attempt INTEGER NOT NULL
     );
 
+        CREATE TABLE IF NOT EXISTS portfolio (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      subtitle TEXT,
+      category TEXT NOT NULL,
+      tag TEXT,
+      image_url TEXT NOT NULL,
+      service_id TEXT,
+      featured INTEGER DEFAULT 0,
+      sort_order INTEGER DEFAULT 0,
+      created_at TEXT NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS redemptions (
       id TEXT PRIMARY KEY,
       code TEXT NOT NULL,
@@ -368,6 +381,103 @@ export function initDatabase() {
 
   // Asegurar que el WhatsApp de David sea el real
   db.prepare("UPDATE config SET value = ? WHERE key = 'whatsappPhone' AND (value = '\"5491123456789\"' OR value = '\"3413762115\"')").run(JSON.stringify('5493413762115'));
+
+  // Asegurar portfolio de autor inicial
+  try {
+    const portfolioCount = db.prepare('SELECT COUNT(*) as count FROM portfolio').get().count;
+    if (portfolioCount === 0) {
+      const initialPortfolio = [
+        {
+          id: 'look-1',
+          title: 'Fade Comprimido & Freestyle',
+          subtitle: 'Diseño geométrico a navaja y degradado quirúrgico milimétrico.',
+          category: 'freestyle',
+          tag: 'DISEÑO FREESTYLE',
+          image_url: 'imagenes/corte-freestyle.jpg',
+          service_id: 'corte',
+          featured: 1,
+          sort_order: 1
+        },
+        {
+          id: 'look-3',
+          title: 'Corte Premium · Relax VIP',
+          subtitle: 'Gafas de presoterapia ocular, masajeador cervical y bebida fría.',
+          category: 'premium',
+          tag: 'EXPERIENCIA COMPLETA',
+          image_url: 'imagenes/corte-premium.png',
+          service_id: 'experiencia-completa',
+          featured: 1,
+          sort_order: 2
+        },
+        {
+          id: 'look-2',
+          title: 'Burst Fade · Diseño 23',
+          subtitle: 'Degradado curvo milimétrico con textura superior personalizada.',
+          category: 'fades',
+          tag: 'FADE DE AUTOR',
+          image_url: 'imagenes/IMG_3526.PNG',
+          service_id: 'corte',
+          featured: 0,
+          sort_order: 3
+        },
+        {
+          id: 'look-4',
+          title: 'Barba Premium · Ritual de Navaja',
+          subtitle: 'Perfilado al detalle, toalla caliente y aceites botánicos.',
+          category: 'premium',
+          tag: 'RITUAL A NAVAJA',
+          image_url: 'imagenes/barba-premium.jpg',
+          service_id: 'barba-premium',
+          featured: 0,
+          sort_order: 4
+        },
+        {
+          id: 'look-5',
+          title: 'Corte de Autor + Bebida Fría',
+          subtitle: 'Fade con cerveza fría, Monster o gaseosa en el sillón.',
+          category: 'fades',
+          tag: 'CORTE + BEBIDA',
+          image_url: 'imagenes/corte-bebida.jpg',
+          service_id: 'corte-bebida',
+          featured: 0,
+          sort_order: 5
+        },
+        {
+          id: 'look-6',
+          title: 'Colorimetría & Textura Técnica',
+          subtitle: 'Iluminación, reflejos y peinado técnico de alta duración.',
+          category: 'freestyle',
+          tag: 'COLOR & TÉCNICA',
+          image_url: 'imagenes/IMG_0989.JPG.jpeg',
+          service_id: 'colorimetria',
+          featured: 0,
+          sort_order: 6
+        }
+      ];
+
+      const insertPort = db.prepare(`
+        INSERT INTO portfolio (id, title, subtitle, category, tag, image_url, service_id, featured, sort_order, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      for (const item of initialPortfolio) {
+        insertPort.run(
+          item.id,
+          item.title,
+          item.subtitle,
+          item.category,
+          item.tag,
+          item.image_url,
+          item.service_id,
+          item.featured,
+          item.sort_order,
+          new Date().toISOString()
+        );
+      }
+    }
+  } catch (err) {
+    console.error('Error seeding portfolio:', err);
+  }
 
   // Asegurar servicios
   const serviceCount = db.prepare('SELECT COUNT(*) as count FROM services').get().count;
@@ -524,4 +634,55 @@ export function updateConfigObject(updates) {
     upsert.run(k, JSON.stringify(v));
   }
   return getConfigObject();
+}
+
+export function getPortfolioItems() {
+  return db.prepare('SELECT * FROM portfolio ORDER BY sort_order ASC, created_at DESC').all();
+}
+
+export function insertPortfolioItem({ id, title, subtitle, category, tag, image_url, service_id, featured, sort_order }) {
+  const insert = db.prepare(`
+    INSERT INTO portfolio (id, title, subtitle, category, tag, image_url, service_id, featured, sort_order, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  const now = new Date().toISOString();
+  insert.run(
+    id,
+    title,
+    subtitle || '',
+    category || 'fades',
+    tag || '',
+    image_url,
+    service_id || null,
+    featured ? 1 : 0,
+    sort_order || 0,
+    now
+  );
+  return db.prepare('SELECT * FROM portfolio WHERE id = ?').get(id);
+}
+
+export function updatePortfolioItem(id, updates) {
+  const current = db.prepare('SELECT * FROM portfolio WHERE id = ?').get(id);
+  if (!current) return null;
+
+  const title = updates.title !== undefined ? updates.title : current.title;
+  const subtitle = updates.subtitle !== undefined ? updates.subtitle : current.subtitle;
+  const category = updates.category !== undefined ? updates.category : current.category;
+  const tag = updates.tag !== undefined ? updates.tag : current.tag;
+  const image_url = updates.image_url !== undefined ? updates.image_url : current.image_url;
+  const service_id = updates.service_id !== undefined ? updates.service_id : current.service_id;
+  const featured = updates.featured !== undefined ? (updates.featured ? 1 : 0) : current.featured;
+  const sort_order = updates.sort_order !== undefined ? updates.sort_order : current.sort_order;
+
+  db.prepare(`
+    UPDATE portfolio
+    SET title = ?, subtitle = ?, category = ?, tag = ?, image_url = ?, service_id = ?, featured = ?, sort_order = ?
+    WHERE id = ?
+  `).run(title, subtitle, category, tag, image_url, service_id, featured, sort_order, id);
+
+  return db.prepare('SELECT * FROM portfolio WHERE id = ?').get(id);
+}
+
+export function deletePortfolioItem(id) {
+  return db.prepare('DELETE FROM portfolio WHERE id = ?').run(id);
 }

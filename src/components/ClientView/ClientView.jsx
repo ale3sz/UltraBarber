@@ -10,6 +10,7 @@ import AddToCalendarButton from './AddToCalendarButton';
 import { getAssetUrl } from '../../utils/assets';
 import MagneticButton from '../common/MagneticButton';
 import {
+  Camera,
   Calendar,
   Clock,
   MessageCircle,
@@ -125,79 +126,175 @@ export default function ClientView({
 
   return (
     <div className="max-w-6xl w-full mx-auto pb-28 md:pb-16 space-y-8">
-            {/* SUBTAB 1: MI PASE & CLUB (BENTO GRID & PORTFOLIO DE AUTOR) */}
-      {subTab === 'club' && (
-        <div className="space-y-12">
-          {!loggedClient ? (
-            /* VISTA DE INVITADO: Pura estética editorial "Quiet Luxury", limpia, sin tarjetas vacías de 0 PTS */
-            <div className="space-y-10">
-              {/* Hero Principal con Fotografía de David y Acciones Claras */}
-              <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#141417] shadow-2xl">
-                <img
-                  src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
-                  alt="David en el estudio"
-                  className="absolute inset-0 w-full h-full object-cover object-center opacity-30"
-                />
-                <div className="relative z-10 p-6 sm:p-10 md:p-12 bg-gradient-to-t from-[#0D0D0F] via-[#0D0D0F]/85 to-[#0D0D0F]/60 flex flex-col justify-end min-h-[300px] sm:min-h-[360px] space-y-6">
-                  <div className="space-y-2 max-w-xl">
-                    <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#E5C378]">
-                      Sillón Privado · Capitán Bermúdez
-                    </span>
-                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-[#EDEDED] leading-tight">
-                      Cortes de autor con{' '}
-                      <span className="font-editorial italic font-normal text-[#E5C378]">
-                        David
-                      </span>
-                    </h1>
-                    <p className="text-xs sm:text-sm text-[#A0A0A5] leading-relaxed max-w-lg">
-                      Atención personalizada y exclusiva. Reserva instantánea en tres simples pasos sin seña previa.
-                    </p>
-                  </div>
+            {/* PANTALLA 1: INICIO / HOME */}
+      {(subTab === 'home' || !subTab) && (
+        <div className="space-y-10 animate-enter">
+          {/* Turno Activo Card (si existe turno en curso) */}
+          {loggedClient && activeTurns.length > 0 && (
+            <div className="p-5 rounded-2xl bg-[#141416] card-hairline text-[#EDEDED] space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-mono text-[#E5C378] tracking-wider uppercase block mb-0.5">Turno en curso</span>
+                  <h2 className="text-base font-display font-bold text-[#EDEDED]">
+                    Próxima visita al <span className="font-editorial italic font-normal text-[#E5C378]">estudio</span>
+                  </h2>
+                </div>
+                <span className="badge-champagne font-mono font-bold uppercase tracking-wider text-[11px] tabular-nums">
+                  #{activeTurns[0].code} • {activeTurns[0].status}
+                </span>
+              </div>
 
-                  {/* Feature Badges / Quiet luxury pills */}
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[11px] font-mono text-[#8A898E]">
-                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
-                      <Scissors className="w-3 h-3 text-[#E5C378]" />
-                      1 a 1 en sillón privado
-                    </span>
-                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
-                      <Sparkles className="w-3 h-3 text-[#E5C378]" />
-                      Sin seña previa
-                    </span>
-                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
-                      <Award className="w-3 h-3 text-[#E5C378]" />
-                      Club de beneficios
-                    </span>
-                  </div>
+              <div className="flex flex-col gap-3 text-xs text-[#8A898E]">
+                <div>
+                  <strong className="text-sm text-[#EDEDED] block font-display">
+                    {activeTurns[0].serviceName}
+                    {activeTurns[0].selectedDrink ? ` • ${activeTurns[0].selectedDrink}` : ''}
+                  </strong>
+                  <span className="font-mono tabular-nums text-xs text-[#8A898E]">
+                    {activeTurns[0].date} • {activeTurns[0].time} hs
+                  </span>
+                </div>
 
-                  {/* Botones de Acción */}
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                    <MagneticButton
-                      onClick={() => {
-                        setSubTab('book');
-                        setBookingStep(1);
-                      }}
-                      className="py-3.5 px-8 rounded-lg bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_25px_-5px_rgba(229,195,120,0.4)] transition-all"
-                    >
-                      <span>Sacá tu turno</span>
-                      <ArrowRight className="w-4 h-4 text-[#0D0D0F] stroke-[2.5]" />
-                    </MagneticButton>
+                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/[0.06]">
+                  <AddToCalendarButton appointment={activeTurns[0]} studioConfig={studioConfig} />
 
+                  {activeTurns[0].status === 'pendiente' && (
                     <button
                       type="button"
-                      onClick={() => setShowSocioLogin(!showSocioLogin)}
-                      className="py-3.5 px-5 rounded-lg border border-white/[0.12] hover:border-[#E5C378]/50 bg-white/[0.03] hover:bg-white/[0.06] text-[#EDEDED] font-mono text-xs uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-all"
+                      onClick={async () => {
+                        const statusData = await api.getAppointmentStatus(activeTurns[0].id);
+                        setAppointmentResponse({
+                          appointment: statusData,
+                          code: statusData.code,
+                          expiresAt: statusData.expiresAt,
+                          rawMessage: statusData.rawMessage,
+                          whatsappUrl: statusData.whatsappUrl
+                        });
+                        setSubTab('book');
+                        setBookingStep(4);
+                      }}
+                      className="px-3.5 py-2 rounded-md btn-whatsapp-luxury text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all"
                     >
-                      <UserCheck className="w-3.5 h-3.5 text-[#E5C378]" />
-                      <span>{showSocioLogin ? 'Cerrar acceso' : '¿Ya sos socio? Ingresá'}</span>
+                      <MessageCircle className="w-3.5 h-3.5 fill-white/20 stroke-[2]" />
+                      <span>Confirmar WhatsApp</span>
                     </button>
-                  </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => handleCancelTurn(activeTurns[0].id)}
+                    className="px-3 py-2 rounded-md border border-white/[0.08] hover:border-red-500/40 text-[#8A898E] hover:text-red-400 text-xs font-mono transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Hero Principal con Fotografía de David */}
+          <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#141417] shadow-2xl">
+            <img
+              src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
+              alt="David en el estudio"
+              className="absolute inset-0 w-full h-full object-cover object-center opacity-30"
+            />
+            <div className="relative z-10 p-6 sm:p-10 md:p-12 bg-gradient-to-t from-[#0D0D0F] via-[#0D0D0F]/85 to-[#0D0D0F]/60 flex flex-col justify-end min-h-[300px] sm:min-h-[360px] space-y-6">
+              <div className="space-y-2 max-w-xl">
+                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#E5C378]">
+                  Sillón Privado · Capitán Bermúdez
+                </span>
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-[#EDEDED] leading-tight">
+                  Cortes de autor con{' '}
+                  <span className="font-editorial italic font-normal text-[#E5C378]">
+                    David
+                  </span>
+                </h1>
+                <p className="text-xs sm:text-sm text-[#A0A0A5] leading-relaxed max-w-lg">
+                  Atención personalizada y exclusiva en sillón privado. Reserva instantánea en tres simples pasos sin seña previa.
+                </p>
+              </div>
+
+              {/* Feature Badges / Quiet luxury pills */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[11px] font-mono text-[#8A898E]">
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                  <Scissors className="w-3 h-3 text-[#E5C378]" />
+                  1 a 1 en sillón privado
+                </span>
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                  <Sparkles className="w-3 h-3 text-[#E5C378]" />
+                  Sin seña previa
+                </span>
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                  <Award className="w-3 h-3 text-[#E5C378]" />
+                  Club de beneficios
+                </span>
+              </div>
+
+              {/* Botones de Acción */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                <MagneticButton
+                  onClick={() => {
+                    setSubTab('book');
+                    setBookingStep(1);
+                  }}
+                  className="py-3.5 px-8 rounded-lg bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_25px_-5px_rgba(229,195,120,0.4)] transition-all"
+                >
+                  <span>Sacá tu turno</span>
+                  <ArrowRight className="w-4 h-4 text-[#0D0D0F] stroke-[2.5]" />
+                </MagneticButton>
+
+                <button
+                  type="button"
+                  onClick={() => setSubTab('portfolio')}
+                  className="py-3.5 px-6 rounded-lg border border-white/[0.12] hover:border-[#E5C378]/50 bg-white/[0.03] hover:bg-white/[0.06] text-[#EDEDED] font-mono text-xs uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-all"
+                >
+                  <Camera className="w-4 h-4 text-[#E5C378]" />
+                  <span>Ver Galería de Cortes</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Banner resumen para socio logueado o acceso para invitados */}
+          {loggedClient ? (
+            <div className="p-5 rounded-2xl bg-[#141416] card-hairline flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#0B0B0C] border border-[#E5C378]/30 flex items-center justify-center text-[#E5C378] font-bold">
+                  {(loggedClient.firstName || 'S').charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="text-sm font-display font-bold text-[#EDEDED]">
+                    Hola, {loggedClient.firstName || loggedClient.name}
+                  </h3>
+                  <p className="text-xs font-mono text-[#E5C378]">
+                    {loggedClient.points || 0} PTS disponibles • {loggedClient.points >= 10 ? '★ ¡Corte bonificado listo!' : `${10 - ((loggedClient.points || 0) % 10)} visitas para tu corte bonificado`}
+                  </p>
                 </div>
               </div>
 
-              {/* Acceso para Socios (Desplegable limpio al hacer click) */}
+              <button
+                type="button"
+                onClick={() => setSubTab('club')}
+                className="px-4 py-2.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-xs font-mono text-[#EDEDED] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all"
+              >
+                <span>Ver Mi Pase &amp; Canjes</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setShowSocioLogin(!showSocioLogin)}
+                className="inline-flex items-center gap-2 text-xs font-mono text-[#8A898E] hover:text-[#E5C378] tracking-wider transition-colors py-2 px-4 rounded-lg hover:bg-white/[0.03]"
+              >
+                <UserCheck className="w-3.5 h-3.5 text-[#E5C378]" />
+                <span>{showSocioLogin ? 'Ocultar acceso' : '¿Ya sos socio del Club? Ingresá con tu DNI'}</span>
+              </button>
+
               {showSocioLogin && (
-                <div className="max-w-md mx-auto p-6 rounded-xl bg-[#141416] border border-[#E5C378]/30 shadow-2xl animate-enter">
+                <div className="max-w-md mx-auto mt-4 p-6 rounded-2xl bg-[#141416] border border-[#E5C378]/30 shadow-2xl animate-enter text-left">
                   <DniStep
                     loggedClient={loggedClient}
                     guestMode={guestMode}
@@ -205,238 +302,225 @@ export default function ClientView({
                     onAuthSuccess={(client, apts) => {
                       onAuthSuccess(client, apts);
                       setShowSocioLogin(false);
+                      setSubTab('club');
                     }}
                     onAdminAuthSuccess={onAdminAuthSuccess}
                     onLogoutClient={onLogoutClient}
-                    onContinue={() => setShowSocioLogin(false)}
+                    onContinue={() => {
+                      setShowSocioLogin(false);
+                      setSubTab('club');
+                    }}
                   />
                 </div>
               )}
+            </div>
+          )}
 
-              {/* Galería / Lookbook de Cortes */}
-              <AuthorPortfolio
-                onSelectService={(svcId) => {
-                  const found = services.find((s) => s.id === svcId);
-                  if (found) setSelectedService(found);
-                  setSubTab('book');
-                  if (svcId === 'colorimetria' || found?.directConsult) {
-                    setBookingStep(1);
-                  } else {
-                    setBookingStep(2);
-                  }
-                }}
-                onStartBooking={() => {
-                  setSubTab('book');
-                  setBookingStep(1);
-                }}
-              />
-
-              {/* Ubicación & Cómo llegar */}
-              <div className="p-6 rounded-xl bg-[#141416] card-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-lg bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#E5C378] shrink-0">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <strong className="text-[#EDEDED] font-display font-bold text-sm tracking-tight">
-                        {studioConfig.barbershopName || 'V.I.P BARBERÍAS'}
-                      </strong>
-                      <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider bg-[#E5C378]/15 text-[#E5C378] border border-[#E5C378]/30">
-                        SILLÓN DE DAVID
-                      </span>
-                    </div>
-                    <p className="text-[#8A898E] text-xs mt-0.5">
-                      {studioConfig.address || 'Eva Perón 52'} • {studioConfig.city || 'Capitán Bermúdez'} • Lun a Sáb de 09 a 20 hs
-                    </p>
-                  </div>
+          {/* Ubicación & Cómo llegar */}
+          <div className="p-6 rounded-2xl bg-[#141416] card-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-lg bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#E5C378] shrink-0">
+                <MapPin className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <strong className="text-[#EDEDED] font-display font-bold text-sm tracking-tight">
+                    {studioConfig.barbershopName || 'V.I.P BARBERÍAS'}
+                  </strong>
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider bg-[#E5C378]/15 text-[#E5C378] border border-[#E5C378]/30">
+                    SILLÓN DE DAVID
+                  </span>
                 </div>
-
-                <a
-                  href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-[#EDEDED] font-mono font-bold text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 border border-white/[0.1] transition-all"
-                >
-                  <Navigation className="w-3.5 h-3.5 text-[#E5C378]" />
-                  <span>Cómo llegar</span>
-                </a>
+                <p className="text-[#8A898E] text-xs mt-0.5">
+                  {studioConfig.address || 'Eva Perón 52'} • {studioConfig.city || 'Capitán Bermúdez'} • Lun a Sáb de 09 a 20 hs
+                </p>
               </div>
             </div>
-          ) : (
-            /* VISTA DE SOCIO LOGUEADO */
-            <div className="space-y-12">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* Main Column: Pase de Socio Black Card */}
-                <div className="lg:col-span-7 space-y-6">
-                  <MembershipCard
-                    client={loggedClient}
-                    studioConfig={studioConfig}
-                    guestMode={guestMode}
-                    onRefreshClientSession={onRefreshClientSession}
-                    onSelectService={(svcId) => {
-                      const found = services.find((s) => s.id === svcId);
-                      if (found) setSelectedService(found);
-                      setSubTab('book');
-                      if (svcId === 'colorimetria' || found?.directConsult) {
-                        setBookingStep(1);
-                      } else {
-                        setBookingStep(2);
-                      }
-                    }}
-                    onStartBooking={() => {
+
+            <a
+              href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-[#EDEDED] font-mono font-bold text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 border border-white/[0.1] transition-all"
+            >
+              <Navigation className="w-3.5 h-3.5 text-[#E5C378]" />
+              <span>Cómo llegar</span>
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* PANTALLA 2: TRABAJOS DE AUTOR / PORTFOLIO */}
+      {subTab === 'portfolio' && (
+        <div className="space-y-6 animate-enter">
+          <AuthorPortfolio
+            onSelectService={(svcId) => {
+              const found = services.find((s) => s.id === svcId);
+              if (found) setSelectedService(found);
+              setSubTab('book');
+              if (svcId === 'colorimetria' || found?.directConsult) {
+                setBookingStep(1);
+              } else {
+                setBookingStep(2);
+              }
+            }}
+            onStartBooking={() => {
+              setSubTab('book');
+              setBookingStep(1);
+            }}
+          />
+        </div>
+      )}
+
+      {/* PANTALLA 3: MI PASE & CLUB DE SOCIOS */}
+      {subTab === 'club' && (
+        <div className="space-y-8 animate-enter">
+          {loggedClient ? (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Main Column: Pase de Socio Black Card */}
+              <div className="lg:col-span-7 space-y-6">
+                <MembershipCard
+                  client={loggedClient}
+                  studioConfig={studioConfig}
+                  guestMode={guestMode}
+                  onRefreshClientSession={onRefreshClientSession}
+                  onSelectService={(svcId) => {
+                    const found = services.find((s) => s.id === svcId);
+                    if (found) setSelectedService(found);
+                    setSubTab('book');
+                    if (svcId === 'colorimetria' || found?.directConsult) {
+                      setBookingStep(1);
+                    } else {
+                      setBookingStep(2);
+                    }
+                  }}
+                  onStartBooking={() => {
+                    setSubTab('book');
+                    setBookingStep(1);
+                  }}
+                  onRequestLogin={() => {
+                    const el = document.getElementById('dni-input');
+                    if (el) el.focus();
+                  }}
+                />
+              </div>
+
+              {/* Right Column: Turno Activo & Quick Booking CTA */}
+              <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+                {/* Turno Activo Card */}
+                {activeTurns.length > 0 && (
+                  <div className="p-5 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] font-mono text-[#E5C378] tracking-wider uppercase block mb-0.5">Turno en curso</span>
+                        <h2 className="text-base font-display font-bold text-[#EDEDED]">
+                          Próxima visita al <span className="font-editorial italic font-normal text-[#E5C378]">estudio</span>
+                        </h2>
+                      </div>
+                      <span className="badge-champagne font-mono font-bold uppercase tracking-wider text-[11px] tabular-nums">
+                        #{activeTurns[0].code} • {activeTurns[0].status}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-3 text-xs text-[#8A898E]">
+                      <div>
+                        <strong className="text-sm text-[#EDEDED] block font-display">
+                          {activeTurns[0].serviceName}
+                          {activeTurns[0].selectedDrink ? ` • ${activeTurns[0].selectedDrink}` : ''}
+                        </strong>
+                        <span className="font-mono tabular-nums text-xs text-[#8A898E]">
+                          {activeTurns[0].date} • {activeTurns[0].time} hs
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/[0.06]">
+                        <AddToCalendarButton appointment={activeTurns[0]} studioConfig={studioConfig} />
+
+                        {activeTurns[0].status === 'pendiente' && (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const statusData = await api.getAppointmentStatus(activeTurns[0].id);
+                              setAppointmentResponse({
+                                appointment: statusData,
+                                code: statusData.code,
+                                expiresAt: statusData.expiresAt,
+                                rawMessage: statusData.rawMessage,
+                                whatsappUrl: statusData.whatsappUrl
+                              });
+                              setSubTab('book');
+                              setBookingStep(4);
+                            }}
+                            className="px-3.5 py-2 rounded-md btn-whatsapp-luxury text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 fill-white/20 stroke-[2]" />
+                            <span>Confirmar WhatsApp</span>
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => handleCancelTurn(activeTurns[0].id)}
+                          className="px-3 py-2 rounded-md border border-white/[0.08] hover:border-red-500/40 text-[#8A898E] hover:text-red-400 text-xs font-mono transition-colors"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Quick Booking CTA */}
+                <div className="p-6 rounded-lg bg-[#141416] card-hairline space-y-4">
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-display font-bold text-[#EDEDED]">
+                      {loggedClient.points >= 10 ? '¡Tenés un corte bonificado listo!' : '¿Querés agendar tu próximo corte?'}
+                    </h3>
+                    <p className="text-xs text-[#8A898E]">
+                      {loggedClient.points >= 10
+                        ? 'Canjeá tus 10 puntos acumulados directamente en tu próxima visita.'
+                        : 'Elegí fecha y horario disponible en segundos.'}
+                    </p>
+                  </div>
+
+                  <MagneticButton
+                    onClick={() => {
                       setSubTab('book');
                       setBookingStep(1);
                     }}
-                    onRequestLogin={() => {
-                      const el = document.getElementById('dni-input');
-                      if (el) el.focus();
-                    }}
-                  />
-                </div>
-
-                {/* Right Column: Turno Activo & Quick Booking CTA */}
-                <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-                  {/* Turno Activo Card */}
-                  {activeTurns.length > 0 && (
-                    <div className="p-5 rounded-lg bg-[#141416] card-hairline text-[#EDEDED] space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] font-mono text-[#E5C378] tracking-wider uppercase block mb-0.5">Turno en curso</span>
-                          <h2 className="text-base font-display font-bold text-[#EDEDED]">
-                            Próxima visita al <span className="font-editorial italic font-normal text-[#E5C378]">estudio</span>
-                          </h2>
-                        </div>
-                        <span className="badge-champagne font-mono font-bold uppercase tracking-wider text-[11px] tabular-nums">
-                          #{activeTurns[0].code} • {activeTurns[0].status}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col gap-3 text-xs text-[#8A898E]">
-                        <div>
-                          <strong className="text-sm text-[#EDEDED] block font-display">
-                            {activeTurns[0].serviceName}
-                            {activeTurns[0].selectedDrink ? ` • ${activeTurns[0].selectedDrink}` : ''}
-                          </strong>
-                          <span className="font-mono tabular-nums text-xs text-[#8A898E]">
-                            {activeTurns[0].date} • {activeTurns[0].time} hs
-                          </span>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/[0.06]">
-                          <AddToCalendarButton appointment={activeTurns[0]} studioConfig={studioConfig} />
-
-                          {activeTurns[0].status === 'pendiente' && (
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                const statusData = await api.getAppointmentStatus(activeTurns[0].id);
-                                setAppointmentResponse({
-                                  appointment: statusData,
-                                  code: statusData.code,
-                                  expiresAt: statusData.expiresAt,
-                                  rawMessage: statusData.rawMessage,
-                                  whatsappUrl: statusData.whatsappUrl
-                                });
-                                setSubTab('book');
-                                setBookingStep(4);
-                              }}
-                              className="px-3.5 py-2 rounded-md btn-whatsapp-luxury text-white font-display font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all"
-                            >
-                              <MessageCircle className="w-3.5 h-3.5 fill-white/20 stroke-[2]" />
-                              <span>Confirmar WhatsApp</span>
-                            </button>
-                          )}
-
-                          <button
-                            type="button"
-                            onClick={() => handleCancelTurn(activeTurns[0].id)}
-                            className="px-3 py-2 rounded-md border border-white/[0.08] hover:border-red-500/40 text-[#8A898E] hover:text-red-400 text-xs font-mono transition-colors"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Quick Booking CTA */}
-                  <div className="p-6 rounded-lg bg-[#141416] card-hairline space-y-4">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-display font-bold text-[#EDEDED]">
-                        {loggedClient.points >= 10 ? '¡Tenés un corte bonificado listo!' : '¿Querés agendar tu próximo corte?'}
-                      </h3>
-                      <p className="text-xs text-[#8A898E]">
-                        {loggedClient.points >= 10
-                          ? 'Canjeá tus 10 puntos acumulados directamente en tu próxima visita.'
-                          : 'Elegí fecha y horario disponible en segundos.'}
-                      </p>
-                    </div>
-
-                    <MagneticButton
-                      onClick={() => {
-                        setSubTab('book');
-                        setBookingStep(1);
-                      }}
-                      className="w-full py-3.5 rounded-md bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_20px_-4px_rgba(229,195,120,0.35)]"
-                    >
-                      <span>{loggedClient.points >= 10 ? 'Canjear corte bonificado' : 'Sacá tu turno'}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#0D0D0F] stroke-[2.5]" />
-                    </MagneticButton>
-                  </div>
-
-                  {/* Location card */}
-                  <div className="p-5 rounded-lg bg-[#141416] card-hairline space-y-3.5 text-xs">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-md bg-[#0B0B0C] card-hairline flex items-center justify-center text-[#E5C378] shrink-0">
-                        <MapPin className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <strong className="text-[#EDEDED] font-display font-bold text-sm tracking-tight">
-                            {studioConfig.barbershopName || 'V.I.P BARBERÍAS'}
-                          </strong>
-                          <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider bg-[#E5C378]/15 text-[#E5C378] border border-[#E5C378]/30">
-                            SILLÓN DE DAVID
-                          </span>
-                        </div>
-                        <span className="text-[#8A898E] text-xs">
-                          {studioConfig.address || 'Eva Perón 52'} • {studioConfig.city || 'Capitán Bermúdez'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-[#8A898E]">
-                        LUN A SÁB • 09 A 20 HS
-                      </span>
-                      <a
-                        href={studioConfig.googleMapsUrl || 'https://www.google.com/maps/place/V.I.P+BARBER%C3%8DAS/@-32.8300541,-60.7128648,18.5z'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3.5 py-2 rounded-md bg-[#EDEDED] hover:bg-white text-[#0B0B0C] font-display font-bold text-xs uppercase tracking-[0.15em] flex items-center gap-1.5 transition-all shadow-sm"
-                      >
-                        <Navigation className="w-3.5 h-3.5 text-[#0B0B0C]" />
-                        <span>Cómo llegar</span>
-                      </a>
-                    </div>
-                  </div>
+                    className="w-full py-3.5 rounded-md bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_20px_-4px_rgba(229,195,120,0.35)]"
+                  >
+                    <span>{loggedClient.points >= 10 ? 'Canjear corte bonificado' : 'Sacá tu turno'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#0D0D0F] stroke-[2.5]" />
+                  </MagneticButton>
                 </div>
               </div>
+            </div>
+          ) : (
+            /* Pantalla de Invitación al Club para no identificados */
+            <div className="max-w-xl mx-auto space-y-6">
+              <div className="text-center space-y-2 pb-2">
+                <span className="text-[10px] font-mono text-[#E5C378] uppercase tracking-[0.2em] block">
+                  Club Privado · Beneficios Exclusivos
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED]">
+                  Pase de <span className="font-editorial italic font-normal text-[#E5C378]">socio</span>
+                </h2>
+                <p className="text-xs sm:text-sm text-[#8A898E] max-w-md mx-auto">
+                  Acumulá 1 punto por cada corte en el sillón privado. Tu 10° corte es 100% bonificado con barra de cortesía incluida.
+                </p>
+              </div>
 
-              {/* Lookbook de Autor de Ancho Completo */}
-              <AuthorPortfolio
-                onSelectService={(svcId) => {
-                  const found = services.find((s) => s.id === svcId);
-                  if (found) setSelectedService(found);
-                  setSubTab('book');
-                  if (svcId === 'colorimetria' || found?.directConsult) {
-                    setBookingStep(1);
-                  } else {
-                    setBookingStep(2);
-                  }
+              <DniStep
+                loggedClient={loggedClient}
+                guestMode={guestMode}
+                setGuestMode={setGuestMode}
+                onAuthSuccess={(client, apts) => {
+                  onAuthSuccess(client, apts);
                 }}
-                onStartBooking={() => {
+                onAdminAuthSuccess={onAdminAuthSuccess}
+                onLogoutClient={onLogoutClient}
+                onContinue={() => {
                   setSubTab('book');
                   setBookingStep(1);
                 }}
