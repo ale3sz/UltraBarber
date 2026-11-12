@@ -25,12 +25,12 @@ export default function BirthdaySection({
     const firstName = client.firstName || client.name || 'Socio';
     const templates = [
       {
-        label: 'Promo Regalo VIP',
-        text: `Hola ${firstName}! Muy feliz cumpleaños! Quería regalarte un beneficio especial en tu próximo corte de autor conmigo. ¿Querés que te reserve un lugar en el sillón para esta semana?`
+        label: 'Bebida de Cumpleaños de Regalo',
+        text: `¡Muy feliz cumple ${firstName}! Como socio del club, en tu ventana de cumpleaños tenés una bebida de cortesía (cerveza helada, gaseosa o agua) 100% de regalo en tu corte de esta semana. ¿Te guardo un turno en el sillón?`
       },
       {
-        label: 'Bebida de Cortesía + Corte',
-        text: `Muy feliz cumple ${firstName}! En tu semana de cumpleaños, venite que el brindis en el sillón va por mi cuenta mientras renovás tu estilo. Avisame y te aseguro turno!`
+        label: 'Saludo de Cumpleaños Directo',
+        text: `¡Hola ${firstName}! Te mando un gran saludo en tu día. Recordá que por tu cumple tenés tu bebida favorita de regalo en tu próxima visita al estudio. ¡Avisame y coordinamos!`
       },
       {
         label: 'Saludo Personalizado',
@@ -144,9 +144,20 @@ export default function BirthdaySection({
                     DNI {client.dni} • Fecha: {client.birthDate} • {client.phone || 'Sin WhatsApp'}
                   </p>
 
-                  <p className="text-xs font-mono text-emerald-400 tabular-nums">
-                    {client.totalCuts || 0} cortes realizados • {client.points || 0} PTS
-                  </p>
+                  <div className="flex items-center gap-2 flex-wrap pt-0.5">
+                    <span className="text-xs font-mono text-emerald-400 tabular-nums">
+                      {client.totalCuts || 0} cortes • {client.points || 0} PTS
+                    </span>
+                    {client.birthdayDrinkEligible ? (
+                      <span className="px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-[#E5C378]/20 text-[#E5C378] border border-[#E5C378]/40 flex items-center gap-1">
+                        🍺 BEBIDA DE REGALO ACTIVA (Corte &lt; 35d)
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-md text-[9px] font-mono text-[#8A898E] bg-white/[0.04] border border-white/[0.08]" title={client.birthdayDrinkReason || ''}>
+                        {client.birthdayDrinkReason || 'Sin visita reciente (<35d)'}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <button

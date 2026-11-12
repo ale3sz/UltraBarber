@@ -268,7 +268,7 @@ export default function ClientView({
                     Hola, {loggedClient.firstName || loggedClient.name}
                   </h3>
                   <p className="text-xs font-mono text-[#E5C378]">
-                    {loggedClient.points || 0} PTS disponibles • {loggedClient.points >= 10 ? '★ ¡Corte bonificado listo!' : `${10 - ((loggedClient.points || 0) % 10)} visitas para tu corte bonificado`}
+                    {loggedClient.points || 0} PTS disponibles • {loggedClient.points >= 100 ? '★ ¡Corte bonificado listo!' : `${10 - ((loggedClient.points || 0) % 10)} visitas para tu corte bonificado`}
                   </p>
                 </div>
               </div>
@@ -474,11 +474,11 @@ export default function ClientView({
                 <div className="p-6 rounded-lg bg-[#141416] card-hairline space-y-4">
                   <div className="space-y-1">
                     <h3 className="text-lg font-display font-bold text-[#EDEDED]">
-                      {loggedClient.points >= 10 ? '¡Tenés un corte bonificado listo!' : '¿Querés agendar tu próximo corte?'}
+                      {loggedClient.points >= 100 ? '¡Tenés un corte bonificado listo!' : '¿Querés agendar tu próximo corte?'}
                     </h3>
                     <p className="text-xs text-[#8A898E]">
-                      {loggedClient.points >= 10
-                        ? 'Canjeá tus 10 puntos acumulados directamente en tu próxima visita.'
+                      {loggedClient.points >= 100
+                        ? 'Canjeá tus 100 puntos acumulados directamente en tu próxima visita.'
                         : 'Elegí fecha y horario disponible en segundos.'}
                     </p>
                   </div>
@@ -490,7 +490,7 @@ export default function ClientView({
                     }}
                     className="w-full py-3.5 rounded-md bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-xs uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-[0_0_20px_-4px_rgba(229,195,120,0.35)]"
                   >
-                    <span>{loggedClient.points >= 10 ? 'Canjear corte bonificado' : 'Sacá tu turno'}</span>
+                    <span>{loggedClient.points >= 100 ? 'Canjear corte bonificado' : 'Sacá tu turno'}</span>
                     <ArrowRight className="w-3.5 h-3.5 text-[#0D0D0F] stroke-[2.5]" />
                   </MagneticButton>
                 </div>

@@ -42,6 +42,13 @@ export default function DniStep({
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [newPin, setNewPin] = useState('');
+  const [referralCode, setReferralCode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get('ref') || '').toUpperCase();
+    }
+    return '';
+  });
 
   // If client already has an active JWT session
   if (loggedClient) {
@@ -194,7 +201,8 @@ export default function DniStep({
         lastName: lastName.trim(),
         phone: phone.trim(),
         birthDate: birthDate || undefined,
-        pin: cleanPin
+        pin: cleanPin,
+        referralCode: referralCode.trim().toUpperCase() || undefined
       });
       onAuthSuccess(res.client, res.appointments || []);
       if (onContinue) onContinue();
@@ -530,6 +538,19 @@ export default function DniStep({
                 />
               </div>
 
+              <div>
+                <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                  CÓDIGO DE REFERIDO / AMIGO (OPCIONAL)
+                </label>
+                <input
+                  type="text"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                  placeholder="Ej: MAT9888"
+                  className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#D4AF37] text-xs font-mono tracking-widest uppercase focus:outline-none focus:border-[#D4AF37]"
+                />
+              </div>
+
               <button
                 type="submit"
                 disabled={isLoading}
@@ -651,6 +672,19 @@ export default function DniStep({
               className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] text-xs font-mono tracking-widest focus:outline-none focus:border-[#D4AF37]"
             />
           </div>
+
+              <div>
+                <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                  CÓDIGO DE REFERIDO / AMIGO (OPCIONAL)
+                </label>
+                <input
+                  type="text"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                  placeholder="Ej: MAT9888"
+                  className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#D4AF37] text-xs font-mono tracking-widest uppercase focus:outline-none focus:border-[#D4AF37]"
+                />
+              </div>
 
           <button
             type="submit"

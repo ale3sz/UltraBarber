@@ -18,7 +18,7 @@ export default function ClubBenefitsSettings({
 }) {
   const [benefitsList, setBenefitsList] = useState(() => (
     clubBenefits.length > 0 ? [...clubBenefits] : [
-      { id: 'ben-corte', title: 'Corte de Autor Bonificado', description: 'Acumulando 10 puntos con tus visitas en el estudio', badge: '10 PTS', active: true },
+      { id: 'ben-corte', title: 'Corte de Autor Bonificado', description: 'Acumulando 100 puntos con tus visitas en el estudio', badge: '100 PTS', active: true },
       { id: 'ben-bebida', title: 'Barra de Cortesía en el Sillón', description: 'Cerveza helada, gaseosa o agua mineral en servicios con bebida', badge: 'INCLUIDO', active: true },
       { id: 'ben-cumple', title: 'Beneficio Semana de Cumpleaños', description: 'Atención preferencial y regalo directo en tu WhatsApp', badge: 'SOCIOS', active: true }
     ]
@@ -26,9 +26,9 @@ export default function ClubBenefitsSettings({
 
   const [redeemablesList, setRedeemablesList] = useState(() => (
     redeemables.length > 0 ? [...redeemables] : [
-      { id: 'red-corte', name: 'Corte de Autor Completo', pointsCost: 10, stock: 99, hasStockLimit: false, active: true, description: 'Canjeá 10 puntos y tu próximo corte es 100% bonificado.' },
-      { id: 'red-pomada', name: 'Pomada Matte de Autor (50g)', pointsCost: 6, stock: 8, hasStockLimit: true, active: true, description: 'Fijación media y acabado natural mate con aroma exclusivo.' },
-      { id: 'red-aceite', name: 'Aceite Nutritivo para Barba', pointsCost: 5, stock: 5, hasStockLimit: true, active: true, description: 'Hidratación profunda de piel y vello facial con extractos botánicos.' }
+      { id: 'red-corte', name: 'Corte de Autor Completo', pointsCost: 100, stock: 99, hasStockLimit: false, active: true, description: 'Canjeá 100 puntos y tu próximo corte es 100% bonificado.' },
+      { id: 'red-pomada', name: 'Pomada Matte de Autor (50g)', pointsCost: 60, stock: 8, hasStockLimit: true, active: true, description: 'Fijación media y acabado natural mate con aroma exclusivo.' },
+      { id: 'red-aceite', name: 'Aceite Nutritivo para Barba', pointsCost: 50, stock: 5, hasStockLimit: true, active: true, description: 'Hidratación profunda de piel y vello facial con extractos botánicos.' }
     ]
   ));
 

@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { recordPointsMovement, getPointsHistory } from './ledger.js';
+import { applyPointsDecay, calculateEarnedPoints, checkBirthdayDrinkEligibility } from './loyaltyEngine.js';
 import {
   db,
   initDatabase,
@@ -131,7 +133,10 @@ function formatClient(row) {
     preferredDrink: row.preferred_drink || '',
     lastVisitDate: row.last_visit_date || '',
     memberSince: row.member_since,
-    hasPin: Boolean(row.pin_hash)
+    hasPin: Boolean(row.pin_hash),
+    referralCode: row.referral_code || '',
+    referredByDni: row.referred_by_dni || '',
+    noShowCount: Number(row.no_show_count) || 0
   };
 }
 
@@ -475,7 +480,7 @@ app.post('/api/clients/login', clientAuthLimiter, (req, res) => {
 
 // Registro de nuevo cliente (PIN almacenado con bcrypt, nunca en texto plano)
 app.post('/api/clients/register', clientAuthLimiter, (req, res) => {
-  const { dni, firstName, lastName, phone, birthDate, pin } = req.body;
+  const { dni, firstName, lastName, phone, birthDate, pin, referralCode } = req.body;
   const cleanDni = (dni || '').trim().replace(/\D/g, '');
   const cleanPin = (pin || '').trim().replace(/\D/g, '');
 
@@ -496,12 +501,26 @@ app.post('/api/clients/register', clientAuthLimiter, (req, res) => {
     });
   }
 
+  // Generar código de referido propio único
+  const cleanFirst = firstName.trim().replace(/[^a-zA-Z]/g, '').slice(0, 3).toUpperCase() || 'BAR';
+  const myReferralCode = `${cleanFirst}${cleanDni.slice(-4)}`;
+
+  // Validar si viene un código de referido de quien lo invitó
+  let referrerDni = null;
+  const cleanRef = (referralCode || '').trim().toUpperCase();
+  if (cleanRef) {
+    const referrer = db.prepare('SELECT dni FROM clients WHERE referral_code = ?').get(cleanRef);
+    if (referrer && referrer.dni !== cleanDni) {
+      referrerDni = referrer.dni;
+    }
+  }
+
   const id = `c_${Date.now()}`;
   const memberSince = getArgentinaDateString();
 
   db.prepare(`
-    INSERT INTO clients (id, dni, pin_hash, pin_code, first_name, last_name, phone, birth_date, points, total_cuts, notes, member_since, created_at)
-    VALUES (?, ?, ?, NULL, ?, ?, ?, ?, 0, 0, '', ?, ?)
+    INSERT INTO clients (id, dni, pin_hash, pin_code, first_name, last_name, phone, birth_date, points, total_cuts, notes, member_since, created_at, referral_code, referred_by_dni)
+    VALUES (?, ?, ?, NULL, ?, ?, ?, ?, 0, 0, '', ?, ?, ?, ?)
   `).run(
     id,
     cleanDni,
@@ -511,7 +530,9 @@ app.post('/api/clients/register', clientAuthLimiter, (req, res) => {
     phone.trim(),
     birthDate || '',
     memberSince,
-    Date.now()
+    Date.now(),
+    myReferralCode,
+    referrerDni
   );
 
   const newRow = db.prepare('SELECT * FROM clients WHERE id = ?').get(id);
@@ -569,8 +590,16 @@ app.post('/api/clients/setup-pin', clientAuthLimiter, (req, res) => {
 });
 
 // Sesión actual del cliente
+app.get('/api/clients/points-history', (req, res) => {
+  const session = getOptionalClient(req);
+  if (!session) return res.status(401).json({ error: 'Sesión no iniciada' });
+  const history = getPointsHistory(session.dni, 30);
+  res.json({ history });
+});
+
 app.get('/api/clients/me', (req, res) => {
   checkExpiredAppointments();
+  try { applyPointsDecay(); } catch (e) { console.error('Points decay error:', e); }
   const session = getOptionalClient(req);
   if (!session) {
     return res.status(401).json({ error: 'Sesión no iniciada' });
@@ -1137,6 +1166,7 @@ app.put('/api/admin/credentials', requireAdmin, (req, res) => {
 
 app.get('/api/admin/dashboard', requireAdmin, (req, res) => {
   checkExpiredAppointments();
+  try { applyPointsDecay(); } catch (e) { console.error('Points decay error:', e); }
   const config = getConfigObject();
 
   const appointments = db
@@ -1191,6 +1221,9 @@ app.get('/api/admin/dashboard', requireAdmin, (req, res) => {
             isToday: dayDiff === 0
           };
           thisMonth.push(enriched);
+          const bdayDrink = checkBirthdayDrinkEligibility(c, getArgentinaDateString());
+          enriched.birthdayDrinkEligible = bdayDrink.eligible;
+          enriched.birthdayDrinkReason = bdayDrink.reason || bdayDrink.message;
           if (dayDiff >= -2 && dayDiff <= 7) {
             thisWeek.push(enriched);
           }
@@ -1276,17 +1309,56 @@ app.post('/api/admin/appointments/:id/complete', requireAdmin, (req, res) => {
   try {
     if (clientRow) {
       const newTotalCuts = (clientRow.total_cuts || 0) + 1;
-      const currentPts = clientRow.points || 0;
-      const newPoints = paymentMethod === 'Canje de Puntos'
-        ? Math.max(0, currentPts - usedPts + 1)
-        : currentPts + 1;
+      const serviceRow = db.prepare('SELECT points_earned FROM services WHERE id = ?').get(row.service_id);
+      const baseEarned = serviceRow?.points_earned !== undefined ? Number(serviceRow.points_earned) : 10;
 
-      db.prepare('UPDATE clients SET total_cuts = ?, points = ?, last_visit_date = ? WHERE id = ?').run(
+      // Cálculo inteligente de fidelización (Base + Racha + Día Valle)
+      const { total: finalEarnedPts, breakdown } = calculateEarnedPoints({
+        servicePointsEarned: baseEarned,
+        appointmentDate: row.date,
+        appointmentTime: row.time,
+        lastVisitDate: clientRow.last_visit_date
+      });
+
+      db.prepare('UPDATE clients SET total_cuts = ?, last_visit_date = ? WHERE id = ?').run(
         newTotalCuts,
-        newPoints,
         row.date || getArgentinaDateString(),
         clientRow.id
       );
+
+      if (paymentMethod === 'Canje de Puntos' && usedPts > 0) {
+        recordPointsMovement({
+          dni: clientRow.dni,
+          delta: -usedPts,
+          reason: 'CANJE_TURNO_BONIFICADO',
+          referenceId: row.id
+        });
+      }
+
+      // Otorgar puntos ganados por la visita con desglose
+      if (finalEarnedPts > 0) {
+        const bonusReasons = breakdown.filter(b => b.points > 0 && b.label !== 'Corte completado').map(b => b.label).join(' + ');
+        const reasonStr = bonusReasons ? `CORTE_FINALIZADO (${bonusReasons})` : 'CORTE_FINALIZADO';
+        recordPointsMovement({
+          dni: clientRow.dni,
+          delta: finalEarnedPts,
+          reason: reasonStr,
+          referenceId: row.id
+        });
+      }
+
+      // Recompensa al referente si este es el PRIMER corte del cliente referido (1/4 de puntos = 25 pts)
+      if (newTotalCuts === 1 && clientRow.referred_by_dni) {
+        const referrer = db.prepare('SELECT dni FROM clients WHERE dni = ?').get(clientRow.referred_by_dni);
+        if (referrer) {
+          recordPointsMovement({
+            dni: referrer.dni,
+            delta: 25,
+            reason: 'AMIGO_REFERIDO_PRIMER_CORTE',
+            referenceId: clientRow.dni
+          });
+        }
+      }
     }
 
     db.prepare(`
@@ -1336,6 +1408,7 @@ app.post('/api/admin/appointments/:id/no-show', requireAdmin, (req, res) => {
   }
 
   db.prepare("UPDATE appointments SET status = 'no_asistio' WHERE id = ?").run(row.id);
+  db.prepare("UPDATE clients SET no_show_count = COALESCE(no_show_count, 0) + 1 WHERE dni = ?").run(row.dni);
   const updated = db.prepare('SELECT * FROM appointments WHERE id = ?').get(row.id);
   res.json({ success: true, appointment: formatAppointment(updated) });
 });
@@ -1370,18 +1443,34 @@ app.post('/api/admin/appointments/:id/refund', requireAdmin, (req, res) => {
   db.exec('BEGIN IMMEDIATE;');
   try {
     if (clientRow) {
-      let restoredPoints = clientRow.points || 0;
-      restoredPoints = Math.max(0, restoredPoints - 1);
-      if (row.points_used > 0) {
-        restoredPoints += row.points_used;
-      }
+      const serviceRow = db.prepare('SELECT points_earned FROM services WHERE id = ?').get(row.service_id);
+      const earnedPts = serviceRow?.points_earned !== undefined ? Number(serviceRow.points_earned) : 10;
       const newTotalCuts = Math.max(0, (clientRow.total_cuts || 1) - 1);
 
-      db.prepare('UPDATE clients SET points = ?, total_cuts = ? WHERE id = ?').run(
-        restoredPoints,
+      db.prepare('UPDATE clients SET total_cuts = ? WHERE id = ?').run(
         newTotalCuts,
         clientRow.id
       );
+
+      // Revertir puntos ganados
+      if (earnedPts > 0) {
+        recordPointsMovement({
+          dni: clientRow.dni,
+          delta: -earnedPts,
+          reason: 'REEMBOLSO_ANULACION_CORTE',
+          referenceId: row.id
+        });
+      }
+
+      // Restaurar puntos canjeados
+      if (row.points_used > 0) {
+        recordPointsMovement({
+          dni: clientRow.dni,
+          delta: row.points_used,
+          reason: 'RESTAURACION_PUNTOS_CANJEADOS',
+          referenceId: row.id
+        });
+      }
     }
 
     if (row.amount_paid && row.amount_paid > 0) {
@@ -1453,11 +1542,13 @@ app.post('/api/admin/redemptions/:id/accept', requireAdmin, (req, res) => {
 
   db.exec('BEGIN IMMEDIATE;');
   try {
-    // 1. Descontar puntos al socio
-    db.prepare('UPDATE clients SET points = points - ? WHERE dni = ?').run(
-      pointsCost,
-      client.dni
-    );
+    // 1. Descontar puntos al socio registrando en el ledger atómico
+    recordPointsMovement({
+      dni: client.dni,
+      delta: -pointsCost,
+      reason: `CANJE_${redemption.item_name || 'PREMIO'}`.toUpperCase().replace(/\s+/g, '_'),
+      referenceId: redemption.id
+    });
 
     // 2. Descontar stock en la configuración si corresponde
     const config = getConfigObject();

@@ -31,3 +31,6 @@ yarn-error.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+server/data/*.bak
+imagenes/*.pdf

@@ -14,7 +14,9 @@ import {
   MessageCircle,
   Check,
   AlertCircle,
-  Loader2
+  Loader2,
+  Share2,
+  Copy
 } from 'lucide-react';
 import OdometerCounter from '../common/OdometerCounter';
 import SpotlightCard from '../common/SpotlightCard';
@@ -31,7 +33,8 @@ export default function MembershipCard({
   onSelectService,
   onRefreshClientSession
 }) {
-  const [activeTab, setActiveTab] = useState('puntos'); // 'puntos' | 'premios'
+  const [activeTab, setActiveTab] = useState('puntos');
+  const [copiedLink, setCopiedLink] = useState(false); // 'puntos' | 'premios'
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState('');
 
@@ -115,7 +118,7 @@ export default function MembershipCard({
 
   const points = client?.points || 0;
   const cuts = client?.totalCuts || 0;
-  const milestone = 10;
+  const milestone = studioConfig?.pointsForFreeCut ? Number(studioConfig.pointsForFreeCut) : 100;
   const progressPct = Math.min(100, Math.round(((points % milestone) / milestone) * 100));
   const remainingForFree = points >= milestone ? 0 : milestone - (points % milestone);
 
@@ -123,8 +126,8 @@ export default function MembershipCard({
     {
       id: 'ben-corte',
       title: 'Corte de Autor Bonificado',
-      description: 'Acumulando 10 puntos con tus visitas en el estudio',
-      badge: '10 PTS'
+      description: 'Acumulando 100 puntos con tus visitas en el estudio',
+      badge: '100 PTS'
     },
     {
       id: 'ben-bebida',
@@ -144,15 +147,15 @@ export default function MembershipCard({
     {
       id: 'red-corte',
       name: 'Corte de Autor Completo',
-      pointsCost: 10,
+      pointsCost: 100,
       stock: 99,
       hasStockLimit: false,
-      description: 'Canjeá 10 puntos y tu próximo corte es 100% bonificado.'
+      description: 'Canjeá 100 puntos y tu próximo corte es 100% bonificado.'
     },
     {
       id: 'red-pomada',
       name: 'Pomada Matte de Autor (50g)',
-      pointsCost: 6,
+      pointsCost: 60,
       stock: 8,
       hasStockLimit: true,
       description: 'Fijación media y acabado natural mate con aroma exclusivo.'
@@ -160,7 +163,7 @@ export default function MembershipCard({
     {
       id: 'red-aceite',
       name: 'Aceite Nutritivo para Barba',
-      pointsCost: 5,
+      pointsCost: 50,
       stock: 5,
       hasStockLimit: true,
       description: 'Hidratación profunda de piel y vello facial con extractos botánicos.'
@@ -234,7 +237,7 @@ export default function MembershipCard({
           <button
             type="button"
             onClick={() => setActiveTab('premios')}
-            className={`pb-2 px-3 text-[11px] font-mono uppercase tracking-[0.15em] transition-colors relative ${
+            className={`pb-2 px-2 sm:px-3 text-[11px] font-mono uppercase tracking-[0.15em] transition-colors relative ${
               activeTab === 'premios'
                 ? 'text-[#EDEDED] font-bold after:absolute after:bottom-[-5px] after:left-0 after:right-0 after:h-[2px] after:bg-[#D4AF37]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
@@ -242,9 +245,91 @@ export default function MembershipCard({
           >
             Beneficios &amp; Canjes
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('referidos')}
+            className={`pb-2 px-2 sm:px-3 text-[11px] font-mono uppercase tracking-[0.15em] transition-colors relative ${
+              activeTab === 'referidos'
+                ? 'text-[#EDEDED] font-bold after:absolute after:bottom-[-5px] after:left-0 after:right-0 after:h-[2px] after:bg-[#D4AF37]'
+                : 'text-[#8A898E] hover:text-[#EDEDED]'
+            }`}
+          >
+            Invitar Amigos
+          </button>
         </div>
 
-        {activeTab === 'puntos' ? (
+        {activeTab === 'referidos' ? (
+          <div className="card-hairline rounded-lg p-5 sm:p-6 text-[#EDEDED] space-y-5 animate-enter">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-md bg-[#101012] border border-white/[0.08] text-[#D4AF37] flex items-center justify-center shrink-0">
+                <Share2 className="w-5 h-5 stroke-[1.5]" />
+              </div>
+              <div>
+                <span className="micro-technical block text-[9px] text-[#D4AF37]">PROGRAMA DE REFERIDOS</span>
+                <h3 className="text-base font-display font-bold text-[#EDEDED]">Ganá 25 PTS por cada amigo</h3>
+              </div>
+            </div>
+
+            <p className="text-xs text-[#8A898E] leading-relaxed">
+              Compartí tu enlace o código exclusivo con tus amigos. Cuando se registren y completen su primer corte con David, <strong className="text-[#EDEDED]">sumás 25 puntos automáticamente</strong> a tu balance (un 25% de un corte gratis).
+            </p>
+
+            {client ? (
+              <div className="p-4 rounded-md bg-[#101012] border border-white/[0.08] space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-[#8A898E] uppercase tracking-wider">Tu código personal:</span>
+                  <span className="text-sm font-mono font-bold text-[#D4AF37] tracking-widest">{client.referralCode || 'MI_CODIGO'}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={typeof window !== 'undefined' ? `${window.location.origin}?ref=${client.referralCode || ''}` : ''}
+                    className="w-full px-3 py-2 text-xs font-mono bg-black/50 border border-white/[0.08] rounded text-[#8A898E] select-all focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        const link = `${window.location.origin}?ref=${client.referralCode || ''}`;
+                        navigator.clipboard.writeText(link);
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2000);
+                      }
+                    }}
+                    className="px-3 py-2 rounded bg-[#D4AF37] hover:bg-[#c29e2f] text-black text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 transition-colors"
+                  >
+                    {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedLink ? 'Copiado' : 'Copiar'}</span>
+                  </button>
+                </div>
+
+                <a
+                  href={typeof window !== 'undefined' ? `https://wa.me/?text=${encodeURIComponent(`¡Hola! Sacá tu turno con David en Barber Fade y activá tu Pase de Socio con mi código ${client.referralCode || ''}: ${window.location.origin}?ref=${client.referralCode || ''}`)}` : '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors mt-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Enviar invitación por WhatsApp</span>
+                </a>
+              </div>
+            ) : (
+              <div className="p-4 rounded-md bg-[#101012] border border-white/[0.08] text-center space-y-3">
+                <Lock className="w-6 h-6 text-[#8A898E] mx-auto" />
+                <p className="text-xs text-[#8A898E]">Identificate con tu DNI para obtener tu enlace y código único de referidos.</p>
+                <button
+                  type="button"
+                  onClick={() => onRequestLogin && onRequestLogin()}
+                  className="px-4 py-2 rounded bg-[#D4AF37] text-black font-mono font-bold text-xs uppercase tracking-wider"
+                >
+                  Entrar con mi DNI
+                </button>
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'puntos' ? (
           /* Módulo Inspirado en Tarjeta Física Black Card / Apple Wallet */
           <div className={`black-card metal-shimmer p-5 sm:p-6 text-[#EDEDED] space-y-5 animate-enter relative ${
             points >= milestone ? 'black-card-reward' : ''
@@ -360,7 +445,7 @@ export default function MembershipCard({
                     : `FALTAN ${remainingForFree} PARA CORTE BONIFICADO`}
                 </span>
                 <span className="text-[#EDEDED] font-bold tabular-nums">
-                  {!client ? '0 / 10' : points >= milestone ? '10 / 10' : `${points % milestone} / 10`}
+                  {!client ? `0 / ${milestone}` : points >= milestone ? `${milestone} / ${milestone}` : `${points % milestone} / ${milestone}`}
                 </span>
               </div>
             </div>

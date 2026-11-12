@@ -458,6 +458,11 @@ export default function DailyAgenda({
                           SOCIO VIP
                         </span>
                       )}
+                      {client && (client.noShowCount || 0) > 0 && (
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
+                          ⚠️ {client.noShowCount} NO-SHOW
+                        </span>
+                      )}
                     </div>
 
                     <p className="text-xs text-[#8A898E] font-mono tabular-nums">

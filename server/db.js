@@ -251,9 +251,32 @@ export function initDatabase() {
       created_at INTEGER NOT NULL,
       processed_at INTEGER
     );
+
+    CREATE TABLE IF NOT EXISTS points_ledger (
+      id TEXT PRIMARY KEY,
+      client_dni TEXT NOT NULL,
+      delta INTEGER NOT NULL,
+      balance_after INTEGER NOT NULL,
+      reason TEXT NOT NULL,
+      reference_id TEXT,
+      created_at INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS sessions (
+      token TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      role TEXT NOT NULL,
+      data_json TEXT,
+      expires_at INTEGER NOT NULL,
+      created_at INTEGER NOT NULL
+    );
   `);
 
   // Migraciones automáticas de esquema
+  try { db.exec("ALTER TABLE clients ADD COLUMN referral_code TEXT;"); } catch {}
+  try { db.exec("ALTER TABLE clients ADD COLUMN referred_by_dni TEXT;"); } catch {}
+  try { db.exec("ALTER TABLE clients ADD COLUMN no_show_count INTEGER DEFAULT 0;"); } catch {}
+  try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_clients_referral_code ON clients(referral_code) WHERE referral_code IS NOT NULL;"); } catch {}
   try {
     db.exec("ALTER TABLE admins ADD COLUMN dni TEXT DEFAULT '11111111';");
   } catch {}

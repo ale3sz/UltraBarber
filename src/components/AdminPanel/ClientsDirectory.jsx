@@ -178,7 +178,7 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
 
   clients.forEach((c) => {
     const days = getDaysSinceLastVisit(c.lastVisitDate);
-    if ((c.totalCuts || 0) >= 5 || (c.points || 0) >= 5) counts.top++;
+    if ((c.totalCuts || 0) >= 5 || (c.points || 0) >= 50) counts.top++;
     if (days !== null) {
       if (days >= 25 && days <= 35) counts.due++;
       else if (days > 35 && days <= 45) counts.risk++;
@@ -196,7 +196,7 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
     } else if (activeSegment === 'inactive') {
       if (days === null || days <= 45) return false;
     } else if (activeSegment === 'top') {
-      if ((c.totalCuts || 0) < 5 && (c.points || 0) < 5) return false;
+      if ((c.totalCuts || 0) < 5 && (c.points || 0) < 50) return false;
     }
 
     // Query filter
@@ -293,7 +293,7 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-3.5">
           {filtered.map((c) => {
             const segment = getClientSegment(c);
-            const isVip = (c.totalCuts || 0) >= 5 || (c.points || 0) >= 5;
+            const isVip = (c.totalCuts || 0) >= 5 || (c.points || 0) >= 50;
 
             return (
               <div
@@ -411,7 +411,7 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
                 </div>
 
                 {/* Bottom Metrics Bar */}
-                <dl className="grid grid-cols-4 gap-2 pt-2 border-t border-white/[0.06] text-xs font-mono tabular-nums">
+                <dl className="grid grid-cols-5 gap-2 pt-2 border-t border-white/[0.06] text-xs font-mono tabular-nums">
                   <div>
                     <dt className="text-[10px] text-[#8A898E] uppercase">Puntos</dt>
                     <dd className="text-sm font-bold text-emerald-400">
@@ -425,9 +425,15 @@ export default function ClientsDirectory({ clients = [], onUpdateClient }) {
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] text-[#8A898E] uppercase">PIN Web</dt>
-                    <dd className="text-sm font-bold text-[#D4AF37]">
-                      {c.pinCode || '1234'}
+                    <dt className="text-[10px] text-[#8A898E] uppercase">Referidos</dt>
+                    <dd className="text-xs font-bold text-[#D4AF37]">
+                      {c.referralCode || '-'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[10px] text-[#8A898E] uppercase">No-Show</dt>
+                    <dd className={`text-xs font-bold ${(c.noShowCount || 0) > 0 ? 'text-rose-400' : 'text-[#8A898E]'}`}>
+                      {c.noShowCount || 0}
                     </dd>
                   </div>
                   <div>

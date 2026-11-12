@@ -137,11 +137,11 @@ export default function PaymentModal({
               </div>
               {currentPoints < pointsUsed ? (
                 <p className="text-red-400 font-semibold text-[11px]">
-                  Saldo insuficiente para bonificar el corte. El cliente necesita acumular 10 PTS (saldo actual: {currentPoints} PTS).
+                  Saldo insuficiente para bonificar el corte. El cliente necesita acumular {pointsUsed} PTS (saldo actual: {currentPoints} PTS).
                 </p>
               ) : (
                 <p className="text-barber-pistache">
-                  Se descuentan 10 puntos y se suma +1 punto por la nueva visita completada.
+                  Se descuentan {pointsUsed} puntos y se suman los puntos por el servicio completado.
                 </p>
               )}
             </div>
