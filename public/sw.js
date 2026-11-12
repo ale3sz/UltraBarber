@@ -1,5 +1,5 @@
 // ULTRA BARBER Studio - Lightweight Service Worker for PWA (Hardened)
-const CACHE_NAME = 'davidbarber-v2';
+const CACHE_NAME = 'davidbarber-v3';
 const PRECACHE_URLS = [
   './',
   './index.html',
