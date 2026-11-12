@@ -125,8 +125,8 @@ export default function MembershipCard({
   const clubBenefits = studioConfig?.clubBenefits?.filter(b => b.active !== false) || [
     {
       id: 'ben-corte',
-      title: 'Corte de Autor Bonificado',
-      description: 'Acumulando 100 puntos con tus visitas en el estudio',
+      title: 'Corte Bonificado',
+      description: 'Acumulando 100 puntos con tus visitas en el sillón',
       badge: '100 PTS'
     },
     {
@@ -146,7 +146,7 @@ export default function MembershipCard({
   const redeemables = studioConfig?.redeemables?.filter(r => r.active !== false) || [
     {
       id: 'red-corte',
-      name: 'Corte de Autor Completo',
+      name: 'Corte Completo',
       pointsCost: 100,
       stock: 99,
       hasStockLimit: false,
@@ -154,7 +154,7 @@ export default function MembershipCard({
     },
     {
       id: 'red-pomada',
-      name: 'Pomada Matte de Autor (50g)',
+      name: 'Pomada Matte (50g)',
       pointsCost: 60,
       stock: 8,
       hasStockLimit: true,
@@ -386,7 +386,7 @@ export default function MembershipCard({
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-[#E5C378] shrink-0" />
                   <span className="text-[#EDEDED] font-semibold text-[11px] leading-tight">
-                    Tenés 1 corte de autor $0 bonificado listo para canjear
+                    Tenés 1 corte bonificado listo para canjear
                   </span>
                 </div>
                 <button

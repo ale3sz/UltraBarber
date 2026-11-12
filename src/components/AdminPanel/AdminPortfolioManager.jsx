@@ -36,7 +36,7 @@ export default function AdminPortfolioManager({ services = [] }) {
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [category, setCategory] = useState('fades');
-  const [tag, setTag] = useState('FADE DE AUTOR');
+  const [tag, setTag] = useState('FADE');
   const [serviceId, setServiceId] = useState('');
   const [featured, setFeatured] = useState(false);
   const [imagePreview, setImagePreview] = useState('');
@@ -68,7 +68,7 @@ export default function AdminPortfolioManager({ services = [] }) {
     setTitle('');
     setSubtitle('');
     setCategory('fades');
-    setTag('FADE DE AUTOR');
+    setTag('FADE');
     setServiceId(services[0]?.id || 'corte');
     setFeatured(false);
     setImagePreview('');
@@ -83,7 +83,7 @@ export default function AdminPortfolioManager({ services = [] }) {
     setTitle(item.title || '');
     setSubtitle(item.subtitle || '');
     setCategory(item.category || 'fades');
-    setTag(item.tag || 'FADE DE AUTOR');
+    setTag(item.tag || 'FADE');
     setServiceId(item.service_id || item.serviceId || '');
     setFeatured(Boolean(item.featured));
     const src = item.src || (item.image_url ? getAssetUrl(item.image_url) : '');
@@ -180,7 +180,7 @@ export default function AdminPortfolioManager({ services = [] }) {
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2 h-2 rounded-full bg-[#E5C378] animate-pulse" />
             <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#E5C378]">
-              Galería de Autor · David
+              Galería de Cortes · David
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-bold text-[#EDEDED] flex items-center gap-2.5">
@@ -274,7 +274,7 @@ export default function AdminPortfolioManager({ services = [] }) {
                   {/* Top Badges */}
                   <div className="absolute top-3 inset-x-3 flex items-center justify-between gap-2 pointer-events-none">
                     <span className="px-2.5 py-1 rounded bg-[#0D0D0F]/80 backdrop-blur-md border border-white/[0.1] text-[9px] font-mono uppercase tracking-[0.15em] text-[#E5C378] font-bold">
-                      {item.tag || 'CORTE DE AUTOR'}
+                      {item.tag || 'CORTE'}
                     </span>
                     {item.featured ? (
                       <span className="px-2 py-0.5 rounded bg-[#E5C378] text-[#0D0D0F] text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
@@ -481,7 +481,7 @@ export default function AdminPortfolioManager({ services = [] }) {
                     type="text"
                     value={tag}
                     onChange={(e) => setTag(e.target.value)}
-                    placeholder="Ej: FADE DE AUTOR"
+                    placeholder="Ej: FADE O CORTE"
                     className="w-full px-3.5 py-2.5 rounded-lg bg-[#0B0B0C] border border-white/[0.1] text-[#EDEDED] text-xs font-mono uppercase focus:border-[#E5C378] focus:outline-none"
                   />
                 </div>

@@ -123,7 +123,7 @@ export default function App() {
       <Footer
         onOpenAdmin={() => setActiveView(activeView === 'admin' ? 'client' : 'admin')}
         adminUser={adminUser}
-
+        studioConfig={studioConfig}
       />
     </div>
   );

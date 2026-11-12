@@ -202,10 +202,10 @@ export default function ClientView({
             <div className="relative z-10 p-6 sm:p-10 md:p-12 bg-gradient-to-t from-[#0D0D0F] via-[#0D0D0F]/85 to-[#0D0D0F]/60 flex flex-col justify-end min-h-[300px] sm:min-h-[360px] space-y-6">
               <div className="space-y-2 max-w-xl">
                 <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#E5C378]">
-                  Sillón Privado · Barbería de Autor
+                  Sillón en {studioConfig.barbershopName || 'V.I.P Barberías'}
                 </span>
                 <h1 className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-[#EDEDED] leading-tight">
-                  Cortes de autor con{' '}
+                  Cortes y fades con{' '}
                   <span className="font-editorial italic font-normal text-[#E5C378]">
                     David
                   </span>
@@ -325,41 +325,27 @@ export default function ClientView({
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <strong className="text-[#EDEDED] font-display font-bold text-sm tracking-tight">
-                    {studioConfig.barbershopName || 'ESTUDIO DE AUTOR'}
+                    {studioConfig.barbershopName || 'V.I.P BARBERÍAS'}
                   </strong>
                   <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider bg-[#E5C378]/15 text-[#E5C378] border border-[#E5C378]/30">
                     SILLÓN DE DAVID
                   </span>
                 </div>
                 <p className="text-[#8A898E] text-xs mt-0.5">
-                  {studioConfig.address && studioConfig.address !== 'Ubicación coordinada por WhatsApp' && !studioConfig.address.toLowerCase().includes('eva perón')
-                    ? `${studioConfig.address}${studioConfig.city ? ` • ${studioConfig.city}` : ''} • `
-                    : 'Atención personalizada exclusivamente con reserva previa • '}Lun a Sáb de 09 a 20 hs
+                  {studioConfig.address || 'Eva Perón 52'} • {studioConfig.city || 'Capitán Bermúdez'} • Lun a Sáb de 09 a 20 hs
                 </p>
               </div>
             </div>
 
-            {studioConfig.googleMapsUrl && !studioConfig.googleMapsUrl.includes('V.I.P+BARBER') ? (
-              <a
-                href={studioConfig.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-[#EDEDED] font-mono font-bold text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 border border-white/[0.1] transition-all"
-              >
-                <Navigation className="w-3.5 h-3.5 text-[#E5C378]" />
-                <span>Cómo llegar</span>
-              </a>
-            ) : (
-              <a
-                href={`https://wa.me/${studioConfig.whatsappPhone || '5493413762115'}?text=${encodeURIComponent('¡Hola David! Te consulto por la ubicación exacta de mi turno.')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-[#EDEDED] font-mono font-bold text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 border border-white/[0.1] transition-all"
-              >
-                <Navigation className="w-3.5 h-3.5 text-[#E5C378]" />
-                <span>Consultar ubicación</span>
-              </a>
-            )}
+            <a
+              href={studioConfig.googleMapsUrl || 'https://maps.app.goo.gl/JK9s2uNjGVHNvEuS8'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-[#EDEDED] font-mono font-bold text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 border border-white/[0.1] transition-all"
+            >
+              <Navigation className="w-3.5 h-3.5 text-[#E5C378]" />
+              <span>Cómo llegar</span>
+            </a>
           </div>
         </div>
       )}

@@ -50,14 +50,14 @@ export function setAdminToken(token) {
 const MOCK_CONFIG = {
   barberName: 'David',
   businessName: 'DAVID BARBER',
-  barbershopName: 'Studio de Autor',
+  barbershopName: 'V.I.P Barberías',
   whatsappPhone: '5493413762115',
   holdDurationMinutes: 15,
   pointsForFreeCut: 10,
-  address: 'Ubicación coordinada por WhatsApp',
-  city: '',
-  locationNote: 'Sillón de David en Studio de Autor',
-  googleMapsUrl: '',
+  address: 'Eva Perón 52',
+  city: 'Capitán Bermúdez',
+  locationNote: 'Sillón de David en V.I.P Barberías',
+  googleMapsUrl: 'https://maps.app.goo.gl/JK9s2uNjGVHNvEuS8',
   instagram: '@barber_f4de',
   workHours: {
     start: '09:00',
@@ -70,7 +70,7 @@ const MOCK_CONFIG = {
   clubBenefits: [
     {
       id: 'ben-corte',
-      title: 'Corte de Autor Bonificado',
+      title: 'Corte Bonificado',
       description: 'Acumulando 10 puntos con tus visitas en el estudio',
       badge: '10 PTS',
       active: true
@@ -93,7 +93,7 @@ const MOCK_CONFIG = {
   redeemables: [
     {
       id: 'red-corte',
-      name: 'Corte de Autor Completo',
+      name: 'Corte Completo',
       pointsCost: 10,
       stock: 99,
       hasStockLimit: false,
@@ -102,7 +102,7 @@ const MOCK_CONFIG = {
     },
     {
       id: 'red-pomada',
-      name: 'Pomada Matte de Autor (50g)',
+      name: 'Pomada Matte (50g)',
       pointsCost: 6,
       stock: 8,
       hasStockLimit: true,
@@ -125,7 +125,7 @@ const MOCK_SERVICES = [
   {
     id: 'corte',
     name: 'Corte',
-    tagline: 'Fade & Corte de Autor',
+    tagline: 'Fade & Corte',
     price: 18000,
     duration: 45,
     pointsEarned: 1,
@@ -391,7 +391,7 @@ function handleStaticFallback(path, options = {}) {
       title: body.title || 'Nuevo Corte',
       subtitle: body.subtitle || '',
       category: body.category || 'fades',
-      tag: (body.tag || 'FADE DE AUTOR').toUpperCase(),
+      tag: (body.tag || 'FADE').toUpperCase(),
       image_url: body.image_data || body.image_url || getAssetUrl('imagenes/IMG_3526.PNG'),
       src: body.image_data || body.image_url || getAssetUrl('imagenes/IMG_3526.PNG'),
       service_id: body.service_id || null,
@@ -667,7 +667,7 @@ function handleStaticFallback(path, options = {}) {
       clientName,
       clientPhone,
       itemId: body.itemId,
-      itemName: body.itemName || 'Premio de Autor',
+      itemName: body.itemName || 'Premio',
       pointsCost,
       status: 'pendiente',
       notes: body.notes || 'Solicitud vía web',

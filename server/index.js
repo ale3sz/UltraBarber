@@ -1007,8 +1007,8 @@ app.post('/api/redemptions/request', generalApiLimiter, (req, res) => {
 
   const config = getConfigObject();
   const redeemables = config.redeemables || [
-    { id: 'red-corte', name: 'Corte de Autor Completo', pointsCost: 10, stock: 99, hasStockLimit: false },
-    { id: 'red-pomada', name: 'Pomada Matte de Autor (50g)', pointsCost: 6, stock: 8, hasStockLimit: true },
+    { id: 'red-corte', name: 'Corte Completo', pointsCost: 10, stock: 99, hasStockLimit: false },
+    { id: 'red-pomada', name: 'Pomada Matte (50g)', pointsCost: 6, stock: 8, hasStockLimit: true },
     { id: 'red-aceite', name: 'Aceite Nutritivo para Barba', pointsCost: 5, stock: 5, hasStockLimit: true }
   ];
 
@@ -1864,7 +1864,7 @@ app.post('/api/admin/portfolio', requireAdmin, (req, res) => {
       title: title.trim(),
       subtitle: (subtitle || '').trim(),
       category: category || 'fades',
-      tag: (tag || 'FADE DE AUTOR').toUpperCase(),
+      tag: (tag || 'FADE').toUpperCase(),
       image_url: finalImageUrl,
       service_id: service_id || null,
       featured: !!featured,

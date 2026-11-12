@@ -2,7 +2,7 @@
 
 ## 1. Visual Direction & Atmosphere
 
-- **Concept:** Contemporary Author Barber & Private Club (Sillón privado de autor).
+- **Concept:** David Barber & Barber Fade (Sillón en V.I.P Barberías, Eva Perón 52, Capitán Bermúdez).
 - **Core Aesthetic Pillars:**
   - **Surgical Precision:** Laser hairlines (`rgba(255, 255, 255, 0.08)`), high-contrast tabular numbers (`Azeret Mono`), zero decorative noise.
   - **Muted Satin Champagne & Carbon:** Base obsidian surfaces (`#0B0B0C`, `#141416`), illuminated by delicate brushed champagne accents (`#D4AF37`, `#E5C378`), replacing harsh yellow-golds.

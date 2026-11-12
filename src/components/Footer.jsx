@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import InstagramIcon from './icons/InstagramIcon';
 
-export default function Footer({ onOpenAdmin, adminUser }) {
+export default function Footer({ onOpenAdmin, adminUser, studioConfig = {} }) {
   const [activeModal, setActiveModal] = useState(null); // 'terms' | 'privacy'
 
   return (
@@ -31,7 +31,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
             </div>
             <div className="flex items-center gap-1.5 text-[10px] text-[#52525B]">
               <MapPin className="w-3 h-3 text-[#52525B]" />
-              <span>Atención exclusiva con turno previo • Sillón Privado</span>
+              <span>Atención en {studioConfig.barbershopName || 'V.I.P Barberías'} • {studioConfig.address || 'Eva Perón 52'}{studioConfig.city ? `, ${studioConfig.city}` : ', Capitán Bermúdez'}</span>
             </div>
           </div>
 
@@ -47,7 +47,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
                   David Barber
                 </span>
                 <span className="text-[10px] font-mono text-[#52525B]">
-                  • Sillón Privado
+                  • Sillón en {studioConfig.barbershopName || 'V.I.P Barberías'}
                 </span>
               </div>
 
@@ -56,7 +56,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
               </p>
 
               <p className="text-[10px] font-mono text-[#52525B]">
-                Barbería de autor • Atención exclusivamente con turno previo
+                {studioConfig.city || 'Capitán Bermúdez'}, Santa Fe • Atención exclusivamente con turno previo
               </p>
 
               <div className="pt-1">
@@ -128,7 +128,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
           {/* Bottom Bar: Copyright & Versión */}
           <div className="pt-5 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-[#52525B]">
             <p>
-              &copy; {new Date().getFullYear()} David Barber • Turnos &amp; Fidelización de Autor.
+              &copy; {new Date().getFullYear()} David Barber • Turnos &amp; Fidelización en {studioConfig.barbershopName || 'V.I.P Barberías'}.
             </p>
 
             <span>v2.5</span>

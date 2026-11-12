@@ -28,11 +28,11 @@ export default function SettingsModal({
   const [activeTab, setActiveTab] = useState('annual'); // 'annual' | 'schedule' | 'club' | 'general' | 'prices' | 'security'
   const [whatsappPhone, setWhatsappPhone] = useState(config.whatsappPhone || '5493413762115');
   const [holdDurationMinutes, setHoldDurationMinutes] = useState(config.holdDurationMinutes || 15);
-  const [barbershopName, setBarbershopName] = useState(config.barbershopName || 'Studio de Autor');
-  const [address, setAddress] = useState(config.address || 'Ubicación coordinada por WhatsApp');
-  const [city, setCity] = useState(config.city || '');
+  const [barbershopName, setBarbershopName] = useState(config.barbershopName || 'V.I.P Barberías');
+  const [address, setAddress] = useState(config.address || 'Eva Perón 52');
+  const [city, setCity] = useState(config.city || 'Capitán Bermúdez');
   const [googleMapsUrl, setGoogleMapsUrl] = useState(
-    config.googleMapsUrl || ''
+    config.googleMapsUrl || 'https://maps.app.goo.gl/JK9s2uNjGVHNvEuS8'
   );
 
   // Working days (0: Dom, 1: Lun, 2: Mar, 3: Mié, 4: Jue, 5: Vie, 6: Sáb)
@@ -456,7 +456,7 @@ export default function SettingsModal({
                   required
                   value={barbershopName}
                   onChange={(e) => setBarbershopName(e.target.value)}
-                  placeholder="Ej: Studio de Autor"
+                  placeholder="Ej: V.I.P Barberías"
                   className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
                 />
               </div>
@@ -468,7 +468,7 @@ export default function SettingsModal({
                   required
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Ej: "
+                  placeholder="Ej: Capitán Bermúdez"
                   className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
                 />
               </div>
@@ -481,7 +481,7 @@ export default function SettingsModal({
                 required
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Ej: Ubicación coordinada por WhatsApp"
+                placeholder="Ej: Eva Perón 52"
                 className="w-full px-3.5 py-3 rounded-xl bg-barber-darkBg border border-barber-darkBorder text-barber-darkText"
               />
             </div>

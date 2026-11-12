@@ -46,7 +46,7 @@ const DEFAULT_PORTFOLIO_ITEMS = [
     title: 'Burst Fade · Diseño 23',
     subtitle: 'Degradado curvo milimétrico con textura superior personalizada.',
     category: 'fades',
-    tag: 'FADE DE AUTOR',
+    tag: 'FADE',
     featured: false,
     serviceId: 'corte'
   },
@@ -65,7 +65,7 @@ const DEFAULT_PORTFOLIO_ITEMS = [
     id: 'look-5',
     src: getAssetUrl('imagenes/corte-bebida.jpg'),
     image_url: 'imagenes/corte-bebida.jpg',
-    title: 'Corte de Autor + Bebida Fría',
+    title: 'Corte + Bebida Fría',
     subtitle: 'Fade con cerveza fría, Monster o gaseosa en el sillón.',
     category: 'fades',
     tag: 'CORTE + BEBIDA',
@@ -181,9 +181,9 @@ export default function AuthorPortfolio({ onSelectService, onStartBooking }) {
           <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#EDEDED] flex items-center gap-2.5">
             <Camera className="w-6 h-6 text-[#E5C378] stroke-[1.5]" />
             <span>
-              Trabajos de{' '}
+              Cortes y{' '}
               <span className="font-editorial italic font-normal text-[#E5C378]">
-                autor
+                fades
               </span>
             </span>
           </h2>
@@ -328,7 +328,7 @@ export default function AuthorPortfolio({ onSelectService, onStartBooking }) {
           >
             <div>
               <span className="text-[10px] font-mono tracking-[0.2em] text-[#E5C378] uppercase">
-                {activePhoto.tag} • LOOKBOOK DE AUTOR
+                {activePhoto.tag} • LOOKBOOK
               </span>
               <h4 className="text-lg sm:text-xl font-display font-bold text-[#EDEDED]">
                 {activePhoto.title}

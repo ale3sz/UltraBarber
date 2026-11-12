@@ -325,14 +325,14 @@ export function initDatabase() {
   const defaultConfig = {
     barberName: 'David',
     businessName: 'DAVID BARBER',
-    barbershopName: 'Studio de Autor',
+    barbershopName: 'V.I.P Barberías',
     whatsappPhone: '5493413762115',
     holdDurationMinutes: 15,
     pointsForFreeCut: 10,
-    address: 'Ubicación coordinada por WhatsApp',
-    city: '',
-    locationNote: 'Sillón de David en Studio de Autor',
-    googleMapsUrl: '',
+    address: 'Eva Perón 52',
+    city: 'Capitán Bermúdez',
+    locationNote: 'Sillón de David en V.I.P Barberías',
+    googleMapsUrl: 'https://maps.app.goo.gl/JK9s2uNjGVHNvEuS8',
     instagram: '@barber_f4de',
     workHours: {
       start: '09:00',
@@ -346,7 +346,7 @@ export function initDatabase() {
     clubBenefits: [
       {
         id: 'ben-corte',
-        title: 'Corte de Autor Bonificado',
+        title: 'Corte Bonificado',
         description: 'Acumulando 10 puntos con tus visitas en el sillón',
         badge: '10 PTS',
         active: true
@@ -369,7 +369,7 @@ export function initDatabase() {
     redeemables: [
       {
         id: 'red-corte',
-        name: 'Corte de Autor Completo',
+        name: 'Corte Completo',
         pointsCost: 10,
         stock: 99,
         hasStockLimit: false,
@@ -378,7 +378,7 @@ export function initDatabase() {
       },
       {
         id: 'red-pomada',
-        name: 'Pomada Matte de Autor (50g)',
+        name: 'Pomada Matte (50g)',
         pointsCost: 6,
         stock: 8,
         hasStockLimit: true,
@@ -404,6 +404,13 @@ export function initDatabase() {
 
   // Asegurar que el WhatsApp de David sea el real
   db.prepare("UPDATE config SET value = ? WHERE key = 'whatsappPhone' AND (value = '\"5491123456789\"' OR value = '\"3413762115\"')").run(JSON.stringify('5493413762115'));
+
+  // Asegurar ubicación actual de David en V.I.P Barberías y link de Google Maps
+  db.prepare("UPDATE config SET value = ? WHERE key = 'googleMapsUrl'").run(JSON.stringify('https://maps.app.goo.gl/JK9s2uNjGVHNvEuS8'));
+  db.prepare("UPDATE config SET value = ? WHERE key = 'barbershopName' AND (value = '\"Studio de Autor\"' OR value IS NULL)").run(JSON.stringify('V.I.P Barberías'));
+  db.prepare("UPDATE config SET value = ? WHERE key = 'address' AND (value = '\"Ubicación coordinada por WhatsApp\"' OR value IS NULL)").run(JSON.stringify('Eva Perón 52'));
+  db.prepare("UPDATE config SET value = ? WHERE key = 'city' AND (value = '\"\"' OR value IS NULL)").run(JSON.stringify('Capitán Bermúdez'));
+  db.prepare("UPDATE config SET value = ? WHERE key = 'locationNote' AND (value = '\"Sillón de David en Studio de Autor\"' OR value IS NULL)").run(JSON.stringify('Sillón de David en V.I.P Barberías'));
 
   // Asegurar portfolio de autor inicial
   try {
@@ -437,7 +444,7 @@ export function initDatabase() {
           title: 'Burst Fade · Diseño 23',
           subtitle: 'Degradado curvo milimétrico con textura superior personalizada.',
           category: 'fades',
-          tag: 'FADE DE AUTOR',
+          tag: 'FADE',
           image_url: 'imagenes/IMG_3526.PNG',
           service_id: 'corte',
           featured: 0,
@@ -456,7 +463,7 @@ export function initDatabase() {
         },
         {
           id: 'look-5',
-          title: 'Corte de Autor + Bebida Fría',
+          title: 'Corte + Bebida Fría',
           subtitle: 'Fade con cerveza fría, Monster o gaseosa en el sillón.',
           category: 'fades',
           tag: 'CORTE + BEBIDA',
@@ -509,7 +516,7 @@ export function initDatabase() {
       {
         id: 'corte',
         name: 'Corte',
-        tagline: 'Fade & Corte de Autor',
+        tagline: 'Fade & Corte',
         price: 18000,
         duration: 45,
         points_earned: 1,
