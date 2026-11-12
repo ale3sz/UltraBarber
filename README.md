@@ -1,92 +1,90 @@
-# ULTRA BARBER Studio - Sistema de Turnos, Membresía & Handshake WhatsApp
+# DAVID BARBER - Sistema de Gestión, Turnos & Fidelización de Autor
 
-Aplicación web integral para barbería de autor con estética **Earth & Botanical Studio**, diseñada para una experiencia ágil tanto para los clientes como para el barbero David.
-
----
-
-## 🎨 Paleta de Colores (Earth & Botanical Studio)
-
-Configurada con tokens en `tailwind.config.js` y soporte completo para **Modo Claro** y **Modo Oscuro**:
-
-- **Swatches base:**
-  - `matcha`: `#809671`
-  - `pistache`: `#B3B792`
-  - `almond`: `#E5E0D8`
-  - `vanilla`: `#E5D2B8`
-  - `chai`: `#D2AB80`
-  - `carob`: `#725C3A`
-
-- **Modo Claro:**
-  - `lightBg`: `#F7F6F2` (Fondo suave)
-  - `lightSurface`: `#FFFFFF` (Tarjetas y modales)
-  - `lightBorder`: `#E5E0D8` (Separadores)
-  - `lightText`: `#2B2620` (Texto principal)
-  - `lightMuted`: `#725C3A` (Texto secundario / DNI)
-  - `lightPrimary`: `#809671` (Botones de acción Matcha)
-  - `lightSecondary`: `#D2AB80` (Acentos y badges Chai)
-
-- **Modo Oscuro:**
-  - `darkBg`: `#181715` (Fondo oscuro tostado)
-  - `darkSurface`: `#24221E` (Tarjetas oscuras)
-  - `darkBorder`: `#3D372E` (Separadores)
-  - `darkText`: `#F7F6F2` (Texto principal claro)
-  - `darkMuted`: `#B3B792` (Texto secundario Pistache)
-  - `darkPrimary`: `#809671` (Botones principales Matcha)
-  - `darkSecondary`: `#D2AB80` (Acentos y badges Chai)
+Plataforma web integral para el estudio de barbería de autor de **David** (ubicado en **V.I.P Barberías**, Eva Perón 52, Capitán Bermúdez). Diseñada con enfoque mobile-first, protección de concurrencia en base de datos, motor de fidelización con ledger contable y handshake bidireccional vía WhatsApp.
 
 ---
 
-## 🚀 Funcionamiento y Lógica Implementada
+## 💎 Identidad Visual & Look & Feel
 
-### A. Flujo de Reserva y Verificación Antifraude (Handshake por WhatsApp)
-1. **Identificación por DNI:**
-   - El cliente ingresa su DNI en la web pública.
-   - Si ya existe: precarga automáticamente Nombre, Apellido, Celular y muestra su tarjeta de membresía digital con los puntos acumulados y cortes históricos.
-   - Si no existe: solicita Nombre, Apellido, Celular (WhatsApp) y Fecha de Nacimiento (para promo de cumpleaños).
-2. **Selección de Servicio:**
-   - Catálogo extraído de los precios oficiales:
-     1. Corte ($18.000)
-     2. Corte + Bebida ($20.000) - con selector de bebida (Agua mineral, Gaseosa, Cerveza)
-     3. Barba Premium ($20.000)
-     4. Barba Premium + Bebida ($22.000) - con selector de bebida
-     5. Experiencia Completa (Corte + Barba + Facial) ($24.000) - con selector de bebida
-3. **Selección de Horario & Bloqueo Temporal (15 minutos):**
-   - El cliente selecciona fecha y horario libre (detección en tiempo real de slots ocupados).
-   - Al tocar "Solicitar Turno", se crea la reserva con estado `pendiente`, código único de 4 dígitos (ej: `#4821`) y temporizador de bloqueo por 15 minutos (`expires_at`).
-   - Botón directo a WhatsApp con el mensaje prearmado exacto:
-     *"Hola David! Quiero confirmar mi turno para el [FECHA] a las [HORA] hs. Código de turno: #4821 - Cliente: [NOMBRE] (DNI: [DNI])"*
-4. **Confirmación por parte de David:**
-   - David recibe el mensaje en su WhatsApp (validando línea activa y persona real).
-   - En su panel web ve la tarjeta `Pendiente #4821` con cuenta regresiva en vivo y presiona **[Confirmar Turno]**.
-   - En la pantalla del cliente se detecta automáticamente la confirmación y se festeja con confetti.
-   - Si pasan 15 minutos sin confirmación, el worker en segundo plano expira el turno y libera el horario automáticamente.
+- **Estética:** *Dark Luxury Minimalist & Botanical Studio*.
+- **Acentos:** Dorado champán (`#D4AF37` / `#E5C378`), fondos oscuros carbón técnico (`#0D0D0F`, `#141416`), bordes ultra finos *hairline* (`white/[0.08]`) y tipografías display con toques técnicos monoespaciados.
+- **Pase de Socio:** Tarjeta digital estilo *Black Card / Apple Wallet* con efecto metal shimmer, balance en odómetro animado y selector de solapas (*Pase de Socio*, *Beneficios & Canjes*, *Invitar Amigos*).
 
 ---
 
-### B. Membresía y Puntos
-- Cada corte completado suma **+1 punto** al balance del DNI del cliente.
-- Tarjeta de fidelización digital con nivel de socio, balance de puntos y barra de progreso hacia corte gratis.
-- **Sección de Cumpleaños:** En el panel de David se listan los clientes que cumplen años en la semana y en el mes, con un botón en 1 toque para enviarles el saludo y promo directo a su WhatsApp.
+## 🚀 Arquitectura Técnica y Lógica de Negocio
+
+### 1. Motor de Concurrencia y Turnos (WhatsApp Handshake)
+- **Bloqueo atómico con SQLite WAL (`BEGIN IMMEDIATE`)**:
+  - Evita colisiones o doble reserva simultánea mediante un índice único parcial en base de datos (`idx_unique_active_slot` sobre turnos pendientes y confirmados).
+  - Cálculo de disponibilidad con franja de 15 minutos de anticipación mínima y validación horaria estricta contra la zona de Argentina (`America/Argentina/Buenos_Aires`).
+- **Hold de cortesía (15–25 minutos)**:
+  - Al solicitar turno, se genera un código identificador (`#XXXX`) y se bloquea el slot con expiración temporal.
+  - El cliente dispara el mensaje de WhatsApp preformateado a David con un toque.
+  - David confirma desde su panel y el cliente recibe feedback inmediato con animación festiva. Si transcurre el tiempo límite sin confirmación, un worker en segundo plano libera el horario automáticamente.
+- **Protección antifraude y no-shows**:
+  - Límite de cancelaciones abusivas por cliente en ventana de 24 horas.
+  - Registro de incidentes: si David marca **[No Asistió]**, se incrementa el contador `no_show_count` del cliente, generando una advertencia visual preventiva (`⚠️ X NO-SHOW`) en la agenda y directorio ante futuras citas.
 
 ---
 
-### C. Control de Cortes y Cobro
-- Desde la agenda, David marca **[Cobrar y Finalizar]**.
-- Registra el método de pago (`Efectivo`, `Transferencia`, `Canje de Puntos`), monto y notas.
-- El sistema incrementa automáticamente el historial de visitas (+1 corte) y el balance (+1 punto).
-- Opción **[No Asistió]**, cancelando el turno sin sumar puntos.
+### 2. Motor de Fidelización y Club de Socios (Escala en Centenas)
+
+Los puntos se auditan de forma inmutable en una tabla `points_ledger` (con delta, balance posterior, referencia y motivo contable).
+
+- **Escala de puntos:**
+  - **10 PTS base:** Por cada corte o servicio de autor completado.
+  - **100 PTS:** Canje directo por 1 corte de autor 100% bonificado ($0).
+  - **Catálogo de premios:** Canjes por productos de cuidado facial, barba y bebidas exclusivas configurables por stock.
+- **Bonus dinámico por días de menor demanda (+5 PTS):**
+  - El backend analiza automáticamente la última semana activa de trabajo y determina los 2 días con menor cantidad de turnos (con fallback por defecto a **Martes y Miércoles** en semanas vacacionales o sin datos).
+  - Cortarse en esos días bonifica con **+5 PTS extra**.
+- **Racha de recurrencia (+5 PTS):**
+  - Si el socio vuelve al sillón dentro de los **≤ 21 días** desde su última visita, el sistema premia la constancia sumando **+5 PTS extra** (pudiendo acumular hasta 20 PTS en una sola visita combinada con día valle).
+- **Programa de referidos (Anti-multicuentas):**
+  - Cada cliente posee su código personal (`referral_code`, ej: `MAT9888`) y enlace directo (`?ref=MAT9888`).
+  - **Regla de liberación:** El referente recibe **+25 PTS** (exactamente un cuarto de un corte gratis) **únicamente cuando el amigo referido completa su primer corte en el sillón**.
+- **Caducidad gradual por inactividad (Points Decay):**
+  - A partir de los **60 días (2 meses)** sin visitas, el sistema aplica un descuento gradual preventivo de **10 PTS cada 21 días (3 semanas)** adicionales de inactividad (nunca bajando de 0).
+- **Atención de cumpleaños (Bebida de cortesía de regalo):**
+  - Dentro de una ventana de **±2 días** respecto a la fecha de cumpleaños del cliente.
+  - Condición de actividad: Haber visitado el sillón en los últimos **35 días**.
+  - Regalo: **1 bebida de cortesía bonificada** (cerveza helada, gaseosa o agua) para brindar en el sillón.
 
 ---
 
-## 🛠️ Cómo Ejecutar el Proyecto
+### 3. Panel de Administración de David
+- **Agenda diaria:** Vista cronológica de citas con selector de fecha, desglose de servicios, bebidas seleccionadas y alertas de DNA de estilo / No-shows.
+- **Acciones en 1 toque:** Confirmación, cobro con selección de método de pago, anulación/reembolso controlado y bloqueo manual de días u horarios.
+- **Directorio de clientes:** Segmentación inteligente (Al día, Toca corte, En riesgo, Inactivos), métricas de visitas, saldo de puntos, PIN web y disparadores directos de WhatsApp para reactivación.
+- **Gestor de Trabajos de Autor:** Alta, edición y categorización de fotos del portfolio (Fades, Freestyle, Barba, Relax VIP) con flags de destacados.
+- **Configuraciones del estudio:** Parámetros de horarios comerciales, precios de servicios, WhatsApp oficial y beneficios del club.
+
+---
+
+## 🛠️ Stack Tecnológico
+
+- **Frontend:** React 18, Vite 6, Tailwind CSS 3.4, Lucide React, Canvas Confetti, QR Code.
+- **Backend:** Node.js (ESM), Express 4, `node:sqlite` (SQLite embebido nativo con modo WAL), bcryptjs, Helmet, Express Rate Limit.
+- **Seguridad:** Hash bcrypt (cost 10) para credenciales administrativas y PINes de 4 dígitos de clientes, limitadores de tasa por IP en reservas y autenticación.
+
+---
+
+## 💻 Ejecución en Entorno Local
 
 ```bash
-# Instalar dependencias (ya instaladas)
+# 1. Instalar dependencias
 npm install
 
-# Iniciar servidor backend y frontend concurrentemente
+# 2. Iniciar servidor backend y frontend concurrentemente
 npm run dev
 ```
 
 - **Frontend (Vite):** `http://localhost:5173/`
-- **Backend API (Express):** `http://localhost:3001/api`
+- **Backend API (Express):** `http://localhost:7201/api`
+
+### Scripts disponibles
+- `npm run dev`: Ejecuta Express y Vite en paralelo.
+- `npm run build`: Genera el bundle de producción en `/dist`.
+- `npm run server`: Inicia únicamente el servidor backend (`node server/index.js`).
+- `npm run client`: Inicia únicamente el servidor de desarrollo de Vite.
