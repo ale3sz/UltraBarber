@@ -78,12 +78,23 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 );
 
-// Register PWA Service Worker
-if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+// Limpieza y desinstalación activa de Service Workers obsoletos
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch((err) => {
-      console.log('SW registration note:', err);
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const reg of registrations) {
+        reg.unregister().then(() => {
+          console.log('[SW] Service Worker desregistrado con éxito para evitar caché obsoleta');
+        });
+      }
     });
+    if (typeof caches !== 'undefined') {
+      caches.keys().then((keys) => {
+        for (const k of keys) {
+          caches.delete(k);
+        }
+      });
+    }
   });
 }
 
