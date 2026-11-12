@@ -31,7 +31,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
             </div>
             <div className="flex items-center gap-1.5 text-[10px] text-[#52525B]">
               <MapPin className="w-3 h-3 text-[#52525B]" />
-              <span>Atención en V.I.P Barberías • Eva Perón 52, Capitán Bermúdez</span>
+              <span>Atención exclusiva con turno previo • Sillón Privado</span>
             </div>
           </div>
 
@@ -47,7 +47,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
                   David Barber
                 </span>
                 <span className="text-[10px] font-mono text-[#52525B]">
-                  • Sillón en V.I.P Barberías
+                  • Sillón Privado
                 </span>
               </div>
 
@@ -56,7 +56,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
               </p>
 
               <p className="text-[10px] font-mono text-[#52525B]">
-                Capitán Bermúdez, Santa Fe • Atención exclusivamente con turno previo
+                Barbería de autor • Atención exclusivamente con turno previo
               </p>
 
               <div className="pt-1">
@@ -128,7 +128,7 @@ export default function Footer({ onOpenAdmin, adminUser }) {
           {/* Bottom Bar: Copyright & Versión */}
           <div className="pt-5 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-[#52525B]">
             <p>
-              &copy; {new Date().getFullYear()} David Barber • Turnos &amp; Fidelización en V.I.P Barberías.
+              &copy; {new Date().getFullYear()} David Barber • Turnos &amp; Fidelización de Autor.
             </p>
 
             <span>v2.5</span>

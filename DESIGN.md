@@ -1,43 +1,39 @@
-# Design System — ULTRA BARBER STUDIO (Urban Botanical Club)
+# Design System — DAVID BARBER / BARBER FADE (Surgical & Club Master Craft)
 
 ## 1. Visual Direction & Atmosphere
 
-- **Concept:** Contemporary Barber Club & Street-Luxury Grooming Studio (inspired by mobile club apps like *Il Figaro* in the reference video, engineered in the **Earth & Botanical Studio** color palette).
-- **Why the previous look felt outdated ("de señora") & how this replaces it:**
-  - *Out:* Soft beige tea-room cards, wedding-style serif headings on every label, centered corporate web forms, floral/botanical icons, and generic top navbars.
-  - *In:* **Dark Tostado (`#181715`) & Espresso Surface (`#24221E`)** dominant club interface; sharp **Space Grotesk** geometric display typography paired with **Plus Jakarta Sans** UI type and selective editorial italic accents (*Instrument Serif* / *Playfair Display Italic* only for expressive emphasis like *"¿Qué te *servimos* hoy?"*); bold oversized tabular numbers (`08 PTS`, `$18.000`, `#4821`); 2-column visual service cards with atmospheric photography; Apple-Wallet-style Club Membership Pass with QR; and a floating native-app Bottom Dock.
+- **Concept:** Contemporary Author Barber & Private Club (Sillón privado de autor).
+- **Core Aesthetic Pillars:**
+  - **Surgical Precision:** Laser hairlines (`rgba(255, 255, 255, 0.08)`), high-contrast tabular numbers (`Azeret Mono`), zero decorative noise.
+  - **Muted Satin Champagne & Carbon:** Base obsidian surfaces (`#0B0B0C`, `#141416`), illuminated by delicate brushed champagne accents (`#D4AF37`, `#E5C378`), replacing harsh yellow-golds.
+  - **Tactile Digital Black Pass:** Apple-Wallet-inspired card with dynamic metal shimmer, micro-etched security chip, and integrated QR modal.
 
-## 2. Color Tokens (Earth & Botanical Studio)
+## 2. Definitive Color Tokens
 
-Configured in `tailwind.config.js` under `colors.barber`:
+Configured in `tailwind.config.js`:
 
-| Token | Hex | Role |
+| Token | Hex / Value | Architectural Role |
 |---|---|---|
-| `barber.matcha` | `#809671` | Primary brand action, active states, confirmed badges, progress bars |
-| `barber.pistache` | `#B3B792` | Secondary muted text in dark mode, subtle highlights |
-| `barber.chai` | `#D2AB80` | Warm metallic gold/chai accent, VIP club pass footer, points & level badges |
-| `barber.vanilla` | `#E5D2B8` | Warm highlights, gradient stops on membership pass |
-| `barber.almond` | `#E5E0D8` | Light mode borders and subtle dividers |
-| `barber.carob` | `#725C3A` | Deep earth bronze, secondary muted text in light mode, level 3 accents |
-| `barber.darkBg` | `#181715` | Primary background in Dark Mode (warm toasted obsidian) |
-| `barber.darkSurface` | `#24221E` | Elevated cards, sheets, and dock in Dark Mode |
-| `barber.darkBorder` | `#3D372E` | Crisp 1px structural hairlines in Dark Mode |
-| `barber.darkText` | `#F7F6F2` | Primary high-contrast off-white text in Dark Mode |
-| `barber.lightBg` | `#F7F6F2` | Primary background in Light Mode |
-| `barber.lightSurface` | `#FFFFFF` | Elevated cards and sheets in Light Mode |
-| `barber.lightBorder` | `#E5E0D8` | Crisp 1px structural hairlines in Light Mode |
-| `barber.lightText` | `#2B2620` | Deep espresso primary text in Light Mode |
+| `carbon.bg` / `barber.darkBg` | `#0B0B0C` | Deep obsidian matte background |
+| `carbon.surface` / `barber.darkSurface` | `#141416` | Elevated cards, sheets, bottom dock |
+| `carbon.elevated` | `#1B1B1F` | High-elevation overlays, modales & popovers |
+| `champagne` / `barber.gold` | `#D4AF37` | Satin pure champagne for badges, active states & metrics |
+| `champagneLight` / `barber.goldLight` | `#E5C378` | Soft champagne for hover states, progress bars & highlights |
+| `champagneDark` / `barber.goldDark` | `#997B1C` | Deep metallic bronze for structural gradients & borders |
+| `pearl` / `barber.darkText` | `#EDEDED` | Crisp off-white display typography |
+| `mutedGrey` / `barber.pistache` | `#8A898E` | Titanium muted text for secondary details & labels |
+| `borderHairline` / `barber.darkBorder`| `rgba(255, 255, 255, 0.08)` | 1px precision hairline borders |
 
-## 3. Typography & Hierarchy
+## 3. Typography Architecture
 
-- **Display / Headings (`font-display`):** `'Space Grotesk', sans-serif` — bold, tight tracking (`-0.03em`), urban and architectural. Used for big numbers (`8 PTS`, `$18.000`), screen titles, and service names.
-- **Editorial Accent (`font-editorial`):** `'Instrument Serif', 'Playfair Display', serif` (italic) — used sparingly inside display headlines (e.g., `¿Qué te *servimos* hoy?`, `Hola, *Lucas*`) to replicate the exact luxury barber club vibe from the reference video.
-- **UI & Body (`font-sans`):** `'Plus Jakarta Sans', sans-serif` — clean, fast-scanning for descriptions, schedules, and admin controls.
-- **Data / Codes (`font-mono`):** `'JetBrains Mono', monospace` with `tabular-nums` — exclusively for DNI, 4-digit handshake codes (`#4821`), countdown timers (`14:59`), and timestamps.
+- **Display & Large Headlines (`font-display`):** `'Archivo', system-ui, sans-serif` — Bold geometric neo-grotesk with tight tracking (`-0.03em`).
+- **Technical & Calibration Codes (`font-mono`):** `'Azeret Mono', monospace` with `tabular-nums` — Handshake code (`#4821`), DNI numbers, countdown timers, points odometer (`08 PTS`).
+- **UI & Form Body (`font-sans`):** `'Work Sans', system-ui, sans-serif` — High readability and optimal x-height on mobile touchscreens.
+- **Authorial Signature Accent (`font-editorial`):** `'Newsreader', Georgia, serif` (Italic) — Used with restraint for expressive highlights (`¿Qué te *servimos* hoy?`, `Hola, *Lucas*`).
 
-## 4. Layout & App Shell Architecture
+## 4. Components & Elevation
 
-- **Mobile-First Club Shell + Desktop Studio Workspace:**
-  - **Client View:** Structured like an installed mobile club app (`max-w-lg` centered shell on mobile/tablet, expanding to a 2-column split on desktop where the left column holds the sticky **Club Member Pass & Active Turn** and the right column holds the interactive **Booking / Services / History** stage).
-  - **Floating Bottom Navigation Dock:** 4 primary client destinations (`Club / Inicio`, `Reservar`, `Mis Turnos`, `Precios`) + discreet `Barbero` lock button for David's authenticated portal.
-  - **David's Admin Workspace:** Full-width (`max-w-6xl`) operational cockpit with live audio/visual handshake radar, 1-tap WhatsApp actions, daily agenda timeline, manual turn booking, schedule blocker, cash register summary, and client PIN/points manager.
+- `.black-card`: 145° titanium gradient with dynamic metal shimmer sweep and subtle top hairline reflection.
+- `.card-hairline`: Architectural containment with `rgba(255, 255, 255, 0.08)` and inner highlight.
+- `.badge-champagne`: Technical status tag with micro-mono typography and hairline gold border.
+- `.security-keyplate`: Laser-etched code container for the 15-minute anti-fraud handshake.

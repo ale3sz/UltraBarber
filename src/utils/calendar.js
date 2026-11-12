@@ -4,9 +4,9 @@ export function createCalendarEventData(appointment, studioConfig = {}) {
   const service = appointment?.serviceName || 'Corte con David';
   const drink = appointment?.selectedDrink ? ` con ${appointment.selectedDrink}` : '';
   const title = `Turno: ${service}${drink} • David Barber`;
-  const location = studioConfig?.barbershopName
-    ? `${studioConfig.barbershopName} • ${studioConfig?.address || 'Eva Perón 52'}, ${studioConfig?.city || 'Capitán Bermúdez'}`
-    : `${studioConfig?.address || 'Eva Perón 52'}, ${studioConfig?.city || 'Capitán Bermúdez'}`;
+  const location = studioConfig?.barbershopName && !studioConfig.barbershopName.toLowerCase().includes('v.i.p')
+    ? `${studioConfig.barbershopName}${studioConfig?.address && !studioConfig.address.toLowerCase().includes('eva perón') ? ` • ${studioConfig.address}` : ''}`
+    : 'David Barber • Sillón Privado (Atención con turno previo)';
   
   const description = [
     `Turno #${appointment?.code || ''}`,
