@@ -1,0 +1,7 @@
+# robots.txt for David Barber (barberfade.com)
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://barberfade.com/sitemap.xml

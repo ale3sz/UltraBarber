@@ -301,3 +301,36 @@
 .animate-stepper-morph {
   animation: stepperMorphFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+
+/* ==========================================================================
+   WCAG 2.1 AA ACCESSIBILITY & MOBILE ZOOM PREVENTION (Core Web Vitals)
+   ========================================================================== */
+
+/* Prevenir zoom involuntario en iOS Safari en inputs al hacer foco */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Área táctil mínima accesible para botones interactivos (44x44px) */
+button,
+a,
+input[type="checkbox"],
+input[type="radio"] {
+  touch-action: manipulation;
+}
+
+/* Foco de teclado visible y accesible de alto contraste (WCAG 2.1 AA) */
+:focus-visible {
+  outline: 2px solid #E5C378;
+  outline-offset: 2px;
+}

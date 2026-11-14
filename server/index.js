@@ -43,11 +43,31 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 // MIDDLEWARES DE SEGURIDAD Y PROTECCIÓN
 // ============================================================================
 
-// 1. Helmet: Blindaje de cabeceras HTTP
+// Redirección obligatoria a HTTPS en producción (Punto 04 del Checklist)
+if (IS_PROD) {
+  app.use((req, res, next) => {
+    const proto = req.headers['x-forwarded-proto'];
+    if (proto && proto !== 'https') {
+      return res.redirect(301, `https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+}
+
+// 1. Helmet: Blindaje de cabeceras HTTP (HSTS, Referrer-Policy, Anti-Sniff)
 app.use(helmet({
   contentSecurityPolicy: false, // Permite assets estáticos de Vite/PWA sin bloqueos
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  hsts: IS_PROD ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
+
+// Cabeceras de seguridad complementarias (Permissions-Policy & X-Content-Type-Options)
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
 
 // 2. CORS controlado por whitelist / variable de entorno
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -480,7 +500,13 @@ app.post('/api/clients/login', clientAuthLimiter, (req, res) => {
 
 // Registro de nuevo cliente (PIN almacenado con bcrypt, nunca en texto plano)
 app.post('/api/clients/register', clientAuthLimiter, (req, res) => {
-  const { dni, firstName, lastName, phone, birthDate, pin, referralCode } = req.body;
+  const { dni, firstName, lastName, phone, birthDate, pin, referralCode, company_hp, website } = req.body;
+
+  // Filtro Honeypot anti-spam (Punto 17 del Checklist): si viene relleno el campo trampa, descartar silenciosamente
+  if (company_hp || website) {
+    return res.status(200).json({ success: true, message: 'Operación procesada' });
+  }
+
   const cleanDni = (dni || '').trim().replace(/\D/g, '');
   const cleanPin = (pin || '').trim().replace(/\D/g, '');
 
@@ -756,7 +782,10 @@ app.post('/api/appointments/request', appointmentBookingLimiter, (req, res) => {
     });
   }
 
-  const { serviceId, selectedDrink, date, time } = req.body;
+  const { serviceId, selectedDrink, date, time, company_hp } = req.body;
+  if (company_hp) {
+    return res.status(200).json({ success: true, message: 'Turno recibido' });
+  }
   if (!serviceId || !date || !time) {
     return res.status(400).json({ error: 'Seleccioná servicio, fecha y horario' });
   }
@@ -1919,6 +1948,27 @@ app.delete('/api/admin/portfolio/:id', requireAdmin, (req, res) => {
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada en la API' });
 });
+
+// En producción: Servir frontend compilado en dist con caching de assets (Puntos 12 & 15 del Checklist)
+const distDir = path.join(__dirname, '..', 'dist');
+if (fs.existsSync(distDir)) {
+  // Assets estáticos con hash inmutable (1 año de caché para Core Web Vitals)
+  app.use('/assets', express.static(path.join(distDir, 'assets'), {
+    maxAge: '1y',
+    immutable: true
+  }));
+
+  // Resto de archivos estáticos (manifest, icons, robots, sitemap, etc.)
+  app.use(express.static(distDir, {
+    maxAge: '1d',
+    index: false
+  }));
+
+  // SPA Fallback para cualquier ruta GET que no sea /api (Retorna index.html)
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distDir, 'index.html'));
+  });
+}
 
 // Middleware global de manejo de errores (Nunca expone el stack trace en producción)
 app.use((err, req, res, next) => {

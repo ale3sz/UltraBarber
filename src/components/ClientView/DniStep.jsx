@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../services/api';
 import SpotlightCard from '../common/SpotlightCard';
+import { analytics } from '../../utils/analytics';
 
 export default function DniStep({
   loggedClient,
@@ -49,6 +50,7 @@ export default function DniStep({
     }
     return '';
   });
+  const [honeypot, setHoneypot] = useState('');
 
   // If client already has an active JWT session
   if (loggedClient) {
@@ -165,6 +167,7 @@ export default function DniStep({
     setErrorMsg('');
     try {
       const res = await api.loginClientWithPin(checkResult.dni, pinInput.trim());
+      analytics.trackClubLogin(checkResult.dni);
       onAuthSuccess(res.client, res.appointments || []);
       if (onContinue) onContinue();
     } catch (err) {
@@ -202,8 +205,10 @@ export default function DniStep({
         phone: phone.trim(),
         birthDate: birthDate || undefined,
         pin: cleanPin,
-        referralCode: referralCode.trim().toUpperCase() || undefined
+        referralCode: referralCode.trim().toUpperCase() || undefined,
+        company_hp: honeypot || undefined
       });
+      analytics.trackClubLogin(cleanDni);
       onAuthSuccess(res.client, res.appointments || []);
       if (onContinue) onContinue();
     } catch (err) {
@@ -306,6 +311,20 @@ export default function DniStep({
                 placeholder="Ingresá tu número de DNI"
                 className="w-full flex-1 min-w-0 px-4 py-3 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] placeholder-[#8A898E]/40 text-sm font-mono tracking-wider tabular-nums focus:outline-none focus:border-[#E5C378] focus:ring-1 focus:ring-[#E5C378]/30 transition-all"
               />
+              {/* Campo trampa Honeypot anti-spam (Punto 17 del Checklist) */}
+              <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                <label htmlFor="company_hp">No completar este campo</label>
+                <input
+                  id="company_hp"
+                  type="text"
+                  name="company_hp"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
+
               <button
                 type="submit"
                 disabled={isLoading || dniInput.length < 4}
@@ -374,6 +393,20 @@ export default function DniStep({
                 </div>
               </div>
 
+              {/* Campo trampa Honeypot anti-spam (Punto 17 del Checklist) */}
+              <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                <label htmlFor="company_hp">No completar este campo</label>
+                <input
+                  id="company_hp"
+                  type="text"
+                  name="company_hp"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
+
               <button
                 type="submit"
                 disabled={isLoading || !passwordInput.trim()}
@@ -423,6 +456,20 @@ export default function DniStep({
                   placeholder="••••"
                   className="w-full px-4 py-3 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] text-center text-xl font-mono tracking-[0.5em] focus:outline-none focus:border-[#D4AF37] transition-colors"
                   autoFocus
+                />
+              </div>
+
+              {/* Campo trampa Honeypot anti-spam (Punto 17 del Checklist) */}
+              <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                <label htmlFor="company_hp">No completar este campo</label>
+                <input
+                  id="company_hp"
+                  type="text"
+                  name="company_hp"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
                 />
               </div>
 
@@ -548,6 +595,20 @@ export default function DniStep({
                   onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                   placeholder="Ej: MAT9888"
                   className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#D4AF37] text-xs font-mono tracking-widest uppercase focus:outline-none focus:border-[#D4AF37]"
+                />
+              </div>
+
+              {/* Campo trampa Honeypot anti-spam (Punto 17 del Checklist) */}
+              <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                <label htmlFor="company_hp">No completar este campo</label>
+                <input
+                  id="company_hp"
+                  type="text"
+                  name="company_hp"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
                 />
               </div>
 

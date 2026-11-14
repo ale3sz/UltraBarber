@@ -642,7 +642,10 @@ export default function MembershipCard({
               {qrDataUrl ? (
                 <img
                   src={qrDataUrl}
-                  alt={`Código QR DNI ${client?.dni}`}
+                  alt={`Código QR DNI ${client?.dni} para acreditación de turnos`}
+                  width={112}
+                  height={112}
+                  decoding="async"
                   className="w-28 h-28 object-contain"
                 />
               ) : (

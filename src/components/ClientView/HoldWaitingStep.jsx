@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../services/api';
 import AddToCalendarButton from './AddToCalendarButton';
+import { analytics } from '../../utils/analytics';
 
 export default function HoldWaitingStep({
   appointmentData,
@@ -59,6 +60,7 @@ export default function HoldWaitingStep({
         if (res && res.status) {
           setStatus(res.status);
           if (res.status === 'confirmado') {
+            analytics.trackBookingSuccess(code || appointment?.code, appointment?.serviceName);
             confetti({
               particleCount: 80,
               spread: 70,
@@ -88,6 +90,7 @@ export default function HoldWaitingStep({
   };
 
   const handleOpenWhatsApp = () => {
+    analytics.trackWhatsAppClick('booking_hold_step');
     if (whatsappUrl) {
       window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     }

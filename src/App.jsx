@@ -5,17 +5,51 @@ import ClientView from './components/ClientView/ClientView';
 import AdminPanel from './components/AdminPanel/AdminPanel';
 import FloatingHelpButton from './components/FloatingHelpButton';
 import PwaInstallBanner from './components/PwaInstallBanner';
+import CookieConsentBanner from './components/common/CookieConsentBanner';
+import NotFoundView from './components/common/NotFoundView';
 import { api, getClientToken, getAdminToken } from './services/api';
 
 export default function App() {
-  const [activeView, setActiveView] = useState('client'); // 'client' | 'admin'
-  const [clientSubTab, setClientSubTab] = useState('home'); // 'club' | 'book' | 'turns'
+  const [activeView, setActiveView] = useState('client'); // 'client' | 'admin' | '404'
+  const [clientSubTab, setClientSubTab] = useState('home'); // 'home' | 'club' | 'book' | 'turns' | 'portfolio'
 
   const [loggedClient, setLoggedClient] = useState(null);
   const [clientAppointments, setClientAppointments] = useState([]);
   const [adminUser, setAdminUser] = useState(null);
   const [pendingCount, setPendingCount] = useState(0);
   const [studioConfig, setStudioConfig] = useState({});
+
+  // Sincronización de rutas con hash para navegación directa e indexabilidad (Puntos 07 y 15)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (!hash || hash === 'home') {
+        setActiveView('client');
+        setClientSubTab('home');
+      } else if (hash === 'book') {
+        setActiveView('client');
+        setClientSubTab('book');
+      } else if (hash === 'portfolio') {
+        setActiveView('client');
+        setClientSubTab('portfolio');
+      } else if (hash === 'club') {
+        setActiveView('client');
+        setClientSubTab('club');
+      } else if (hash === 'turns') {
+        setActiveView('client');
+        setClientSubTab('turns');
+      } else if (hash === 'admin') {
+        setActiveView('admin');
+      } else {
+        // Ruta o hash desconocido -> 404 personalizado
+        setActiveView('404');
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const refreshClientSession = useCallback(async () => {
     if (!getClientToken()) return;
@@ -69,19 +103,32 @@ export default function App() {
     api.logoutAdmin();
     setAdminUser(null);
     setActiveView('client');
+    window.location.hash = '';
+  };
+
+  const handleGoHome = () => {
+    setActiveView('client');
+    setClientSubTab('home');
+    window.location.hash = '';
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-barber-lightBg dark:bg-barber-darkBg text-barber-lightText dark:text-barber-darkText transition-colors duration-200">
       <Navbar
-        activeView={activeView}
-        setActiveView={setActiveView}
+        activeView={activeView === '404' ? 'client' : activeView}
+        setActiveView={(v) => {
+          setActiveView(v);
+          window.location.hash = v === 'admin' ? 'admin' : clientSubTab;
+        }}
         clientSubTab={clientSubTab}
-        setClientSubTab={setClientSubTab}
+        setClientSubTab={(tab) => {
+          setClientSubTab(tab);
+          setActiveView('client');
+          window.location.hash = tab === 'home' ? '' : tab;
+        }}
         loggedClient={loggedClient}
         onLogoutClient={handleLogoutClient}
         adminUser={adminUser}
-
         onLogoutAdmin={handleLogoutAdmin}
         pendingCount={pendingCount}
       />
@@ -89,10 +136,15 @@ export default function App() {
       <PwaInstallBanner />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 pt-6 sm:pt-8">
-        {activeView === 'client' ? (
+        {activeView === '404' ? (
+          <NotFoundView onGoHome={handleGoHome} />
+        ) : activeView === 'client' ? (
           <ClientView
             subTab={clientSubTab}
-            setSubTab={setClientSubTab}
+            setSubTab={(tab) => {
+              setClientSubTab(tab);
+              window.location.hash = tab === 'home' ? '' : tab;
+            }}
             loggedClient={loggedClient}
             clientAppointments={clientAppointments}
             onAuthSuccess={(client, apts) => {
@@ -102,6 +154,7 @@ export default function App() {
             onAdminAuthSuccess={(admin) => {
               setAdminUser(admin);
               setActiveView('admin');
+              window.location.hash = 'admin';
             }}
             onLogoutClient={handleLogoutClient}
             onRefreshClientSession={refreshClientSession}
@@ -110,7 +163,6 @@ export default function App() {
         ) : (
           <AdminPanel
             adminUser={adminUser}
-
             onAdminLoginSuccess={(admin) => setAdminUser(admin)}
             onAdminLogout={handleLogoutAdmin}
             onPendingCountChange={setPendingCount}
@@ -118,10 +170,18 @@ export default function App() {
         )}
       </main>
 
+      {/* Botón flotante accesible de WhatsApp en escritorio y móviles (Punto 18) */}
       <FloatingHelpButton studioConfig={studioConfig} />
 
+      {/* Banner de consentimiento de cookies no invasivo (Punto 03) */}
+      <CookieConsentBanner />
+
       <Footer
-        onOpenAdmin={() => setActiveView(activeView === 'admin' ? 'client' : 'admin')}
+        onOpenAdmin={() => {
+          const next = activeView === 'admin' ? 'client' : 'admin';
+          setActiveView(next);
+          window.location.hash = next === 'admin' ? 'admin' : '';
+        }}
         adminUser={adminUser}
         studioConfig={studioConfig}
       />

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#0B0B0C"/>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-opacity="0.4"/>
+  <!-- Gold Scissor Silhouette & Monogram DB -->
+  <g fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Blade 1 -->
+    <path d="M20 44 L44 20" />
+    <!-- Blade 2 -->
+    <path d="M20 20 L44 44" />
+    <!-- Finger Rings -->
+    <circle cx="17" cy="47" r="5" stroke-width="2.5" />
+    <circle cx="17" cy="17" r="5" stroke-width="2.5" />
+  </g>
+  <!-- Center Pivot Gold Dot -->
+  <circle cx="32" cy="32" r="2.5" fill="#D4AF37" />
+</svg>

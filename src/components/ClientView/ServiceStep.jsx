@@ -113,7 +113,9 @@ export default function ServiceStep({
                   {service.imageUrl && (
                     <img
                       src={getImageSrc(service.imageUrl)}
-                      alt={service.name}
+                      alt={`Servicio de ${service.name} en David Barber`}
+                      loading="lazy"
+                      decoding="async"
                       style={{ objectPosition: getObjectPosition(service.id) }}
                       className="w-full h-full object-cover filter contrast-[1.05] group-hover:scale-105 transition-transform duration-500 ease-out"
                     />

@@ -9,6 +9,7 @@ import { api } from '../../services/api';
 import AddToCalendarButton from './AddToCalendarButton';
 import { getAssetUrl } from '../../utils/assets';
 import MagneticButton from '../common/MagneticButton';
+import { analytics } from '../../utils/analytics';
 import {
   Camera,
   Calendar,
@@ -192,11 +193,16 @@ export default function ClientView({
             </div>
           )}
 
-          {/* Hero Principal con Fotografía de David */}
+          {/* Hero Principal con Fotografía de David (LCP Optimizado para Core Web Vitals) */}
           <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#141417] shadow-2xl">
             <img
               src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
-              alt="David en el estudio"
+              alt="David Barber en su sillón exclusivo de barbería en Capitán Bermúdez"
+              width={1200}
+              height={600}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="absolute inset-0 w-full h-full object-cover object-center opacity-30"
             />
             <div className="relative z-10 p-6 sm:p-10 md:p-12 bg-gradient-to-t from-[#0D0D0F] via-[#0D0D0F]/85 to-[#0D0D0F]/60 flex flex-col justify-end min-h-[300px] sm:min-h-[360px] space-y-6">
@@ -231,10 +237,11 @@ export default function ClientView({
                 </span>
               </div>
 
-              {/* Botones de Acción */}
+              {/* Botones de Acción - CTA Principal Único y Focalizado (Punto 20) */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
                 <MagneticButton
                   onClick={() => {
+                    analytics.trackBookingStart('hero_sacar_turno');
                     setSubTab('book');
                     setBookingStep(1);
                   }}
@@ -246,7 +253,10 @@ export default function ClientView({
 
                 <button
                   type="button"
-                  onClick={() => setSubTab('portfolio')}
+                  onClick={() => {
+                    analytics.trackGalleryView();
+                    setSubTab('portfolio');
+                  }}
                   className="py-3.5 px-6 rounded-lg border border-white/[0.12] hover:border-[#E5C378]/50 bg-white/[0.03] hover:bg-white/[0.06] text-[#EDEDED] font-mono text-xs uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-all"
                 >
                   <Camera className="w-4 h-4 text-[#E5C378]" />
