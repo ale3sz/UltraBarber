@@ -19,8 +19,8 @@ import InstagramIcon from '../icons/InstagramIcon';
 const DEFAULT_PORTFOLIO_ITEMS = [
   {
     id: 'look-1',
-    src: getAssetUrl('imagenes/corte-freestyle.jpg'),
-    image_url: 'imagenes/corte-freestyle.jpg',
+    src: getAssetUrl('imagenes/corte-freestyle.webp'),
+    image_url: 'imagenes/corte-freestyle.webp',
     title: 'Fade Comprimido & Freestyle',
     subtitle: 'Diseño geométrico a navaja y degradado quirúrgico milimétrico.',
     category: 'freestyle',
@@ -30,8 +30,8 @@ const DEFAULT_PORTFOLIO_ITEMS = [
   },
   {
     id: 'look-3',
-    src: getAssetUrl('imagenes/corte-premium.png'),
-    image_url: 'imagenes/corte-premium.png',
+    src: getAssetUrl('imagenes/corte-premium.webp'),
+    image_url: 'imagenes/corte-premium.webp',
     title: 'Corte Premium · Relax VIP',
     subtitle: 'Gafas de presoterapia ocular, masajeador cervical y bebida fría.',
     category: 'premium',
@@ -41,8 +41,8 @@ const DEFAULT_PORTFOLIO_ITEMS = [
   },
   {
     id: 'look-2',
-    src: getAssetUrl('imagenes/IMG_3526.PNG'),
-    image_url: 'imagenes/IMG_3526.PNG',
+    src: getAssetUrl('imagenes/IMG_3526.webp'),
+    image_url: 'imagenes/IMG_3526.webp',
     title: 'Burst Fade · Diseño 23',
     subtitle: 'Degradado curvo milimétrico con textura superior personalizada.',
     category: 'fades',
@@ -52,8 +52,8 @@ const DEFAULT_PORTFOLIO_ITEMS = [
   },
   {
     id: 'look-4',
-    src: getAssetUrl('imagenes/barba-premium.jpg'),
-    image_url: 'imagenes/barba-premium.jpg',
+    src: getAssetUrl('imagenes/barba-premium.webp'),
+    image_url: 'imagenes/barba-premium.webp',
     title: 'Barba Premium · Ritual de Navaja',
     subtitle: 'Perfilado al detalle, toalla caliente y aceites botánicos.',
     category: 'premium',
@@ -63,8 +63,8 @@ const DEFAULT_PORTFOLIO_ITEMS = [
   },
   {
     id: 'look-5',
-    src: getAssetUrl('imagenes/corte-bebida.jpg'),
-    image_url: 'imagenes/corte-bebida.jpg',
+    src: getAssetUrl('imagenes/corte-bebida.webp'),
+    image_url: 'imagenes/corte-bebida.webp',
     title: 'Corte + Bebida Fría',
     subtitle: 'Fade con cerveza fría, Monster o gaseosa en el sillón.',
     category: 'fades',
@@ -74,8 +74,8 @@ const DEFAULT_PORTFOLIO_ITEMS = [
   },
   {
     id: 'look-6',
-    src: getAssetUrl('imagenes/IMG_0989.JPG.jpeg'),
-    image_url: 'imagenes/IMG_0989.JPG.jpeg',
+    src: getAssetUrl('imagenes/IMG_0989.webp'),
+    image_url: 'imagenes/IMG_0989.webp',
     title: 'Colorimetría & Textura Técnica',
     subtitle: 'Iluminación, reflejos y peinado técnico de alta duración.',
     category: 'freestyle',
@@ -105,7 +105,7 @@ export default function AuthorPortfolio({ onSelectService, onStartBooking }) {
               } else if (it.image_url) {
                 src = getAssetUrl(it.image_url);
               } else {
-                src = getAssetUrl('imagenes/IMG_3526.PNG');
+                src = getAssetUrl('imagenes/IMG_3526.webp');
               }
             }
             return {

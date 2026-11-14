@@ -85,7 +85,10 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '15mb' }));
-app.use('/imagenes', express.static(path.join(__dirname, '..', 'imagenes')));
+app.use('/imagenes', express.static(path.join(__dirname, '..', 'imagenes'), {
+  maxAge: '30d',
+  immutable: true
+}));
 
 // 3. Prevención de caché en respuestas dinámicas de la API (Blindaje PWA / Service Worker)
 app.use('/api', (req, res, next) => {

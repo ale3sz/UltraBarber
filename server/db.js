@@ -423,7 +423,7 @@ export function initDatabase() {
           subtitle: 'Diseño geométrico a navaja y degradado quirúrgico milimétrico.',
           category: 'freestyle',
           tag: 'DISEÑO FREESTYLE',
-          image_url: 'imagenes/corte-freestyle.jpg',
+          image_url: 'imagenes/corte-freestyle.webp',
           service_id: 'corte',
           featured: 1,
           sort_order: 1
@@ -434,7 +434,7 @@ export function initDatabase() {
           subtitle: 'Gafas de presoterapia ocular, masajeador cervical y bebida fría.',
           category: 'premium',
           tag: 'EXPERIENCIA COMPLETA',
-          image_url: 'imagenes/corte-premium.png',
+          image_url: 'imagenes/corte-premium.webp',
           service_id: 'experiencia-completa',
           featured: 1,
           sort_order: 2
@@ -445,7 +445,7 @@ export function initDatabase() {
           subtitle: 'Degradado curvo milimétrico con textura superior personalizada.',
           category: 'fades',
           tag: 'FADE',
-          image_url: 'imagenes/IMG_3526.PNG',
+          image_url: 'imagenes/IMG_3526.webp',
           service_id: 'corte',
           featured: 0,
           sort_order: 3
@@ -456,7 +456,7 @@ export function initDatabase() {
           subtitle: 'Perfilado al detalle, toalla caliente y aceites botánicos.',
           category: 'premium',
           tag: 'RITUAL A NAVAJA',
-          image_url: 'imagenes/barba-premium.jpg',
+          image_url: 'imagenes/barba-premium.webp',
           service_id: 'barba-premium',
           featured: 0,
           sort_order: 4
@@ -467,7 +467,7 @@ export function initDatabase() {
           subtitle: 'Fade con cerveza fría, Monster o gaseosa en el sillón.',
           category: 'fades',
           tag: 'CORTE + BEBIDA',
-          image_url: 'imagenes/corte-bebida.jpg',
+          image_url: 'imagenes/corte-bebida.webp',
           service_id: 'corte-bebida',
           featured: 0,
           sort_order: 5
@@ -478,7 +478,7 @@ export function initDatabase() {
           subtitle: 'Iluminación, reflejos y peinado técnico de alta duración.',
           category: 'freestyle',
           tag: 'COLOR & TÉCNICA',
-          image_url: 'imagenes/IMG_0989.JPG.jpeg',
+          image_url: 'imagenes/IMG_0989.webp',
           service_id: 'colorimetria',
           featured: 0,
           sort_order: 6
@@ -522,7 +522,7 @@ export function initDatabase() {
         points_earned: 1,
         drink_included: 0,
         badge: 'CLÁSICO DE LA CASA',
-        image_url: '/imagenes/IMG_3526.PNG',
+        image_url: '/imagenes/IMG_3526.webp',
         includes: [
           'Corte personalizado',
           'Perfilado',
@@ -541,7 +541,7 @@ export function initDatabase() {
         points_earned: 1,
         drink_included: 1,
         badge: 'MÁS ELEGIDO',
-        image_url: '/imagenes/corte-bebida.jpg',
+        image_url: '/imagenes/corte-bebida.webp',
         includes: [
           'Corte personalizado',
           'Perfilado',
@@ -561,7 +561,7 @@ export function initDatabase() {
         points_earned: 1,
         drink_included: 0,
         badge: 'PERFILADO PRO',
-        image_url: '/imagenes/barba-premium.jpg',
+        image_url: '/imagenes/barba-premium.webp',
         includes: [
           'Diseño de barba',
           'Perfilado con navaja',
@@ -578,7 +578,7 @@ export function initDatabase() {
         points_earned: 1,
         drink_included: 1,
         badge: 'BARBA + TRAGO',
-        image_url: '/imagenes/barba-premium-bebida.jpg',
+        image_url: '/imagenes/barba-premium-bebida.webp',
         includes: [
           'Diseño de barba',
           'Perfilado con navaja',
@@ -596,7 +596,7 @@ export function initDatabase() {
         points_earned: 1,
         drink_included: 1,
         badge: 'CORTE PREMIUM VIP',
-        image_url: '/imagenes/corte-premium.png',
+        image_url: '/imagenes/corte-premium.webp',
         includes: [
           'Corte personalizado y perfilado al detalle',
           'Sesión relax con gafas de masaje ocular y masajeador cervical',

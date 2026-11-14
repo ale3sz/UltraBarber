@@ -196,7 +196,7 @@ export default function ClientView({
           {/* Hero Principal con Fotografía de David (LCP Optimizado para Core Web Vitals) */}
           <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#141417] shadow-2xl">
             <img
-              src={getAssetUrl('imagenes/IMG_0989.JPG.jpeg')}
+              src={getAssetUrl('imagenes/IMG_0989.webp')}
               alt="David Barber en su sillón exclusivo de barbería en Capitán Bermúdez"
               width={1200}
               height={600}
