@@ -1879,16 +1879,26 @@ app.post('/api/admin/portfolio', requireAdmin, (req, res) => {
           const fileName = `${id}.${ext}`;
           const filePath = path.join(portfolioDir, fileName);
           fs.writeFileSync(filePath, buffer);
+
+          // Sincronizar con dist/imagenes/portfolio si dist existe en producción
+          try {
+            const distPortfolioDir = path.join(__dirname, '..', 'dist', 'imagenes', 'portfolio');
+            if (fs.existsSync(path.join(__dirname, '..', 'dist', 'imagenes'))) {
+              if (!fs.existsSync(distPortfolioDir)) fs.mkdirSync(distPortfolioDir, { recursive: true });
+              fs.writeFileSync(path.join(distPortfolioDir, fileName), buffer);
+            }
+          } catch {}
+
           finalImageUrl = `imagenes/portfolio/${fileName}`;
         }
       } catch (err) {
         console.error('Error saving uploaded portfolio image:', err);
-        finalImageUrl = image_data.length < 300000 ? image_data : 'imagenes/IMG_3526.PNG';
+        finalImageUrl = image_data.length < 300000 ? image_data : 'imagenes/IMG_3526.webp';
       }
     }
 
     if (!finalImageUrl) {
-      finalImageUrl = 'imagenes/IMG_3526.PNG';
+      finalImageUrl = 'imagenes/IMG_3526.webp';
     }
 
     const item = insertPortfolioItem({

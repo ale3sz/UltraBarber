@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { getAssetUrl } from '../../utils/assets';
+import { compressImageFile } from '../../utils/imageCompressor';
 
 const CATEGORIES = [
   { id: 'fades', label: 'Fades' },
@@ -41,6 +42,7 @@ export default function AdminPortfolioManager({ services = [] }) {
   const [featured, setFeatured] = useState(false);
   const [imagePreview, setImagePreview] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [compressionInfo, setCompressionInfo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -73,6 +75,7 @@ export default function AdminPortfolioManager({ services = [] }) {
     setFeatured(false);
     setImagePreview('');
     setImageUrl('');
+    setCompressionInfo(null);
     setErrorMsg('');
     setSuccessMsg('');
     setIsModalOpen(true);
@@ -89,28 +92,36 @@ export default function AdminPortfolioManager({ services = [] }) {
     const src = item.src || (item.image_url ? getAssetUrl(item.image_url) : '');
     setImagePreview(src);
     setImageUrl(item.image_url || '');
+    setCompressionInfo(null);
     setErrorMsg('');
     setSuccessMsg('');
     setIsModalOpen(true);
   };
 
-  const handleImageFileChange = (e) => {
+  const handleImageFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setErrorMsg('El archivo debe ser una imagen (JPG, PNG, WEBP).');
+      setErrorMsg('El archivo debe ser una imagen válida (JPG, PNG o WEBP).');
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target?.result;
-      if (typeof dataUrl === 'string') {
-        setImagePreview(dataUrl);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      setErrorMsg('');
+      const res = await compressImageFile(file, 1200, 1200, 0.82);
+      setImagePreview(res.dataUrl);
+      setImageUrl('');
+      setCompressionInfo({
+        origKb: res.origSizeKb,
+        newKb: res.newSizeKb,
+        savings: Math.max(0, 100 - Math.round((res.newSizeKb / (res.origSizeKb || 1)) * 100)),
+        format: res.format.toUpperCase()
+      });
+    } catch (err) {
+      console.error('Error al procesar la foto:', err);
+      setErrorMsg('No se pudo procesar la fotografía: ' + err.message);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -396,6 +407,17 @@ export default function AdminPortfolioManager({ services = [] }) {
                         <span>Quitar</span>
                       </button>
                     </div>
+
+                    {compressionInfo && (
+                      <div className="absolute bottom-2 left-2 right-2 px-2.5 py-1.5 rounded-lg bg-black/80 backdrop-blur-md border border-[#E5C378]/30 flex items-center justify-between text-[10px] font-mono">
+                        <span className="text-[#E5C378] font-bold">
+                          ✓ Optimizado a {compressionInfo.format} ({compressionInfo.newKb} KB)
+                        </span>
+                        <span className="text-emerald-400">
+                          -{compressionInfo.savings}% peso
+                        </span>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div
