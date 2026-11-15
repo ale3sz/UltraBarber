@@ -83,6 +83,8 @@ export default function ServiceStep({
               key={service.id}
               onClick={() => handleSelectService(service)}
               role="button"
+              aria-pressed={isSelected}
+              aria-label={`Seleccionar ${service.name}`}
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -90,19 +92,19 @@ export default function ServiceStep({
                   handleSelectService(service);
                 }
               }}
-              className={`group rounded-lg overflow-hidden text-left transition-all duration-300 cursor-pointer flex flex-col justify-between active:scale-[0.99] animate-enter relative ${
+              className={`group rounded-lg overflow-hidden text-left transition-all duration-300 cursor-pointer flex flex-col justify-between active:scale-[0.99] animate-enter relative focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E5C378] ${
                 isFullHero ? 'sm:col-span-2' : ''
               } ${
                 isSelected
                   ? 'bg-[#161619] border border-[#E5C378] ring-1 ring-[#E5C378]/40 shadow-[0_0_25px_-5px_rgba(229,195,120,0.25)]'
                   : isSweetSpot
-                  ? 'bg-[#141417] border border-[#E5C378]/35 shadow-[0_0_20px_-5px_rgba(229,195,120,0.12)] hover:border-[#E5C378]/60'
-                  : 'bg-[#141417] border border-white/[0.07] hover:border-white/20'
+                  ? 'bg-[#141417] border border-[#E5C378]/35 shadow-[0_0_20px_-5px_rgba(229,195,120,0.12)] hover:border-[#E5C378]/60 hover:-translate-y-0.5'
+                  : 'bg-[#141417] border border-white/[0.07] hover:border-white/20 hover:-translate-y-0.5'
               }`}
             >
               {/* Sweet spot decoy flag */}
               {isSweetSpot && !isSelected && (
-                <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded bg-[#E5C378]/90 text-[#0D0D0F] text-[8px] font-mono font-bold uppercase tracking-widest shadow-md">
+                <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded bg-[#E5C378]/90 text-[#0D0D0F] text-[9px] font-mono font-bold uppercase tracking-widest shadow-md">
                   ★ ELECCIÓN DE LA CASA
                 </div>
               )}
@@ -114,6 +116,8 @@ export default function ServiceStep({
                     <img
                       src={getImageSrc(service.imageUrl)}
                       alt={`Servicio de ${service.name} en David Barber`}
+                      width={600}
+                      height={400}
                       loading="lazy"
                       decoding="async"
                       style={{ objectPosition: getObjectPosition(service.id) }}

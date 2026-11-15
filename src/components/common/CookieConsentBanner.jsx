@@ -55,41 +55,41 @@ export default function CookieConsentBanner() {
         <aside
           role="region"
           aria-label="Aviso de Cookies y Privacidad"
-          className="fixed bottom-20 sm:bottom-4 inset-x-3 sm:inset-x-auto sm:right-6 sm:max-w-md z-50 p-4 sm:p-5 rounded-2xl bg-[#141417]/95 backdrop-blur-xl border border-white/[0.12] shadow-2xl text-[#EDEDED] space-y-3 animate-enter"
+          className="fixed bottom-[4.75rem] sm:bottom-6 inset-x-3 sm:inset-x-auto sm:right-6 sm:max-w-md z-50 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#141417]/95 backdrop-blur-xl border border-white/[0.12] shadow-2xl text-[#EDEDED] space-y-2.5 sm:space-y-3 animate-enter"
         >
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#0B0B0C] border border-[#E5C378]/30 flex items-center justify-center text-[#E5C378] shrink-0 mt-0.5">
-              <Cookie className="w-4 h-4" />
+          <div className="flex items-start gap-2.5 sm:gap-3">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#0B0B0C] border border-[#E5C378]/30 flex items-center justify-center text-[#E5C378] shrink-0 mt-0.5">
+              <Cookie className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
-            <div className="space-y-1">
-              <h4 className="text-xs font-display font-bold uppercase tracking-wider text-[#EDEDED]">
+            <div className="space-y-0.5 sm:space-y-1">
+              <h4 className="text-[11px] sm:text-xs font-display font-bold uppercase tracking-wider text-[#EDEDED]">
                 Privacidad &amp; Cookies
               </h4>
-              <p className="text-[11px] leading-relaxed text-[#9CA3AF]">
-                Utilizamos cookies esenciales para gestionar tus turnos y sesión del Club. Opcionalmente, usamos cookies de rendimiento para optimizar la experiencia de navegación.
+              <p className="text-[10px] sm:text-[11px] leading-relaxed text-[#9CA3AF]">
+                Cookies esenciales para turnos y sesión del Club. Opcionales para rendimiento.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 pt-1">
+          <div className="flex items-center gap-2 pt-0.5">
             <button
               type="button"
               onClick={handleAcceptAll}
-              className="flex-1 py-2 px-3 rounded-lg bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-[11px] uppercase tracking-wider transition-colors shadow-sm text-center"
+              className="flex-1 py-2 px-3 rounded-lg bg-[#E5C378] hover:bg-[#F3E5AB] text-[#0D0D0F] font-mono font-bold text-[10px] sm:text-[11px] uppercase tracking-wider transition-colors shadow-sm text-center min-h-[38px] flex items-center justify-center"
             >
               Aceptar todas
             </button>
             <button
               type="button"
               onClick={handleReject}
-              className="py-2 px-3 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-[#9CA3AF] hover:text-[#EDEDED] font-mono text-[11px] uppercase tracking-wider transition-colors text-center"
+              className="py-2 px-3 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-[#9CA3AF] hover:text-[#EDEDED] font-mono text-[10px] sm:text-[11px] uppercase tracking-wider transition-colors text-center min-h-[38px] flex items-center justify-center"
             >
-              Rechazar
+              Solo esenciales
             </button>
             <button
               type="button"
               onClick={() => setShowConfig(true)}
-              className="p-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-[#9CA3AF] hover:text-[#EDEDED] transition-colors"
+              className="p-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-[#9CA3AF] hover:text-[#EDEDED] transition-colors min-h-[38px] min-w-[38px] flex items-center justify-center"
               title="Configurar cookies"
               aria-label="Configurar cookies"
             >

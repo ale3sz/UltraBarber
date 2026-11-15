@@ -202,7 +202,7 @@ export default function ClientView({
               height={600}
               loading="eager"
               decoding="async"
-              fetchPriority="high"
+              fetchpriority="high"
               className="absolute inset-0 w-full h-full object-cover object-center opacity-30"
             />
             <div className="relative z-10 p-6 sm:p-10 md:p-12 bg-gradient-to-t from-[#0D0D0F] via-[#0D0D0F]/85 to-[#0D0D0F]/60 flex flex-col justify-end min-h-[300px] sm:min-h-[360px] space-y-6">
@@ -293,14 +293,15 @@ export default function ClientView({
               </button>
             </div>
           ) : (
-            <div className="text-center">
+            <div className="flex justify-center">
               <button
                 type="button"
                 onClick={() => setShowSocioLogin(!showSocioLogin)}
-                className="inline-flex items-center gap-2 text-xs font-mono text-[#8A898E] hover:text-[#E5C378] tracking-wider transition-colors py-2 px-4 rounded-lg hover:bg-white/[0.03]"
+                className="inline-flex items-center gap-2.5 text-xs font-mono text-[#EDEDED] hover:text-[#E5C378] tracking-wider transition-all py-2.5 px-4 rounded-xl bg-[#141417]/80 hover:bg-[#1A1A1F] border border-white/[0.08] hover:border-[#E5C378]/40 shadow-sm"
               >
                 <UserCheck className="w-3.5 h-3.5 text-[#E5C378]" />
                 <span>{showSocioLogin ? 'Ocultar acceso' : '¿Ya sos socio del Club? Ingresá con tu DNI'}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E5C378]/60" />
               </button>
 
               {showSocioLogin && (

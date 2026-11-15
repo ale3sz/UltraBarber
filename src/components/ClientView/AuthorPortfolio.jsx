@@ -246,6 +246,8 @@ export default function AuthorPortfolio({ onSelectService, onStartBooking }) {
               <img
                 src={item.src}
                 alt={`${item.title} - ${item.tag || 'Corte de autor'} realizado por David Barber`}
+                width={600}
+                height={800}
                 decoding="async"
                 className="absolute inset-0 w-full h-full object-cover object-top filter contrast-[1.03] group-hover:scale-[1.04] transition-transform duration-700 ease-out cursor-pointer"
                 loading="lazy"
@@ -365,6 +367,8 @@ export default function AuthorPortfolio({ onSelectService, onStartBooking }) {
             <img
               src={activePhoto.src}
               alt={`${activePhoto.title} en detalle - Trabajo realizado por David Barber`}
+              width={1000}
+              height={1200}
               decoding="async"
               className="max-h-[72vh] max-w-full rounded-xl object-contain shadow-2xl border border-white/[0.08]"
             />

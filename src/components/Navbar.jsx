@@ -42,7 +42,8 @@ export default function Navbar({
               setActiveView('client');
               setClientSubTab('home');
             }}
-            className="flex items-center gap-3 text-left group focus:outline-none min-w-0"
+            aria-label="Ir al inicio de David Barber"
+            className="flex items-center gap-3 text-left group focus:outline-none focus-visible:ring-1 focus-visible:ring-[#E5C378] rounded-md min-w-0"
           >
             <div className="w-8 h-8 rounded-md bg-[#141417] border border-white/[0.1] flex items-center justify-center text-[#E5C378] group-hover:border-[#E5C378]/50 transition-colors shrink-0">
               <Scissors className="w-4 h-4 -rotate-45 stroke-[1.5]" />
@@ -187,7 +188,7 @@ export default function Navbar({
           <button
             type="button"
             onClick={() => setClientSubTab('home')}
-            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
+            className={`flex-1 min-h-[44px] py-1 px-0.5 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all ${
               clientSubTab === 'home' || !clientSubTab
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
@@ -196,7 +197,7 @@ export default function Navbar({
             <Scissors
               className={`w-3.5 h-3.5 stroke-[1.5] ${(clientSubTab === 'home' || !clientSubTab) ? 'text-[#E5C378]' : ''}`}
             />
-            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-semibold">
+            <span className="text-[10px] font-mono tracking-[0.05em] uppercase font-semibold">
               Inicio
             </span>
           </button>
@@ -205,7 +206,7 @@ export default function Navbar({
           <button
             type="button"
             onClick={() => setClientSubTab('portfolio')}
-            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
+            className={`flex-1 min-h-[44px] py-1 px-0.5 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all ${
               clientSubTab === 'portfolio'
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
@@ -214,7 +215,7 @@ export default function Navbar({
             <Camera
               className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'portfolio' ? 'text-[#E5C378]' : ''}`}
             />
-            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-semibold">
+            <span className="text-[10px] font-mono tracking-[0.05em] uppercase font-semibold">
               Galería
             </span>
           </button>
@@ -223,7 +224,7 @@ export default function Navbar({
           <button
             type="button"
             onClick={() => setClientSubTab('book')}
-            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
+            className={`flex-1 min-h-[44px] py-1 px-0.5 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all ${
               clientSubTab === 'book'
                 ? 'bg-[#E5C378] text-[#0D0D0F]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
@@ -232,7 +233,7 @@ export default function Navbar({
             <CalendarPlus
               className={`w-3.5 h-3.5 stroke-[2] ${clientSubTab === 'book' ? 'text-[#0D0D0F]' : 'text-[#E5C378]'}`}
             />
-            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-bold">
+            <span className="text-[10px] font-mono tracking-[0.05em] uppercase font-bold">
               Reservar
             </span>
           </button>
@@ -241,7 +242,7 @@ export default function Navbar({
           <button
             type="button"
             onClick={() => setClientSubTab('club')}
-            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
+            className={`flex-1 min-h-[44px] py-1 px-0.5 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all ${
               clientSubTab === 'club'
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
@@ -250,7 +251,7 @@ export default function Navbar({
             <CreditCard
               className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'club' ? 'text-[#E5C378]' : ''}`}
             />
-            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-semibold">
+            <span className="text-[10px] font-mono tracking-[0.05em] uppercase font-semibold">
               Mi Pase
             </span>
           </button>
@@ -259,7 +260,7 @@ export default function Navbar({
           <button
             type="button"
             onClick={() => setClientSubTab('turns')}
-            className={`flex-1 py-1.5 px-0.5 rounded-lg flex flex-col items-center gap-0.5 transition-all ${
+            className={`flex-1 min-h-[44px] py-1 px-0.5 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all ${
               clientSubTab === 'turns'
                 ? 'bg-white/[0.08] text-[#EDEDED]'
                 : 'text-[#8A898E] hover:text-[#EDEDED]'
@@ -268,7 +269,7 @@ export default function Navbar({
             <Clock
               className={`w-3.5 h-3.5 stroke-[1.5] ${clientSubTab === 'turns' ? 'text-[#E5C378]' : ''}`}
             />
-            <span className="text-[9px] font-mono tracking-[0.05em] uppercase font-semibold">
+            <span className="text-[10px] font-mono tracking-[0.05em] uppercase font-semibold">
               Turnos
             </span>
           </button>

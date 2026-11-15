@@ -302,6 +302,7 @@ export default function DniStep({
                 id="dni-input"
                 type="tel"
                 inputMode="numeric"
+                autoComplete="off"
                 value={dniInput}
                 onChange={(e) => {
                   setDniInput(e.target.value.replace(/\D/g, ''));
@@ -369,6 +370,7 @@ export default function DniStep({
                   <input
                     id="admin-password-input"
                     type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
                     value={passwordInput}
                     onChange={(e) => {
                       setPasswordInput(e.target.value);
@@ -447,6 +449,7 @@ export default function DniStep({
                   id="pin-login-input"
                   type="password"
                   inputMode="numeric"
+                  autoComplete="current-password"
                   maxLength={4}
                   value={pinInput}
                   onChange={(e) => {
@@ -510,12 +513,14 @@ export default function DniStep({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                  <label htmlFor="reg-first-name-c" className="micro-technical block text-[9px] text-[#8A898E] mb-1">
                     NOMBRE *
                   </label>
                   <input
+                    id="reg-first-name-c"
                     type="text"
                     required
+                    autoComplete="given-name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Agustín"
@@ -524,12 +529,14 @@ export default function DniStep({
                 </div>
 
                 <div>
-                  <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                  <label htmlFor="reg-last-name-c" className="micro-technical block text-[9px] text-[#8A898E] mb-1">
                     APELLIDO *
                   </label>
                   <input
+                    id="reg-last-name-c"
                     type="text"
                     required
+                    autoComplete="family-name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Gómez"
@@ -540,13 +547,15 @@ export default function DniStep({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+                  <label htmlFor="reg-phone-c" className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
                     <Phone className="w-3 h-3 text-[#D4AF37]" />
                     <span>WHATSAPP *</span>
                   </label>
                   <input
+                    id="reg-phone-c"
                     type="tel"
                     required
+                    autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+54 9 341 555-1234"
@@ -555,12 +564,14 @@ export default function DniStep({
                 </div>
 
                 <div>
-                  <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+                  <label htmlFor="reg-birth-c" className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-[#D4AF37]" />
                     <span>FECHA DE NACIMIENTO</span>
                   </label>
                   <input
+                    id="reg-birth-c"
                     type="date"
+                    autoComplete="bday"
                     value={birthDate}
                     onChange={(e) => setBirthDate(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] text-xs focus:outline-none focus:border-[#D4AF37]"
@@ -569,15 +580,17 @@ export default function DniStep({
               </div>
 
               <div>
-                <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+                <label htmlFor="reg-pin-c" className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
                   <KeyRound className="w-3 h-3 text-[#D4AF37]" />
                   <span>CREÁ TU PIN DE 4 DÍGITOS *</span>
                 </label>
                 <input
+                  id="reg-pin-c"
                   type="password"
                   inputMode="numeric"
                   maxLength={4}
                   required
+                  autoComplete="new-password"
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                   placeholder="Ej: 2580"
@@ -586,11 +599,13 @@ export default function DniStep({
               </div>
 
               <div>
-                <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                <label htmlFor="reg-ref-c" className="micro-technical block text-[9px] text-[#8A898E] mb-1">
                   CÓDIGO DE REFERIDO / AMIGO (OPCIONAL)
                 </label>
                 <input
+                  id="reg-ref-c"
                   type="text"
+                  autoComplete="off"
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                   placeholder="Ej: MAT9888"
@@ -649,6 +664,7 @@ export default function DniStep({
               id="dni-reg-input"
               type="tel"
               inputMode="numeric"
+              autoComplete="username"
               required
               value={dniInput}
               onChange={(e) => setDniInput(e.target.value.replace(/\D/g, ''))}
@@ -659,12 +675,14 @@ export default function DniStep({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+              <label htmlFor="pv-first-name" className="micro-technical block text-[9px] text-[#8A898E] mb-1">
                 NOMBRE *
               </label>
               <input
+                id="pv-first-name"
                 type="text"
                 required
+                autoComplete="given-name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Agustín"
@@ -673,12 +691,14 @@ export default function DniStep({
             </div>
 
             <div>
-              <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+              <label htmlFor="pv-last-name" className="micro-technical block text-[9px] text-[#8A898E] mb-1">
                 APELLIDO *
               </label>
               <input
+                id="pv-last-name"
                 type="text"
                 required
+                autoComplete="family-name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Gómez"
@@ -689,13 +709,15 @@ export default function DniStep({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+              <label htmlFor="pv-phone" className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
                 <Phone className="w-3 h-3 text-[#D4AF37]" />
                 <span>WHATSAPP *</span>
               </label>
               <input
+                id="pv-phone"
                 type="tel"
                 required
+                autoComplete="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+54 9 341 555-1234"
@@ -704,12 +726,14 @@ export default function DniStep({
             </div>
 
             <div>
-              <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+              <label htmlFor="pv-birth" className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
                 <Calendar className="w-3 h-3 text-[#D4AF37]" />
                 <span>FECHA DE NACIMIENTO</span>
               </label>
               <input
+                id="pv-birth"
                 type="date"
+                autoComplete="bday"
                 value={birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-md bg-[#101012] border border-white/[0.08] text-[#EDEDED] text-xs focus:outline-none focus:border-[#D4AF37]"
@@ -718,15 +742,17 @@ export default function DniStep({
           </div>
 
           <div>
-            <label className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
+            <label htmlFor="pv-pin" className="micro-technical block text-[9px] text-[#8A898E] mb-1 flex items-center gap-1">
               <KeyRound className="w-3 h-3 text-[#D4AF37]" />
               <span>CREÁ TU PIN DE 4 DÍGITOS *</span>
             </label>
             <input
+              id="pv-pin"
               type="password"
               inputMode="numeric"
               maxLength={4}
               required
+              autoComplete="new-password"
               value={newPin}
               onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
               placeholder="Ej: 2580"
@@ -735,11 +761,13 @@ export default function DniStep({
           </div>
 
               <div>
-                <label className="micro-technical block text-[9px] text-[#8A898E] mb-1">
+                <label htmlFor="pv-ref" className="micro-technical block text-[9px] text-[#8A898E] mb-1">
                   CÓDIGO DE REFERIDO / AMIGO (OPCIONAL)
                 </label>
                 <input
+                  id="pv-ref"
                   type="text"
+                  autoComplete="off"
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                   placeholder="Ej: MAT9888"
